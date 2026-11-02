@@ -3,7 +3,7 @@
 Flutter-App für Backgammon. Zielplattformen: Android, Windows, Web.
 Das Projekt steht am Anfang: `lib/main.dart` und `test/widget_test.dart` sind noch die Vorlage von `flutter create`.
 
-Die Produktvision steht in [docs/vision.md](docs/vision.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
+Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderungen stehen in [docs/anforderungen.md](docs/anforderungen.md), der Aufbau der App steht in [docs/architektur.md](docs/architektur.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
 
 ## Umgebung
 
@@ -33,6 +33,7 @@ Vor jedem Abschluss einer Änderung müssen `flutter analyze` und `flutter test`
 ## Konventionen
 
 - Gearbeitet wird nur im Workspace oder auf GitHub. Dokumente, Pläne und Anforderungen liegen unter `docs/`, nicht in claude.ai-Dokumenten, Artifacts oder anderen externen Diensten.
+- Fällt beim Abarbeiten eines Tasks eine Architekturentscheidung, muss [docs/architektur.md](docs/architektur.md) im selben Schritt aktualisiert werden: Beschreibung anpassen und Eintrag im Entscheidungslog ergänzen. So bleibt nachvollziehbar, wie die App funktioniert.
 - Mit dem Benutzer auf Deutsch kommunizieren.
 - Code, Bezeichner und Code-Kommentare auf Englisch.
 - Lint-Regeln: `flutter_lints` über `analysis_options.yaml`.
