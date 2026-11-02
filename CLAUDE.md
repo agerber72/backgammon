@@ -23,6 +23,7 @@ flutter run -d chrome                             # im Browser starten
 flutter emulators --launch Medium_Phone_API_37.0  # Emulator starten
 flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/setup.ps1                           # GNU Backgammon einrichten
+./tools/blender/setup.ps1                         # Blender einrichten
 ./tools/gnubg/hint.ps1 -PositionId <id> -Die1 3 -Die2 1  # Referenzbewertung
 ```
 
@@ -36,7 +37,9 @@ Vor jedem Abschluss einer Änderung müssen `flutter analyze` und `flutter test`
 - Fällt beim Abarbeiten eines Tasks eine Architekturentscheidung, muss [docs/architektur.md](docs/architektur.md) im selben Schritt aktualisiert werden: Beschreibung anpassen und Eintrag im Entscheidungslog ergänzen. So bleibt nachvollziehbar, wie die App funktioniert.
 - Mit dem Benutzer auf Deutsch kommunizieren.
 - Code, Bezeichner und Code-Kommentare auf Englisch.
+- Sichtbare Texte kommen aus `lib/l10n/app_de.arb`, nie fest aus dem Code.
 - Lint-Regeln: `flutter_lints` über `analysis_options.yaml`.
 - Spielregeln und Spiellogik getrennt von der UI halten, damit sie ohne Widgets testbar sind.
 - Neue Pakete nur nach Rücksprache mit dem Benutzer hinzufügen.
 - Commits nur, wenn der Benutzer darum bittet.
+- Commit-Nachrichten enden mit `Assisted-by: Claude`. Kein `Co-Authored-By` oder andere Formulierung, die Claude als Autor nennt. Pull Requests enden mit `Entwickelt mit Unterstützung von Claude Code`.

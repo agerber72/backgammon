@@ -1,0 +1,15 @@
+{
+  "@@locale": "de",
+  "appTitle": "Backgammon",
+  "@appTitle": {
+    "description": "Application name shown in the title bar."
+  },
+  "counterLabel": "So oft hast du den Knopf gedrückt:",
+  "@counterLabel": {
+    "description": "Label above the counter of the template page."
+  },
+  "incrementTooltip": "Erhöhen",
+  "@incrementTooltip": {
+    "description": "Tooltip of the increment button of the template page."
+  }
+}

@@ -53,3 +53,7 @@ app.*.map.json
 
 # Personal notes, never published
 /Achims Gedanken/
+
+# Blender (installed by tools/blender/setup.ps1, never shipped)
+/tools/blender/app/
+/tools/blender/.download/

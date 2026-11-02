@@ -32,11 +32,11 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 - [x] **T0.3 GNU Backgammon als Testwerkzeug einrichten**
     - [x] Installation per Skript mit Prüfsumme
     - [x] Bewertung über `hint.ps1` in wählbarer Tiefe
-- [ ] **T0.4 Mehrsprachigkeit vorbereiten** (`A-601`, `A-602`)
-    - [ ] Freigabe für die Pakete `flutter_localizations` und `intl` einholen
-    - [ ] Sprachdatei für Deutsch anlegen
-    - [ ] Vorlagentext der App aus der Sprachdatei laden
-    - [ ] Test: Kein sichtbarer Text ist fest im Code verdrahtet
+- [x] **T0.4 Mehrsprachigkeit vorbereiten** (`A-601`, `A-602`)
+    - [x] Freigabe für die Pakete `flutter_localizations` und `intl` einholen
+    - [x] Sprachdatei für Deutsch anlegen
+    - [x] Vorlagentext der App aus der Sprachdatei laden
+    - [x] Test: Kein sichtbarer Text ist fest im Code verdrahtet
 - [ ] **T0.5 Projektstruktur festlegen** (`A-701`)
     - [ ] Ordner für Spiellogik, Oberfläche und Grafiken anlegen
     - [ ] Vorlagencode von `flutter create` entfernen
@@ -44,9 +44,9 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 
 ### D1 Brett-Prototyp
 
-- [ ] **T1.1 Blender einrichten** (`A-301`)
-    - [ ] Portable Blender-Version per Skript nach `tools/` installieren
-    - [ ] Von Git ausschließen
+- [x] **T1.1 Blender einrichten** (`A-301`)
+    - [x] Portable Blender-Version per Skript nach `tools/` installieren
+    - [x] Von Git ausschließen
 - [ ] **T1.2 Render-Skript schreiben** (`A-301`, `A-302`)
     - [ ] Brett mit 24 Zungen und Bar modellieren
     - [ ] Steine, Würfel und Dopplerwürfel modellieren
@@ -281,4 +281,3 @@ Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 - [ ] Wie viele Spielstärken soll es geben? Vorschlag: drei.
 - [ ] Wo läuft die Web-Version? Vorschlag: GitHub Pages.
 - [ ] Wie wird die Windows-Version verteilt? Vorschlag: als Download über GitHub Releases.
-- [ ] Blender 4.5 LTS portabel unter `tools/` installieren? Vorschlag: ja, das passt zur Regel, nur im Workspace zu arbeiten.
