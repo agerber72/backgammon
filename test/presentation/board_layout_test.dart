@@ -61,6 +61,24 @@ void main() {
         }
       });
 
+      test(
+        'A-313: Knöpfe auf dem Filz – erwartet: '
+        'Der Bereich liegt in jeder Bretthälfte zwischen den Zungenspitzen',
+        () {
+          final layout = load(view);
+
+          for (final leftHalf in [true, false]) {
+            final band = layout.middleBand(leftHalf: leftHalf);
+
+            expect(band.width, greaterThan(0.2));
+            expect(band.height, greaterThan(0.03));
+            expect(band.top, greaterThan(0.3));
+            expect(band.top + band.height, lessThan(0.7));
+            expect(leftHalf ? band.left < 0.5 : band.left > 0.3, isTrue);
+          }
+        },
+      );
+
       test('A-302: Vollständige Grafik – erwartet: '
           'Zu Brett, Rahmen und jedem Spielteil gibt es eine Bilddatei', () {
         final layout = load(view);
@@ -69,6 +87,8 @@ void main() {
           ...layout.sprites.keys,
           'board_${view.name}',
           'rail_${view.name}',
+          'checker_white_selected',
+          'checker_black_selected',
         ]) {
           expect(
             File('assets/board/$name.png').existsSync(),

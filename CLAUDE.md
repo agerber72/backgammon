@@ -1,7 +1,7 @@
 # Backgammon
 
 Flutter-App für Backgammon. Zielplattformen: Android, Windows, Web.
-Stand: Die App zeigt ein gerendertes Brett mit der Startaufstellung. Die Spiellogik in `lib/domain` ist fertig, aber noch nicht mit der Oberfläche verbunden. Die Regeln stehen in [docs/regeln.md](docs/regeln.md).
+Stand: Eine Partie lässt sich am Brett spielen, beide Seiten werden noch von Hand bedient. Der Computer-Gegner fehlt. Die Regeln stehen in [docs/regeln.md](docs/regeln.md).
 
 Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderungen stehen in [docs/roadmap-und-anforderungen.md](docs/roadmap-und-anforderungen.md), der Aufbau der App steht in [docs/architektur.md](docs/architektur.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
 

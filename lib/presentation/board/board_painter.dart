@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 
+import '../../domain/board.dart' show Board, Player, Step;
 import 'board_assets.dart';
 import 'board_layout.dart';
 import 'board_scene.dart';
@@ -34,6 +35,8 @@ class BoardFit {
 
 class BoardPainter extends CustomPainter {
   const BoardPainter(this.assets, this.scene);
+
+  static const _rowLength = 5;
 
   final BoardAssets assets;
   final BoardScene scene;
@@ -70,7 +73,13 @@ class BoardPainter extends CustomPainter {
     for (final item in _checkerItems(layout)) {
       _drawSprite(canvas, size, item.sprite, item.position, paint);
     }
+    _drawCounts(canvas, size, layout);
+    _drawTargets(canvas, size, layout);
     _drawImage(canvas, assets.frontRail, Offset.zero & size, paint);
+    final moving = _movingItem(layout);
+    if (moving != null) {
+      _drawSprite(canvas, size, moving.sprite, moving.position, paint);
+    }
 
     final diceSlots = layout.dice[scene.diceColor]!;
     for (var i = 0; i < scene.dice.length; i++) {
@@ -91,14 +100,131 @@ class BoardPainter extends CustomPainter {
 
   /// Sorted so that checkers nearer to the viewer overlap the ones behind.
   List<_CheckerItem> _checkerItems(BoardLayout layout) {
+    final moving = scene.moving;
     final items = <_CheckerItem>[
       for (final MapEntry(key: color, value: points) in scene.checkers.entries)
         for (final MapEntry(key: point, value: count) in points.entries)
           for (var slot = 0; slot < count; slot++)
-            _CheckerItem('checker_$color', layout.points[point]![slot]),
+            if (!(moving != null &&
+                moving.to == point &&
+                slot == count - 1 &&
+                moving.player.name == color))
+              _CheckerItem(
+                _spriteOf(color, point, slot, count),
+                layout.points[point]![slot],
+                slot ~/ _rowLength,
+              ),
+      for (final MapEntry(key: color, value: count) in scene.bar.entries)
+        for (var slot = 0; slot < count; slot++)
+          _CheckerItem(
+            _spriteOf(color, _barOf(color), slot, count),
+            layout.bar[color]![slot],
+            slot ~/ 3,
+          ),
     ];
-    items.sort((a, b) => a.position.v.compareTo(b.position.v));
+    items.sort((a, b) {
+      final byLayer = a.layer.compareTo(b.layer);
+      return byLayer != 0 ? byLayer : a.position.v.compareTo(b.position.v);
+    });
     return items;
+  }
+
+  /// The top checker of the selected position carries the marker.
+  String _spriteOf(String color, int position, int slot, int count) {
+    final isSelected =
+        position == scene.selected &&
+        color == scene.diceColor &&
+        slot == count - 1;
+    return isSelected ? 'checker_${color}_selected' : 'checker_$color';
+  }
+
+  int _barOf(String color) => Step.barOf(Player.values.byName(color));
+
+  /// Stacks of more than five checkers show their size on top.
+  void _drawCounts(Canvas canvas, Size size, BoardLayout layout) {
+    for (final points in scene.checkers.values) {
+      for (final MapEntry(key: point, value: count) in points.entries) {
+        if (count <= _rowLength) {
+          continue;
+        }
+        final slot = layout.points[point]![count - 1];
+        final label = TextPainter(
+          text: TextSpan(
+            text: '$count',
+            style: TextStyle(
+              color: const Color(0xFFE53935),
+              fontSize: size.height * 0.03,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        label.paint(
+          canvas,
+          Offset(slot.u * size.width, slot.v * size.height) -
+              Offset(label.width / 2, label.height / 2),
+        );
+      }
+    }
+  }
+
+  /// See-through checkers show where the selected checker can go.
+  void _drawTargets(Canvas canvas, Size size, BoardLayout layout) {
+    final color = scene.diceColor;
+    final ghost = Paint()
+      ..filterQuality = FilterQuality.medium
+      ..color = const Color.fromRGBO(255, 255, 255, 0.5);
+    for (final target in scene.targets) {
+      if (target < 1 || target > Board.pointCount) {
+        final count = (scene.off[color] ?? 0) + 1;
+        final image =
+            assets.sprites['off_${assets.view.name}_${color}_$count']!;
+        _drawTray(canvas, size, image, layout.off[color]![count - 1], ghost);
+        continue;
+      }
+      final own = scene.checkers[color]?[target] ?? 0;
+      final slot = layout.points[target]![own % _rowLength];
+      _drawSprite(canvas, size, 'checker_$color', slot, ghost);
+    }
+  }
+
+  SlotPosition? _occupiedSlot(BoardLayout layout, String color, int position) {
+    if (position < 1 || position > Board.pointCount) {
+      final bar = scene.bar[color] ?? 0;
+      return bar > 0 ? layout.bar[color]![bar - 1] : null;
+    }
+    final count = scene.checkers[color]?[position] ?? 0;
+    return count > 0 ? layout.points[position]![count - 1] : null;
+  }
+
+  /// The checker on its way, between its old and its new place.
+  _CheckerItem? _movingItem(BoardLayout layout) {
+    final moving = scene.moving;
+    if (moving == null || moving.to < 1 || moving.to > Board.pointCount) {
+      return null;
+    }
+    final color = moving.player.name;
+    final target = _occupiedSlot(layout, color, moving.to);
+    if (target == null) {
+      return null;
+    }
+    final isBar = moving.from == Step.barOf(moving.player);
+    final leftBehind = isBar
+        ? scene.bar[color] ?? 0
+        : scene.checkers[color]?[moving.from] ?? 0;
+    final source = isBar
+        ? layout.bar[color]![leftBehind]
+        : layout.points[moving.from]![leftBehind];
+    final t = moving.progress;
+    return _CheckerItem(
+      'checker_$color',
+      SlotPosition(
+        ui.lerpDouble(source.u, target.u, t)!,
+        ui.lerpDouble(source.v, target.v, t)!,
+        ui.lerpDouble(source.scale, target.scale, t)!,
+      ),
+      0,
+    );
   }
 
   void _drawSprite(
@@ -150,8 +276,9 @@ class BoardPainter extends CustomPainter {
 }
 
 class _CheckerItem {
-  const _CheckerItem(this.sprite, this.position);
+  const _CheckerItem(this.sprite, this.position, this.layer);
 
   final String sprite;
   final SlotPosition position;
+  final int layer;
 }

@@ -47,6 +47,48 @@ bool _hasCheckerBehind(Board board, Player player, int distance) {
   return false;
 }
 
+/// The checker moves that can follow [done] and still lead to a legal play.
+List<Step> nextSteps(Board start, Player player, Dice dice, List<Step> done) {
+  final finals = legalPlays(
+    start,
+    player,
+    dice,
+  ).map((play) => play.result.key).toSet();
+  var current = start;
+  final remaining = List.of(dice.moves);
+  for (final step in done) {
+    current = current.apply(player, step);
+    remaining.remove(step.die);
+  }
+
+  // A board only counts as final once no die can be played any more: the same
+  // board can come up early, for example when a single high die bears off.
+  bool reachesFinal(Board board, List<int> rest) {
+    var moved = false;
+    for (final die in rest.toSet()) {
+      final left = List.of(rest)..remove(die);
+      for (final step in legalSteps(board, player, die)) {
+        moved = true;
+        if (reachesFinal(board.apply(player, step), left)) {
+          return true;
+        }
+      }
+    }
+    return !moved && finals.contains(board.key);
+  }
+
+  final allowed = <String, Step>{};
+  for (final die in remaining.toSet()) {
+    final left = List.of(remaining)..remove(die);
+    for (final step in legalSteps(current, player, die)) {
+      if (reachesFinal(current.apply(player, step), left)) {
+        allowed.putIfAbsent('${step.from}/${step.to}/$die', () => step);
+      }
+    }
+  }
+  return allowed.values.toList();
+}
+
 /// All complete turns the rules allow. Plays that end on the same board count
 /// once. An empty list means the player has to pass.
 List<Play> legalPlays(Board board, Player player, Dice dice) {

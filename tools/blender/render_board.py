@@ -211,6 +211,17 @@ def checker(color, location):
     return obj
 
 
+def marked_checker(color, location):
+    """A checker with a ring on top, which shows it is selected."""
+    r = CHECKER_RADIUS
+    h = CHECKER_HEIGHT
+    profile = [(r - 0.42, h - 0.02), (r - 0.4, h + 0.03), (r - 0.12, h + 0.03),
+               (r - 0.08, h - 0.02)]
+    ring = lathe('marker', profile, MATERIAL_SET['selection_marker'])
+    ring.location = location
+    return [checker(color, location), ring]
+
+
 def edge_checker(color, location):
     """A borne-off checker standing on its rim with its face to the camera."""
     obj = checker(color, location + Vector(
@@ -584,6 +595,10 @@ def render_sprites():
         sprites[name] = render_sprite(
             name, [checker(color, SPRITE_REFERENCE)], CHECKER_RADIUS,
             CHECKER_HEIGHT)
+        name = f'checker_{color}_selected'
+        sprites[name] = render_sprite(
+            name, marked_checker(color, SPRITE_REFERENCE), CHECKER_RADIUS,
+            CHECKER_HEIGHT)
         for top in range(1, 7):
             name = f'die_{color}_{top}'
             sprites[name] = render_sprite(
@@ -694,6 +709,8 @@ def main():
                                     MATERIALS['checker_coat']),
         'pip_on_white': principled('pip_on_white', COLORS['pip_on_white'], 0.4),
         'pip_on_black': principled('pip_on_black', COLORS['pip_on_black'], 0.4),
+        'selection_marker': principled('selection_marker',
+                                       COLORS['selection_marker'], 0.35),
         'doubling_cube': principled('doubling_cube', COLORS['doubling_cube'],
                                     0.3, 0.5),
         'doubling_cube_text': principled('doubling_cube_text',

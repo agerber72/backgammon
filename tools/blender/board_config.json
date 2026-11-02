@@ -10,6 +10,7 @@
     "checker_black": "#141414",
     "pip_on_white": "#141414",
     "pip_on_black": "#EFE6D2",
+    "selection_marker": "#F2B632",
     "doubling_cube": "#EFE6D2",
     "doubling_cube_text": "#141414"
   },

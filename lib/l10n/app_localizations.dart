@@ -105,6 +105,114 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Ansicht wechseln'**
   String get switchViewTooltip;
+
+  /// No description provided for @chooseColor.
+  ///
+  /// In de, this message translates to:
+  /// **'Mit welcher Farbe spielst du?'**
+  String get chooseColor;
+
+  /// No description provided for @playWhite.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiß'**
+  String get playWhite;
+
+  /// No description provided for @playBlack.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwarz'**
+  String get playBlack;
+
+  /// No description provided for @white.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiß'**
+  String get white;
+
+  /// No description provided for @black.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwarz'**
+  String get black;
+
+  /// No description provided for @roll.
+  ///
+  /// In de, this message translates to:
+  /// **'Würfeln'**
+  String get roll;
+
+  /// No description provided for @doubleCube.
+  ///
+  /// In de, this message translates to:
+  /// **'Doppeln'**
+  String get doubleCube;
+
+  /// No description provided for @accept.
+  ///
+  /// In de, this message translates to:
+  /// **'Annehmen'**
+  String get accept;
+
+  /// No description provided for @refuse.
+  ///
+  /// In de, this message translates to:
+  /// **'Ablehnen'**
+  String get refuse;
+
+  /// No description provided for @confirm.
+  ///
+  /// In de, this message translates to:
+  /// **'Zug beenden'**
+  String get confirm;
+
+  /// No description provided for @undo.
+  ///
+  /// In de, this message translates to:
+  /// **'Zurücknehmen'**
+  String get undo;
+
+  /// No description provided for @pass.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiter'**
+  String get pass;
+
+  /// No description provided for @noMove.
+  ///
+  /// In de, this message translates to:
+  /// **'Kein Zug möglich'**
+  String get noMove;
+
+  /// No description provided for @newGame.
+  ///
+  /// In de, this message translates to:
+  /// **'Neue Partie'**
+  String get newGame;
+
+  /// No description provided for @doubleOffered.
+  ///
+  /// In de, this message translates to:
+  /// **'Doppeln auf {value}?'**
+  String doubleOffered(int value);
+
+  /// No description provided for @resultSingle.
+  ///
+  /// In de, this message translates to:
+  /// **'{winner} gewinnt: {points, plural, =1{1 Punkt} other{{points} Punkte}}'**
+  String resultSingle(String winner, int points);
+
+  /// No description provided for @resultGammon.
+  ///
+  /// In de, this message translates to:
+  /// **'{winner} gewinnt mit Gammon: {points} Punkte'**
+  String resultGammon(String winner, int points);
+
+  /// No description provided for @resultBackgammon.
+  ///
+  /// In de, this message translates to:
+  /// **'{winner} gewinnt mit Backgammon: {points} Punkte'**
+  String resultBackgammon(String winner, int points);
 }
 
 class _AppLocalizationsDelegate

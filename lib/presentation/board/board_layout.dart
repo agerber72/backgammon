@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 /// Position on the board image in fractions of its size, plus the sprite scale.
 class SlotPosition {
   const SlotPosition(this.u, this.v, this.scale);
@@ -101,6 +103,32 @@ class BoardLayout {
       ),
     );
   }
+
+  /// Free felt between the point tips on one half of the image, in fractions
+  /// of its size. Buttons sit here without covering the points.
+  TrayImage middleBand({required bool leftHalf}) {
+    final centerU =
+        points.values.map((slots) => slots.first.u).reduce((a, b) => a + b) /
+        points.length;
+    final half = points.values
+        .where((slots) => slots.first.u < centerU == leftHalf)
+        .toList();
+    final topRow = half.where((slots) => slots.first.v < 0.5);
+    final bottomRow = half.where((slots) => slots.first.v >= 0.5);
+
+    double tip(List<SlotPosition> slots) =>
+        slots[_rowLength - 1].v +
+        (slots[_rowLength - 1].v - slots[_rowLength - 2].v) / 2;
+
+    final top = topRow.map(tip).reduce(math.max);
+    final bottom = bottomRow.map(tip).reduce(math.min);
+    final us = half.map((slots) => slots.first.u).toList()..sort();
+    final left = us.first;
+    final right = us.last;
+    return TrayImage(left, top, right - left, bottom - top);
+  }
+
+  static const _rowLength = 5;
 
   final String image;
   final String frontRail;

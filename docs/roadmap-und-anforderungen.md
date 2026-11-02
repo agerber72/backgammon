@@ -104,21 +104,24 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 
 ### D3 Spielbare Partie
 
-- [ ] **T3.1 Regel-Engine anbinden** (`A-201`)
-    - [ ] Partiezustand der Oberfläche bereitstellen
-    - [ ] Würfeln auslösen und anzeigen
-- [ ] **T3.2 Züge bedienen** (`A-202`, `A-203`)
-    - [ ] Stein auswählen und erlaubte Ziele anzeigen
-    - [ ] Stein per Tippen, Klicken oder Ziehen bewegen
-    - [ ] Treffer auf der Zunge in beiden Ansichten zuverlässig machen
-- [ ] **T3.3 Zug zurücknehmen** (`A-204`)
-    - [ ] Zurücknehmen bis zur Bestätigung des Zugs
+- [x] **T3.1 Regel-Engine anbinden** (`A-201`)
+    - [x] Partiezustand der Oberfläche bereitstellen
+    - [x] Würfeln auslösen und anzeigen
+- [x] **T3.2 Züge bedienen** (`A-202`, `A-203`)
+    - [x] Stein auswählen und erlaubte Ziele anzeigen
+    - [x] Gewählten Stein markieren, Ziele als durchsichtige Steine zeigen (`A-314`)
+    - [x] Knöpfe auf den Filz legen und mit dem Brett skalieren (`A-313`)
+    - [x] Stein per Tippen, Klicken oder Ziehen bewegen
+    - [x] Treffer auf der Zunge in beiden Ansichten zuverlässig machen
+- [x] **T3.3 Zug zurücknehmen** (`A-204`)
+    - [x] Zurücknehmen bis zur Bestätigung des Zugs
 - [ ] **T3.4 Animationen** (`A-205`)
-    - [ ] Steine und Würfel bewegen sich nachvollziehbar
-- [ ] **T3.5 Partieablauf** (`A-206`, `A-207`)
-    - [ ] Farbe wählen und Partie starten
-    - [ ] Dopplerwürfel bedienen
-    - [ ] Ergebnis anzeigen und neue Partie starten
+    - [x] Gezogene Steine gleiten auf ihr Ziel
+    - [ ] Schlagen, Auswürfeln und Würfelwurf animieren
+- [x] **T3.5 Partieablauf** (`A-206`, `A-207`)
+    - [x] Farbe wählen und Partie starten
+    - [x] Dopplerwürfel bedienen
+    - [x] Ergebnis anzeigen und neue Partie starten
 
 ### D4 Computer-Gegner
 
@@ -231,6 +234,8 @@ Ein Task ist erledigt, wenn:
 | A-310 | Der Dopplerwürfel liegt zu Beginn im mittleren Fach. Die Steine sind matt. | D1 |
 | A-311 | Das Spielbrett füllt den angezeigten Ausschnitt so weit wie möglich aus, ohne verzerrt oder abgeschnitten zu werden. Die Systemleisten sind ausgeblendet. | D1 |
 | A-312 | Licht und Schatten wirken in beiden Ansichten natürlich. | D1 |
+| A-313 | Die Knöpfe liegen auf dem Filz zwischen den Zungenspitzen, auf der Bretthälfte ohne Würfel, und skalieren mit dem Brett. | D3 |
+| A-314 | Der gewählte Stein trägt eine Markierung. Durchsichtige Steine zeigen die möglichen Ziele. | D3 |
 | A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |
 | A-309 | Bis zu fünf Steine liegen nebeneinander auf einem Dreieck. Steine am Rand werden vom vorderen Rahmen verdeckt wie auf einem echten Brett. | D1 |
 

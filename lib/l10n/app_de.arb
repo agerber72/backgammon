@@ -7,5 +7,44 @@
   "switchViewTooltip": "Ansicht wechseln",
   "@switchViewTooltip": {
     "description": "Tooltip of the button that turns the board to the other player's side."
+  },
+  "chooseColor": "Mit welcher Farbe spielst du?",
+  "playWhite": "Weiß",
+  "playBlack": "Schwarz",
+  "white": "Weiß",
+  "black": "Schwarz",
+  "roll": "Würfeln",
+  "doubleCube": "Doppeln",
+  "accept": "Annehmen",
+  "refuse": "Ablehnen",
+  "confirm": "Zug beenden",
+  "undo": "Zurücknehmen",
+  "pass": "Weiter",
+  "noMove": "Kein Zug möglich",
+  "newGame": "Neue Partie",
+  "doubleOffered": "Doppeln auf {value}?",
+  "@doubleOffered": {
+    "placeholders": { "value": { "type": "int" } }
+  },
+  "resultSingle": "{winner} gewinnt: {points, plural, =1{1 Punkt} other{{points} Punkte}}",
+  "@resultSingle": {
+    "placeholders": {
+      "winner": { "type": "String" },
+      "points": { "type": "int" }
+    }
+  },
+  "resultGammon": "{winner} gewinnt mit Gammon: {points} Punkte",
+  "@resultGammon": {
+    "placeholders": {
+      "winner": { "type": "String" },
+      "points": { "type": "int" }
+    }
+  },
+  "resultBackgammon": "{winner} gewinnt mit Backgammon: {points} Punkte",
+  "@resultBackgammon": {
+    "placeholders": {
+      "winner": { "type": "String" },
+      "points": { "type": "int" }
+    }
   }
 }
