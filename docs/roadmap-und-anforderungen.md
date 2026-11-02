@@ -37,30 +37,41 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
     - [x] Sprachdatei für Deutsch anlegen
     - [x] Vorlagentext der App aus der Sprachdatei laden
     - [x] Test: Kein sichtbarer Text ist fest im Code verdrahtet
-- [ ] **T0.5 Projektstruktur festlegen** (`A-701`)
-    - [ ] Ordner für Spiellogik, Oberfläche und Grafiken anlegen
-    - [ ] Vorlagencode von `flutter create` entfernen
-    - [ ] Automatische Prüfung auf GitHub einrichten: `flutter analyze` und `flutter test`
+- [x] **T0.5 Projektstruktur festlegen** (`A-701`)
+    - [x] Ordner für Spiellogik, Oberfläche und Grafiken anlegen
+    - [x] Vorlagencode von `flutter create` entfernen
+    - [x] Automatische Prüfung auf GitHub einrichten: `flutter analyze` und `flutter test`
 
 ### D1 Brett-Prototyp
 
 - [x] **T1.1 Blender einrichten** (`A-301`)
     - [x] Portable Blender-Version per Skript nach `tools/` installieren
     - [x] Von Git ausschließen
-- [ ] **T1.2 Render-Skript schreiben** (`A-301`, `A-302`)
-    - [ ] Brett mit 24 Zungen und Bar modellieren
-    - [ ] Steine, Würfel und Dopplerwürfel modellieren
-    - [ ] Eine Kamera je Ansicht festlegen
-    - [ ] Bilder für Schwarz und Weiß erzeugen
-- [ ] **T1.3 Brett in Flutter anzeigen** (`A-302`, `A-303`)
-    - [ ] Position jeder Zunge in beiden Ansichten berechnen
-    - [ ] Steine einer festen Beispielstellung an der richtigen Stelle und in richtiger Größe zeichnen
-    - [ ] Auf verschiedene Bildschirmgrößen anpassen
-- [ ] **T1.4 Ansicht wechseln** (`A-304`)
-    - [ ] Wechsel zwischen Schwarz und Weiß mit kurzem Übergang
-- [ ] **T1.5 Prototyp bewerten** (`A-305`)
-    - [ ] Optik und Leistung auf Android, Windows und Web prüfen
-    - [ ] Entscheidung festhalten: weiter so oder Ansatz ändern
+- [x] **T1.2 Render-Skript schreiben** (`A-301`, `A-302`)
+    - [x] Brett mit 24 Zungen und Bar modellieren
+    - [x] Steine, Würfel und Dopplerwürfel modellieren
+    - [x] Eine Kamera je Ansicht festlegen
+    - [x] Bilder für Schwarz und Weiß erzeugen
+- [x] **T1.3 Brett in Flutter anzeigen** (`A-302`, `A-303`)
+    - [x] Position jeder Zunge in beiden Ansichten berechnen
+    - [x] Steine einer festen Beispielstellung an der richtigen Stelle und in richtiger Größe zeichnen
+    - [x] Auf verschiedene Bildschirmgrößen anpassen
+- [x] **T1.4 Ansicht wechseln** (`A-304`)
+    - [x] Wechsel zwischen Schwarz und Weiß mit kurzem Übergang
+- [x] **T1.5 Ablagefach umsetzen** (`A-306` bis `A-308`)
+    - [x] Drei Fächer, Breite, Tiefe und Steindicke aus der Geometrie
+    - [x] Steine hochkant in einer Reihe, 15 Steine füllen ein Fach exakt
+- [x] **T1.7 Brett an die Anzeige anpassen** (`A-311`)
+    - [x] Außenkante des Bretts exportieren und auf die Anzeige skalieren
+    - [x] Tisch transparent rendern, Systemleisten ausblenden
+- [x] **T1.8 Licht beim Ansichtswechsel prüfen** (`A-312`)
+    - [x] Licht folgt der Kamera, beide Ansichten wirken natürlich; vom Benutzer abgenommen
+- [x] **T1.6 Prototyp bewerten** (`A-305`)
+    - [x] Optik prüfen
+    - [x] Leistung auf Windows prüfen
+    - [x] Leistung auf Android prüfen
+    - [x] Leistung auf Web prüfen
+    - [x] Entscheidung: weiter so, vom Benutzer abgenommen
 
 ### D2 Regel-Engine
 
@@ -135,7 +146,8 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 - [ ] **T5.3 Einstellungen** (`A-209`)
     - [ ] Stufe, Farbe und Ansicht wählen
 - [ ] **T5.4 Feinschliff**
-    - [ ] App-Symbol und Startbildschirm
+    - [x] App-Symbol aus dem P2G-Logo (`tools/icon/`)
+    - [ ] Startbildschirm
     - [ ] Texte auf Länge und Verständlichkeit prüfen (`A-602`)
     - [ ] Bedienung mit jemandem testen, der die App nicht kennt
 
@@ -167,7 +179,7 @@ Die Tasks werden erst nach Version 1 verfeinert.
 Ein Task ist erledigt, wenn:
 
 - `flutter analyze` und `flutter test` fehlerfrei durchlaufen,
-- die Logik automatisiert getestet ist,
+- die Logik automatisiert getestet ist und jeder Testname Anforderung und Erwartung nennt,
 - sichtbare Texte aus der Sprachdatei kommen,
 - die Oberfläche auf Android, Windows und Web geprüft wurde, sofern der Task sie betrifft,
 - Architekturentscheidungen in [architektur.md](architektur.md) nachgetragen sind.
@@ -187,6 +199,7 @@ Ein Task ist erledigt, wenn:
 | A-107 | Ein Pasch ergibt vier Züge. Beide Würfel müssen genutzt werden, wenn möglich; geht nur einer, dann der höhere. | D2 |
 | A-108 | Auswürfeln ist nur möglich, wenn alle eigenen Steine im Heimfeld sind. | D2 |
 | A-109 | Die Partie erkennt Sieg, Gammon und Backgammon und wertet einfach, doppelt und dreifach. | D2 |
+| A-111 | Version 1 spielt ohne die Zusatzregeln Jacoby, Beaver und automatisches Doppeln. Gammon und Backgammon zählen auch ohne gedrehten Dopplerwürfel. | D2 |
 | A-110 | Der Dopplerwürfel unterstützt Anbieten, Annehmen und Ablehnen, Besitz und Wert bis 64. Ablehnen beendet die Partie. | D2 |
 
 ### 2xx Spielablauf und Bedienung
@@ -202,16 +215,24 @@ Ein Task ist erledigt, wenn:
 | A-207 | Die App zeigt Ergebnis und Wertung und bietet eine neue Partie an. | D3 |
 | A-208 | Eine laufende Partie bleibt beim Beenden erhalten und lässt sich fortsetzen. | D5 |
 | A-209 | Spielstärke, Farbe und Ansicht lassen sich einstellen. | D5 |
+| A-210 | Die App läuft nur im Querformat. | D0 |
 
 ### 3xx Grafik
 
 | ID | Anforderung | Delivery |
 | --- | --- | --- |
-| A-301 | Alle 3D-Grafiken entstehen reproduzierbar aus einem Blender-Skript im Repository. | D1 |
+| A-301 | Alle 3D-Grafiken entstehen reproduzierbar aus einem Blender-Skript im Repository. Farben, Material, Kamera und Maße stehen in `tools/blender/board_config.json`. | D1 |
 | A-302 | Die App zeigt ein Turnierbrett im 3D-Stil mit Brett, 30 Steinen, Würfeln, Würfelbechern und Dopplerwürfel. | D1 |
 | A-303 | Steine und Würfel passen in Perspektive und Größe exakt zum Brett. | D1 |
 | A-304 | Das Brett lässt sich zwischen den Ansichten für Schwarz und Weiß wechseln. Ein freies Drehen gibt es nicht. | D1 |
 | A-305 | Das Brett läuft flüssig auf Android, Windows und im Web. | D1 |
+| A-306 | Das Ablagefach hat drei gleich große Fächer: je eines pro Spieler an den Enden und eines in der Mitte. In der Ansicht liegt das eigene Fach vorn. | D1 |
+| A-307 | Herausgespielte Steine stehen hochkant in einer Reihe im Fach, beginnend am Rand der eigenen Seite. | D1 |
+| A-310 | Der Dopplerwürfel liegt zu Beginn im mittleren Fach. Die Steine sind matt. | D1 |
+| A-311 | Das Spielbrett füllt den angezeigten Ausschnitt so weit wie möglich aus, ohne verzerrt oder abgeschnitten zu werden. Die Systemleisten sind ausgeblendet. | D1 |
+| A-312 | Licht und Schatten wirken in beiden Ansichten natürlich. | D1 |
+| A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |
+| A-309 | Bis zu fünf Steine liegen nebeneinander auf einem Dreieck. Steine am Rand werden vom vorderen Rahmen verdeckt wie auf einem echten Brett. | D1 |
 
 ### 4xx Computer-Gegner
 
@@ -269,6 +290,7 @@ Ein Task ist erledigt, wenn:
 Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 
 - Zwei Spieler am selben Gerät (Version 2 oder 3)
+- Zusatzregeln Jacoby, Beaver und automatisches Doppeln als Einstellung (Version 3)
 - Matches auf mehrere Punkte
 - Interaktives Tutorial, Tagesaufgaben, Partie nachträglich durchgehen
 - Prüfbare Würfelfolge offenlegen
@@ -277,7 +299,8 @@ Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 
 ## Offene Punkte
 
-- [ ] Gelten die Zusatzregeln Jacoby, Beaver und automatisches Doppeln? Vorschlag: nein, das hält Version 1 einfach. Gammon und Backgammon zählen dann auch ohne gedrehten Dopplerwürfel.
+- [ ] Leistung gezielt messen: Ansichtswechsel auf Android-Gerät, Windows und Web sind bei der Abnahme von T1.6 nicht gemessen worden. Vorschlag: spätestens in D3 mit echten Animationen.
+- [ ] Würfelbecher aus `A-302` modellieren oder streichen.
 - [ ] Wie viele Spielstärken soll es geben? Vorschlag: drei.
 - [ ] Wo läuft die Web-Version? Vorschlag: GitHub Pages.
 - [ ] Wie wird die Windows-Version verteilt? Vorschlag: als Download über GitHub Releases.

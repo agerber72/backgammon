@@ -100,17 +100,11 @@ abstract class AppLocalizations {
   /// **'Backgammon'**
   String get appTitle;
 
-  /// Label above the counter of the template page.
+  /// Tooltip of the button that turns the board to the other player's side.
   ///
   /// In de, this message translates to:
-  /// **'So oft hast du den Knopf gedrückt:'**
-  String get counterLabel;
-
-  /// Tooltip of the increment button of the template page.
-  ///
-  /// In de, this message translates to:
-  /// **'Erhöhen'**
-  String get incrementTooltip;
+  /// **'Ansicht wechseln'**
+  String get switchViewTooltip;
 }
 
 class _AppLocalizationsDelegate

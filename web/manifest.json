@@ -1,12 +1,12 @@
 {
-    "name": "backgammon",
-    "short_name": "backgammon",
+    "name": "Backgammon",
+    "short_name": "Backgammon",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "description": "Backgammon: free, without ads or accounts.",
+    "orientation": "landscape",
     "prefer_related_applications": false,
     "icons": [
         {

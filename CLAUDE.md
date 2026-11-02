@@ -1,9 +1,9 @@
 # Backgammon
 
 Flutter-App für Backgammon. Zielplattformen: Android, Windows, Web.
-Das Projekt steht am Anfang: `lib/main.dart` und `test/widget_test.dart` sind noch die Vorlage von `flutter create`.
+Das Projekt steht am Anfang: Die App zeigt bisher ein gerendertes Brett mit einer festen Beispielstellung.
 
-Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderungen stehen in [docs/anforderungen.md](docs/anforderungen.md), der Aufbau der App steht in [docs/architektur.md](docs/architektur.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
+Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderungen stehen in [docs/roadmap-und-anforderungen.md](docs/roadmap-und-anforderungen.md), der Aufbau der App steht in [docs/architektur.md](docs/architektur.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
 
 ## Umgebung
 
@@ -17,13 +17,14 @@ Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderu
 flutter pub get                                   # Abhängigkeiten laden
 flutter analyze                                   # statische Analyse
 flutter test                                      # alle Tests
-flutter test test/widget_test.dart                # einzelne Testdatei
+flutter test test/app/backgammon_app_test.dart     # einzelne Testdatei
 flutter run -d windows                            # auf Windows starten
 flutter run -d chrome                             # im Browser starten
 flutter emulators --launch Medium_Phone_API_37.0  # Emulator starten
 flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/setup.ps1                           # GNU Backgammon einrichten
 ./tools/blender/setup.ps1                         # Blender einrichten
+./tools/blender/render.ps1                        # Assets neu rendern (-Preview: nur Vorschau)
 ./tools/gnubg/hint.ps1 -PositionId <id> -Die1 3 -Die2 1  # Referenzbewertung
 ```
 
@@ -37,6 +38,7 @@ Vor jedem Abschluss einer Änderung müssen `flutter analyze` und `flutter test`
 - Fällt beim Abarbeiten eines Tasks eine Architekturentscheidung, muss [docs/architektur.md](docs/architektur.md) im selben Schritt aktualisiert werden: Beschreibung anpassen und Eintrag im Entscheidungslog ergänzen. So bleibt nachvollziehbar, wie die App funktioniert.
 - Mit dem Benutzer auf Deutsch kommunizieren.
 - Code, Bezeichner und Code-Kommentare auf Englisch.
+- Tests sind für Menschen lesbar: Der Testname nennt die geprüfte Anforderung und die Erwartung im Schema `A-308: Anforderung – erwartet: Erwartung`. Testnamen sind deutsch, das ist die einzige Ausnahme von Englisch im Code.
 - Sichtbare Texte kommen aus `lib/l10n/app_de.arb`, nie fest aus dem Code.
 - Lint-Regeln: `flutter_lints` über `analysis_options.yaml`.
 - Spielregeln und Spiellogik getrennt von der UI halten, damit sie ohne Widgets testbar sind.

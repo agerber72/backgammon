@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('lib contains no hardcoded user-visible text', () {
+  test('A-601: Texte in Sprachdateien – erwartet: '
+      'Kein sichtbarer Text steht fest im Code', () {
     final literalText = RegExp(
       r'''(\bText\(\s*|\b(title|tooltip|label|hintText|semanticLabel): )['"](?!\$)''',
     );

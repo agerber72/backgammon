@@ -13,8 +13,5 @@ class AppLocalizationsDe extends AppLocalizations {
   String get appTitle => 'Backgammon';
 
   @override
-  String get counterLabel => 'So oft hast du den Knopf gedrückt:';
-
-  @override
-  String get incrementTooltip => 'Erhöhen';
+  String get switchViewTooltip => 'Ansicht wechseln';
 }

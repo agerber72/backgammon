@@ -53,7 +53,7 @@ Version 1 ist eine vollständige Partie gegen den Computer zum einfachen Spielen
 
 | Bereich | Version 1 | Version 2 | Später | Bewusst nicht |
 | --- | --- | --- | --- | --- |
-| Spiel | Vollständige Regeln, Einzelpartie mit Dopplerwürfel, gegen Computer in mehreren Stufen, erlaubte Züge anzeigen, Zug zurücknehmen | | Zwei Spieler am selben Gerät (Version 2 oder 3), Matches auf mehrere Punkte | Live-Multiplayer, Echtgeld |
+| Spiel | Vollständige Regeln, Einzelpartie mit Dopplerwürfel, gegen Computer in mehreren Stufen, erlaubte Züge anzeigen, Zug zurücknehmen | | Zwei Spieler am selben Gerät (Version 2 oder 3), Matches auf mehrere Punkte, Zusatzregeln als Einstellung (Version 3) | Live-Multiplayer, Echtgeld |
 | Lernen | | Coach bewertet und erklärt Züge, Regel-Nachschlagewerk | Interaktives Tutorial, Tagesaufgaben, Partie nachträglich durchgehen | Equity-Tabellen, Rollouts |
 | Fairness | Faire Würfel, Würfelstatistik | | Prüfbare Würfelfolge offenlegen | Zertifizierung |
 | Produkt | Android, Windows, Web, Oberfläche auf Deutsch, Mehrsprachigkeit vorbereitet, lokale Speicherung, 3D-Brett mit Ansicht für Schwarz und Weiß, Code öffentlich auf GitHub unter GPL-3.0 | | Englisch und weitere Sprachen, weitere Brett-Designs | Konto, Werbung, Käufe, Münzen |

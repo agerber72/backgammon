@@ -1,0 +1,57 @@
+{
+  "colors": {
+    "table": "#17191C",
+    "felt": "#1F4D3A",
+    "frame_wood_light": "#4A2C1A",
+    "frame_wood_dark": "#24130A",
+    "point_light": "#E6D8B8",
+    "point_dark": "#7A1F24",
+    "checker_white": "#EFE6D2",
+    "checker_black": "#141414",
+    "pip_on_white": "#141414",
+    "pip_on_black": "#EFE6D2",
+    "doubling_cube": "#EFE6D2",
+    "doubling_cube_text": "#141414"
+  },
+  "materials": {
+    "felt_roughness": 0.95,
+    "wood_roughness": 0.38,
+    "point_roughness": 0.7,
+    "checker_roughness": 0.62,
+    "checker_coat": 0.0
+  },
+  "board": {
+    "point_width": 4.4,
+    "point_length": 17.0,
+    "middle_gap": 3.6,
+    "bar_width": 4.4,
+    "rail_width": 2.0,
+    "rail_height": 1.2,
+    "board_bottom": -2.4,
+    "tray_gap": 0.06,
+    "tray_depth_ratio": 0.8,
+    "tray_divider": 0.6
+  },
+  "pieces": {
+    "checker_gap": 0.08,
+    "rail_gap": 0.06,
+    "die_size": 1.7,
+    "cube_size": 2.4
+  },
+  "camera": {
+    "tilt_degrees": 24,
+    "lens_mm": 85,
+    "frame_margin": 1.14
+  },
+  "lighting": {
+    "key_energy": 9000,
+    "fill_energy": 2.5,
+    "world_strength": 0.25
+  },
+  "render": {
+    "width": 2560,
+    "height": 1440,
+    "board_samples": 256,
+    "sprite_samples": 128
+  }
+}

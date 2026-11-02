@@ -57,3 +57,7 @@ app.*.map.json
 # Blender (installed by tools/blender/setup.ps1, never shipped)
 /tools/blender/app/
 /tools/blender/.download/
+/tools/blender/preview/
+
+# Local copy of the app icon source, not published
+/assets/icon/
