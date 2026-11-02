@@ -50,3 +50,6 @@ app.*.map.json
 # GNU Backgammon test tool (installed by tools/gnubg/setup.ps1, never shipped)
 /tools/gnubg/app/
 /tools/gnubg/.download/
+
+# Personal notes, never published
+/Achims Gedanken/

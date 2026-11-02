@@ -79,7 +79,7 @@ Für Version 1 ist das größte Risiko, dass Regelfehler nicht auffallen, weil i
 | Risiko | Auswirkung | Vorschlag |
 | --- | --- | --- |
 | Wenig eigenes Backgammon-Wissen | Regelfehler oder falsche Tipps fallen nicht auf | Regeln aus einer belastbaren Quelle festhalten und vollständig testen, Züge gegen GNU Backgammon prüfen, Strategietipps von erfahrenen Spielern prüfen lassen |
-| Engine-Wahl | Bestimmt Stärke und Plattformen | Mit eigener Dart-Bewertung starten, hinter einer austauschbaren Schnittstelle; GNU Backgammon bleibt [Testwerkzeug](gnubg-swot.md) |
+| Engine-Wahl | Bestimmt Stärke und Plattformen | Mit eigener Dart-Bewertung starten, hinter einer austauschbaren Schnittstelle; GNU Backgammon bleibt [Testwerkzeug](../tools/gnubg/README.md) |
 | Einbau von [GNU Backgammon](https://f-droid.org/de/packages/com.clavierhaus.gnubg/) | Lizenzrechtlich möglich, weil die App selbst unter GPL-3.0 steht, aber auf Web und Windows aufwändig | Vorerst nur als Testwerkzeug nutzen |
 | Kommerzielle Nutzung durch Dritte | GPL-3.0 erlaubt sie ohne Zahlung, verlangt aber offenen Code und Nennung der Urheber | Bewusst akzeptiert |
 | Erklärungen sind unzutreffend | Der Coach verliert Vertrauen | Erklärungen aus berechenbaren Merkmalen ableiten: Blots, Trefferchancen, Pip-Stand, Punkte, Primes |
