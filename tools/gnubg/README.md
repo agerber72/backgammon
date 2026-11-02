@@ -25,6 +25,18 @@ Was man beim Auswerten wissen muss:
 - Die Kandidaten wählt `hint` weiterhin in 0-ply aus. Ein Zug außerhalb der ersten `-MaxMoves` wird nicht betrachtet.
 - `findbestmove` der Python-Schnittstelle scheint die Tiefe zu ignorieren und wird daher nicht verwendet.
 
+## Referenzdaten für die Tests
+
+```powershell
+./tools/gnubg/update_reference.ps1
+```
+
+Das Skript spielt Zufallspartien mit der eigenen Spiellogik und lässt GNU Backgammon zu jeder ausgewählten Stellung alle erlaubten Züge berechnen. Das Ergebnis liegt in `test/fixtures/gnubg_legal_plays.json` und wird committet, damit die Tests auch ohne GNU Backgammon laufen.
+
+Neben einer allgemeinen Stichprobe sucht das Skript gezielt seltene Fälle: Stellungen beim Auswürfeln und Stellungen, in denen nur der höhere Würfel gespielt werden darf. Ohne diese Suche kam die zweite Regel in fast 1000 Stellungen nicht vor.
+
+Die Referenz prüft nur die erlaubten Züge. Wertung und Dopplerwürfel sind nicht dagegen geprüft, dafür gibt es eigene Tests aus [docs/regeln.md](../../docs/regeln.md).
+
 ## Lizenz
 
 GNU Backgammon steht unter der GPL, die App unter GPL-3.0. Ein Einbau wäre daher nicht grundsätzlich ausgeschlossen, ist aber nicht geplant: Es bleibt ein Testwerkzeug. Vor einem Einbau wären die Lizenzen von Engine und Gewichtsdateien im Detail zu prüfen.

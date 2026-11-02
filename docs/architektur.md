@@ -4,7 +4,7 @@ Stand: 2026-11-02 · Grundlage: [roadmap-und-anforderungen.md](roadmap-und-anfor
 
 Die App besteht aus einer reinen Dart-Logik ohne Flutter-Abhängigkeit und einer dünnen Oberfläche darüber, die vorgerenderte Bilder anhand des Spielstands platziert. Sie läuft vollständig offline.
 
-Bisher sind die Grafik-Pipeline und die Anzeige einer festen Beispielstellung umgesetzt. Dieses Dokument beschreibt den geplanten Aufbau und wird bei jeder Architekturentscheidung aktualisiert. Die Entscheidungen stehen im [Entscheidungslog](#entscheidungslog).
+Umgesetzt sind die Grafik-Pipeline, die Anzeige einer festen Stellung und die Spiellogik in `domain`. Oberfläche und Spiellogik sind noch nicht verbunden. Dieses Dokument beschreibt den geplanten Aufbau und wird bei jeder Architekturentscheidung aktualisiert. Die Entscheidungen stehen im [Entscheidungslog](#entscheidungslog).
 
 ## Überblick
 
@@ -147,7 +147,7 @@ Die Berechnung darf das Zeichnen nicht blockieren (`A-405`). Auf Android und Win
 ## Qualität
 
 - **Unit-Tests:** `domain` und `engine` werden ohne Flutter getestet.
-- **Referenztests:** Ein Konverter erzeugt die GNU-Position-ID. Skripte in `tools/gnubg` vergleichen erlaubte Züge und Bewertungen (`A-702`). GNU Backgammon läuft nur lokal auf dem Entwicklungsrechner.
+- **Referenztests:** `position_id.dart` erzeugt die GNU-Position-ID. `tools/gnubg/update_reference.ps1` lässt GNU Backgammon zu zufälligen und gezielt gesuchten Stellungen alle erlaubten Züge berechnen und schreibt sie nach `test/fixtures/gnubg_legal_plays.json` (`A-702`). GNU Backgammon läuft nur lokal, die Datei wird committet.
 - **CI:** GitHub Actions führt `flutter analyze` und `flutter test` aus (T0.5).
 
 ## Entscheidungslog
@@ -156,6 +156,9 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 
 | Datum | Entscheidung | Grund | Status |
 | --- | --- | --- | --- |
+| 2026-11-02 | Referenzdaten von GNU Backgammon liegen als feste Datei in `test/fixtures`, zusätzlich zur Stichprobe mit gezielt gesuchten seltenen Stellungen | Die Prüfung läuft ohne GNU Backgammon auf GitHub; eine reine Stichprobe hätte die Regel zum höheren Würfel nicht geprüft | Entschieden |
+| 2026-11-02 | Zungen sind aus Sicht von Weiß nummeriert, Bar und Ablage setzen die Skala fort: 25 und 0 für Weiß, 0 und 25 für Schwarz | Ein Zug lässt sich für beide Farben gleich beschreiben | Entschieden |
+| 2026-11-02 | Der Zuggenerator liefert vollständige Züge und fasst Züge mit gleicher Endstellung zusammen | Die Zugpflicht lässt sich nur über den ganzen Wurf prüfen | Entschieden |
 | 2026-11-02 | Das Licht bleibt an die Kamera gebunden und dreht beim Ansichtswechsel mit | Beide Spieler sehen das Brett gleich gut beleuchtet, und Steine brauchen nur einen Bildersatz | Entschieden |
 | 2026-11-02 | App-Symbole entstehen per Skript aus dem Logo; Android nutzt ein adaptives Symbol mit Logo in der Schutzzone | Alle Größen bleiben reproduzierbar, ohne Zusatzpaket; Launcher schneiden die Ecken ab | Entschieden |
 | 2026-11-02 | Die App skaliert die Außenkante des Bretts auf die Anzeige; der Tisch ist transparent und fängt nur den Schatten; die Systemleisten sind ausgeblendet | Das Brett nutzt jedes Seitenverhältnis aus, ohne sichtbare Bildkante | Entschieden |

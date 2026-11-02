@@ -75,32 +75,32 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 
 ### D2 Regel-Engine
 
-- [ ] **T2.1 Regeln festhalten** (`A-101`)
-    - [ ] Regeln aus einer belastbaren Quelle in `docs/regeln.md` zusammenfassen
-    - [ ] Offene Regelentscheidungen klären (siehe [Offene Punkte](#offene-punkte))
-- [ ] **T2.2 Spielzustand modellieren** (`A-102`, `A-701`)
-    - [ ] Brett mit 24 Zungen, Bar und ausgewürfelten Steinen abbilden
-    - [ ] Startaufstellung und Spieler am Zug abbilden
-    - [ ] Zustand unveränderlich und ohne Flutter-Abhängigkeit halten
-- [ ] **T2.3 Würfel umsetzen** (`A-103`, `A-501`)
-    - [ ] Fairen Zufallsgenerator kapseln
-    - [ ] Eröffnungswurf umsetzen
-    - [ ] Festgelegte Würfelfolgen für Tests ermöglichen
-- [ ] **T2.4 Erlaubte Züge berechnen** (`A-104` bis `A-108`)
-    - [ ] Einfache Züge und Schlagen
-    - [ ] Wiedereinsetzen von der Bar
-    - [ ] Pasch mit vier Zügen
-    - [ ] Pflicht, beide Würfel beziehungsweise den höheren zu nutzen
-    - [ ] Auswürfeln
-- [ ] **T2.5 Partieende und Wertung** (`A-109`)
-    - [ ] Sieg, Gammon und Backgammon erkennen
-- [ ] **T2.6 Dopplerwürfel** (`A-110`)
-    - [ ] Anbieten, annehmen, ablehnen
-    - [ ] Besitz des Würfels und Wert in der Wertung
-- [ ] **T2.7 Gegen GNU Backgammon absichern** (`A-702`)
-    - [ ] Konverter für die GNU-Position-ID schreiben
-    - [ ] Skript um eine Liste aller erlaubten Züge erweitern
-    - [ ] Erlaubte Züge für viele Positionen automatisch vergleichen
+- [x] **T2.1 Regeln festhalten** (`A-101`)
+    - [x] Regeln aus einer belastbaren Quelle in `docs/regeln.md` zusammenfassen
+    - [x] Offene Regelentscheidungen klären (siehe [Offene Punkte](#offene-punkte))
+- [x] **T2.2 Spielzustand modellieren** (`A-102`, `A-701`)
+    - [x] Brett mit 24 Zungen, Bar und ausgewürfelten Steinen abbilden
+    - [x] Startaufstellung und Spieler am Zug abbilden
+    - [x] Zustand unveränderlich und ohne Flutter-Abhängigkeit halten
+- [x] **T2.3 Würfel umsetzen** (`A-103`, `A-501`)
+    - [x] Fairen Zufallsgenerator kapseln
+    - [x] Eröffnungswurf umsetzen
+    - [x] Festgelegte Würfelfolgen für Tests ermöglichen
+- [x] **T2.4 Erlaubte Züge berechnen** (`A-104` bis `A-108`)
+    - [x] Einfache Züge und Schlagen
+    - [x] Wiedereinsetzen von der Bar
+    - [x] Pasch mit vier Zügen
+    - [x] Pflicht, beide Würfel beziehungsweise den höheren zu nutzen
+    - [x] Auswürfeln
+- [x] **T2.5 Partieende und Wertung** (`A-109`)
+    - [x] Sieg, Gammon und Backgammon erkennen
+- [x] **T2.6 Dopplerwürfel** (`A-110`)
+    - [x] Anbieten, annehmen, ablehnen
+    - [x] Besitz des Würfels und Wert in der Wertung
+- [x] **T2.7 Gegen GNU Backgammon absichern** (`A-702`)
+    - [x] Konverter für die GNU-Position-ID schreiben
+    - [x] Skript um eine Liste aller erlaubten Züge erweitern
+    - [x] Erlaubte Züge für viele Positionen automatisch vergleichen
 
 ### D3 Spielbare Partie
 

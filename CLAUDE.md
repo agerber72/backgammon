@@ -1,7 +1,7 @@
 # Backgammon
 
 Flutter-App für Backgammon. Zielplattformen: Android, Windows, Web.
-Das Projekt steht am Anfang: Die App zeigt bisher ein gerendertes Brett mit einer festen Beispielstellung.
+Stand: Die App zeigt ein gerendertes Brett mit der Startaufstellung. Die Spiellogik in `lib/domain` ist fertig, aber noch nicht mit der Oberfläche verbunden. Die Regeln stehen in [docs/regeln.md](docs/regeln.md).
 
 Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderungen stehen in [docs/roadmap-und-anforderungen.md](docs/roadmap-und-anforderungen.md), der Aufbau der App steht in [docs/architektur.md](docs/architektur.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
 
@@ -26,6 +26,7 @@ flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/blender/setup.ps1                         # Blender einrichten
 ./tools/blender/render.ps1                        # Assets neu rendern (-Preview: nur Vorschau)
 ./tools/gnubg/hint.ps1 -PositionId <id> -Die1 3 -Die2 1  # Referenzbewertung
+./tools/gnubg/update_reference.ps1                # Referenzdaten für die Tests neu erzeugen
 ```
 
 GNU Backgammon ist nur Testwerkzeug (siehe [tools/gnubg/README.md](tools/gnubg/README.md)). Weder Code noch Binärdateien oder Gewichtsdateien dürfen in die App gelangen.
