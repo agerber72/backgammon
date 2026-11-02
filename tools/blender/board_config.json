@@ -2,6 +2,8 @@
   "colors": {
     "table": "#17191C",
     "felt": "#1F4D3A",
+    "tray_felt_white": "#CFC3A6",
+    "tray_felt_black": "#232529",
     "frame_wood_light": "#4A2C1A",
     "frame_wood_dark": "#24130A",
     "point_light": "#E6D8B8",

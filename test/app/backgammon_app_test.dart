@@ -3,6 +3,8 @@ import 'package:backgammon/application/game_controller.dart';
 import 'package:backgammon/domain/board.dart' show Board, Player;
 import 'package:backgammon/domain/dice.dart';
 import 'package:backgammon/domain/game.dart';
+import 'package:backgammon/domain/move_generator.dart';
+import 'package:backgammon/engine/engine.dart';
 import 'package:backgammon/l10n/app_localizations.dart';
 import 'package:backgammon/presentation/board/board_assets.dart';
 import 'package:backgammon/presentation/board/board_painter.dart';
@@ -18,7 +20,24 @@ class FixedRoller implements DiceRoller {
   var _next = 0;
 
   @override
-  int roll() => values[_next++];
+  int roll() => values[_next++ % values.length];
+}
+
+/// Answers at once and always plays the first legal play.
+class InstantEngine implements Engine {
+  @override
+  Future<Play> choosePlay(
+    Board board,
+    Player player,
+    Dice dice,
+    Difficulty difficulty,
+  ) async => legalPlays(board, player, dice).first;
+
+  @override
+  Future<bool> wantsToDouble(Game game, Difficulty difficulty) async => false;
+
+  @override
+  Future<bool> acceptsDouble(Game game, Difficulty difficulty) async => true;
 }
 
 Future<void> showPage(WidgetTester tester, GameController controller) async {
@@ -84,7 +103,7 @@ void main() {
       'Wer Schwarz wählt, sieht das Brett aus Sicht von Schwarz', (
     tester,
   ) async {
-    await showPage(tester, GameController(roller: FixedRoller([3, 1])));
+    await showPage(tester, GameController(roller: FixedRoller([1, 3])));
     expect(find.text('Mit welcher Farbe spielst du?'), findsOneWidget);
 
     await tester.tap(find.text('Schwarz'));
@@ -92,15 +111,23 @@ void main() {
 
     expect(find.byKey(const ValueKey(BoardView.black)), findsOneWidget);
     expect(find.text('Mit welcher Farbe spielst du?'), findsNothing);
+    expect(find.text('Wie stark soll der Computer spielen?'), findsOneWidget);
   });
 
   testWidgets('A-203: Zug bedienen – erwartet: '
       'Nach beiden Zügen erscheint Zug beenden, danach Würfeln', (
     tester,
   ) async {
-    final controller = GameController(roller: FixedRoller([3, 1, 6, 5]));
+    final controller = GameController(
+      roller: FixedRoller([3, 1, 6, 5]),
+      engine: InstantEngine(),
+      computerPause: Duration.zero,
+      autoActionDelay: null,
+    );
     await showPage(tester, controller);
     await tester.tap(find.text('Weiß'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mittel'));
     await tester.pumpAndSettle();
 
     controller
@@ -128,9 +155,16 @@ void main() {
     tester.view.physicalSize = const Size(1600, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    final controller = GameController(roller: FixedRoller([3, 1]));
+    final controller = GameController(
+      roller: FixedRoller([3, 1]),
+      engine: InstantEngine(),
+      computerPause: Duration.zero,
+      autoActionDelay: null,
+    );
     await showPage(tester, controller);
     await tester.tap(find.text('Weiß'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mittel'));
     await tester.pumpAndSettle();
 
     final assets = (await tester.runAsync(
@@ -206,5 +240,77 @@ void main() {
     await tester.tap(find.text('Ablehnen'));
     await tester.pumpAndSettle();
     expect(find.text('Weiß gewinnt: 1 Punkt'), findsOneWidget);
+  });
+
+  testWidgets('A-315: Gleiche Höhe – erwartet: '
+      'Die Knöpfe sind in Farbwahl, Stufenwahl und Spiel gleich hoch, '
+      'und nichts läuft über', (tester) async {
+    tester.view.physicalSize = const Size(2400, 1080);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final controller = GameController(
+      roller: FixedRoller([3, 1, 6, 5]),
+      engine: InstantEngine(),
+      computerPause: Duration.zero,
+      autoActionDelay: null,
+    );
+    await showPage(tester, controller);
+    double height(String text) => tester
+        .getSize(
+          find.ancestor(
+            of: find.text(text),
+            matching: find.byType(FilledButton),
+          ),
+        )
+        .height;
+
+    final colorRow = height('Weiß');
+    await tester.tap(find.text('Weiß'));
+    await tester.pumpAndSettle();
+    final levelRow = height('Mittel');
+    await tester.tap(find.text('Mittel'));
+    await tester.pumpAndSettle();
+
+    controller
+      ..tap(8)
+      ..tap(5)
+      ..tap(6)
+      ..tap(5);
+    await tester.pumpAndSettle();
+    final turnRow = height('Zug beenden');
+
+    expect(levelRow, closeTo(colorRow, 0.01));
+    expect(turnRow, closeTo(colorRow, 0.01));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('A-112: Aufgeben bedienen – erwartet: '
+      'Erst nach der Rückfrage endet die Partie, Abbrechen lässt sie laufen', (
+    tester,
+  ) async {
+    final controller = GameController(
+      game: Game.at(
+        board: Board.start(),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+      ),
+    );
+    await showPage(tester, controller);
+
+    await tester.tap(find.byTooltip('Aufgeben'));
+    await tester.pumpAndSettle();
+    expect(find.text('Du verlierst 1 Punkt.'), findsOneWidget);
+    await tester.tap(find.text('Abbrechen'));
+    await tester.pumpAndSettle();
+    expect(controller.game!.result, isNull);
+
+    await tester.tap(find.byTooltip('Aufgeben'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Aufgeben'));
+    await tester.pumpAndSettle();
+
+    expect(controller.game!.phase, GamePhase.finished);
+    expect(find.text('Neue Partie'), findsOneWidget);
+    expect(find.byTooltip('Aufgeben'), findsNothing);
   });
 }

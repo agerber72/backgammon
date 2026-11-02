@@ -4,7 +4,7 @@ Stand: 2026-11-02 · Grundlage: [roadmap-und-anforderungen.md](roadmap-und-anfor
 
 Die App besteht aus einer reinen Dart-Logik ohne Flutter-Abhängigkeit und einer dünnen Oberfläche darüber, die vorgerenderte Bilder anhand des Spielstands platziert. Sie läuft vollständig offline.
 
-Umgesetzt sind die Grafik-Pipeline, die Spiellogik in `domain`, die Partie-Steuerung in `application` und die Bedienung am Brett. Bis der Computer-Gegner kommt, bedient der Spieler beide Seiten. `persistence` und `engine` fehlen noch. Dieses Dokument beschreibt den geplanten Aufbau und wird bei jeder Architekturentscheidung aktualisiert. Die Entscheidungen stehen im [Entscheidungslog](#entscheidungslog).
+Umgesetzt sind die Grafik-Pipeline, die Spiellogik in `domain`, der Computer-Gegner in `engine`, die Partie-Steuerung in `application` und die Bedienung am Brett. Partien und Einstellungen sichert `persistence`. Dieses Dokument beschreibt den geplanten Aufbau und wird bei jeder Architekturentscheidung aktualisiert. Die Entscheidungen stehen im [Entscheidungslog](#entscheidungslog).
 
 ## Überblick
 
@@ -137,12 +137,17 @@ Die Engine implementiert eine Schnittstelle, damit sie austauschbar bleibt (`A-4
 
 ```dart
 abstract interface class Engine {
-  Future<Move> chooseMove(GameState state, Dice dice, Difficulty difficulty);
-  Future<CubeDecision> decideCube(GameState state, Difficulty difficulty);
+  Future<Play> choosePlay(Board board, Player player, Dice dice, Difficulty difficulty);
+  Future<bool> wantsToDouble(Game game, Difficulty difficulty);
+  Future<bool> acceptsDouble(Game game, Difficulty difficulty);
 }
 ```
 
-Die Berechnung darf das Zeichnen nicht blockieren (`A-405`). Auf Android und Windows läuft sie in einem Isolate. Im Web läuft `compute()` auf dem Hauptthread, dort braucht es eine eigene Lösung. Das klärt T4.4.
+`HeuristicEngine` bewertet die Stellung nach jedem erlaubten Zug mit `evaluate` und wählt die beste. Die Bewertung nutzt Rennstand, Punkte, Prime, Blots, Treffergefahr und weitere Merkmale. Ihre Gewichte stimmt `tools/engine/tune.dart` gegen Referenzbewertungen von GNU Backgammon ab, auf einer Hälfte der Stellungen, gemessen auf der anderen.
+
+Die drei Stufen unterscheiden sich durch einen gezielten Zufallsfehler in der Bewertung. Würfelentscheidungen vergleichen eine geschätzte Gewinnchance mit je Stufe festen Schwellen. `tools/engine/compare_levels.dart` misst die Stufen.
+
+`GameController` führt die Züge des Computers aus. Pausen zwischen den Schritten machen sie nachvollziehbar, und eine Partienummer verhindert, dass ein alter Lauf in eine neue Partie hineinwirkt.
 
 ## Qualität
 
@@ -156,6 +161,12 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 
 | Datum | Entscheidung | Grund | Status |
 | --- | --- | --- | --- |
+| 2026-11-02 | Kombinierte Züge sind eine Folge einzelner `Step`s aus `pathsFrom` auf Basis von `nextSteps`; bei zwei Reihenfolgen gewinnt die mit den wenigsten Schlägen | Keine zweite Regelprüfung, Zurücknehmen bleibt einzeln möglich, und niemand schlägt unbeabsichtigt | Entschieden |
+| 2026-11-02 | Der Stand liegt als ein JSON-Dokument in `shared_preferences`, Speichervorgänge laufen nacheinander; ein beschädigter Stand zählt als keiner | Einfach und ohne Schema; ein älterer Stand kann keinen neueren überschreiben, und die App startet in jedem Fall | Entschieden |
+| 2026-11-02 | Gesichert wird nach jedem abgeschlossenen Zug samt gewürfelter Zahlen, halbe Züge nicht | Ein Neustart kann keinen Wurf ändern | Entschieden |
+| 2026-11-02 | „Zu Ende spielen“ nutzt die Abläufe des Computers für beide Seiten; `Board.hasContact` bestimmt, ab wann das angeboten wird | Keine zweite Spiel-Logik, und ohne Kontakt gibt es keine Entscheidungen mehr, die dem Spieler fehlen könnten | Entschieden |
+| 2026-11-02 | Keine Vorausschau über die Antworten des Gegners; die Engine bewertet nur die Stellung nach dem eigenen Zug | Vorausschau senkte den Fehler nicht (0,039 statt 0,035 Equity) und brachte im Spiel keinen Vorteil; ohne sie ist die Rechnung kurz genug für alle Plattformen, ein Isolate oder eine Aufteilung ist nicht nötig | Entschieden |
+| 2026-11-02 | Stufen entstehen durch gezielten Zufallsfehler in der Bewertung: 0,5 / 0,18 / 0 | Gemessen in je 300 Partien und zwei Läufen: Schwer schlägt Mittel zu 60 bis 64 %, Mittel schlägt Leicht zu 73 bis 76 % | Entschieden |
 | 2026-11-02 | Der gewählte Stein ist ein eigenes gerendertes Sprite, Ziele sind normale Sprites mit Transparenz; die Knopfleiste liegt im aus dem Layout berechneten Filzstreifen | Passt zur 3D-Grafik statt aufgemalter Ringe, und Knöpfe bleiben bei jeder Größe auf dem Filz | Entschieden |
 | 2026-11-02 | `GameController` sammelt die Schritte eines Zugs und gibt sie erst bei Zug beenden an `Game`; bis dahin bleibt die Partie unverändert | Zurücknehmen ist damit trivial, und `domain` kennt keine halben Züge | Entschieden |
 | 2026-11-02 | `nextSteps` bietet nur Schritte an, die zu einem erlaubten Gesamtzug führen; eine Stellung zählt erst als Ende, wenn kein Würfel mehr spielbar ist | Keine Sackgassen beim Setzen Stein für Stein; dieselbe Stellung kann sonst zu früh als fertig gelten | Entschieden |
@@ -188,6 +199,4 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 
 ## Offene Architekturfragen
 
-- [ ] Welches Speicherformat und welches Paket nutzt `persistence`? Vorschlag: JSON über `shared_preferences`. Das Paket braucht eine Freigabe, Task ist T5.1.
-- [ ] Wie läuft die Engine im Web, ohne das Zeichnen zu blockieren? Task ist T4.4.
 - [ ] Wie groß dürfen die Bilder sein, damit die Web-Version schnell lädt? Das klärt der Prototyp in T1.6.

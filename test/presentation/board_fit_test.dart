@@ -20,6 +20,15 @@ void main() {
     bounds.height * fit.imageSize.height,
   );
 
+  test('A-314: Ziel auf voller Zunge – erwartet: '
+      'Bis fünf Steine zeigt das Ziel den normalen Stein, '
+      'ab dem sechsten den markierten, damit er sichtbar bleibt', () {
+    expect(BoardPainter.targetSprite('white', 0), 'checker_white');
+    expect(BoardPainter.targetSprite('white', 4), 'checker_white');
+    expect(BoardPainter.targetSprite('white', 5), 'checker_white_selected');
+    expect(BoardPainter.targetSprite('black', 7), 'checker_black_selected');
+  });
+
   for (final MapEntry(key: name, value: display) in displays.entries) {
     group('$name:', () {
       test('A-311: Brett füllt den Ausschnitt – erwartet: '

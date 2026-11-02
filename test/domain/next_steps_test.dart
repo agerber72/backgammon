@@ -78,4 +78,126 @@ void main() {
     expect(steps, hasLength(4));
     expect(nextSteps(board, Player.white, const Dice(3, 3), steps), isEmpty);
   });
+
+  group('Kombinierter Zug:', () {
+    test('A-215: Freier Weg – erwartet: '
+        'Bei 5-1 sind die Einzelziele und das Summenziel erreichbar', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1, 3: 1}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths.keys, unorderedEquals([15, 19, 14]));
+      expect(paths[14], hasLength(2));
+    });
+
+    test('A-215: Erst 5 gesperrt – erwartet: '
+        'Der Zug geht über die 1 zuerst', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {15: 2}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths[14]!.map((step) => step.die), [1, 5]);
+    });
+
+    test('A-215: Erst 1 gesperrt – erwartet: '
+        'Der Zug geht über die 5 zuerst', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {19: 2}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths[14]!.map((step) => step.die), [5, 1]);
+    });
+
+    test('A-215: Beide Wege gesperrt – erwartet: '
+        'Das Summenziel wird nicht angeboten', () {
+      final paths = pathsFrom(
+        Board.fromCounts(
+          white: const {20: 1, 10: 1},
+          black: const {19: 2, 15: 2},
+        ),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths, isNot(contains(14)));
+    });
+
+    test('A-215: Pasch – erwartet: '
+        'Ein Pasch bietet ein- bis vierfach an, soweit der Weg frei ist', () {
+      final free = pathsFrom(
+        Board.fromCounts(white: const {20: 1}),
+        Player.white,
+        const Dice(3, 3),
+        const [],
+        20,
+      );
+      final blocked = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {11: 2}),
+        Player.white,
+        const Dice(3, 3),
+        const [],
+        20,
+      );
+
+      expect(free.keys, unorderedEquals([17, 14, 11, 8]));
+      expect(free[8], hasLength(4));
+      expect(blocked.keys, unorderedEquals([17, 14]));
+    });
+
+    test('A-215: Pasch teilweise gezogen – erwartet: '
+        'Nur die noch offenen Züge werden angeboten', () {
+      const dice = Dice(3, 3);
+      final board = Board.fromCounts(white: const {20: 1, 19: 1});
+      final done = nextSteps(
+        board,
+        Player.white,
+        dice,
+        const [],
+      ).where((step) => step.from == 19).take(1).toList();
+
+      final paths = pathsFrom(board, Player.white, dice, done, 20);
+
+      expect(paths.keys, unorderedEquals([17, 14, 11]));
+    });
+
+    test('A-215: Kein unbeabsichtigter Schlag – erwartet: '
+        'Geht es auch ohne Schlagen, nimmt der Zug diesen Weg', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {19: 1}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths[14]!.map((step) => step.die), [5, 1]);
+    });
+
+    test('A-215: Geschlagen wird, wenn es nur so geht – erwartet: '
+        'Ist der andere Weg gesperrt, führt der Zug über den Blot', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {19: 1, 15: 2}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths[14]!.map((step) => step.die), [1, 5]);
+    });
+  });
 }

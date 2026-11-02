@@ -4,11 +4,15 @@ import 'package:flutter/services.dart';
 import '../../application/game_controller.dart';
 import '../../domain/board.dart' show Player, Step;
 import '../../domain/game.dart';
+import '../../engine/engine.dart';
 import '../../l10n/app_localizations.dart';
+import '../../persistence/session_store.dart';
 import '../board/board_assets.dart';
 import '../board/board_hit_test.dart';
 import '../board/board_painter.dart';
 import '../board/board_scene.dart';
+import 'settings_dialog.dart';
+import 'stats_dialog.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key, this.preloadedAssets, this.controller});
@@ -32,21 +36,60 @@ class _GamePageState extends State<GamePage>
   static const _viewChange = Duration(milliseconds: 350);
   static const _checkerMove = Duration(milliseconds: 260);
 
+  /// Every button row shares this design size, so all rows scale alike and
+  /// the buttons keep the same height.
+  static const _actionBarWidth = 480.0;
+  static const _actionHeight = 40.0;
+
   late final GameController _controller;
   late final AnimationController _moveAnimation;
   Map<BoardView, BoardAssets>? _assets;
   BoardView _view = BoardView.white;
+  bool _colorChosen = false;
   Step? _animated;
 
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? GameController();
+    _controller =
+        widget.controller ??
+        GameController(store: SharedPreferencesSessionStore());
     _moveAnimation = AnimationController(vsync: this, duration: _checkerMove);
     _controller.addListener(_onGameChanged);
     _assets = widget.preloadedAssets;
     if (_assets == null) {
       _loadAssets();
+    }
+    _restoreGame();
+  }
+
+  Future<void> _restoreGame() async {
+    await _controller.restore();
+    final human = _controller.human;
+    if (mounted && human != null && _controller.game != null) {
+      setState(() => _view = _viewOf(human));
+    }
+  }
+
+  BoardView _viewOf(Player player) =>
+      player == Player.white ? BoardView.white : BoardView.black;
+
+  void _restart() {
+    _controller.restart();
+    final human = _controller.human;
+    if (human != null) {
+      setState(() => _view = _viewOf(human));
+    }
+  }
+
+  Future<void> _openSettings() async {
+    final view = await showDialog<BoardView>(
+      context: context,
+      builder: (context) =>
+          SettingsDialog(controller: _controller, view: _view),
+    );
+    if (view != null) {
+      setState(() => _view = view);
     }
   }
 
@@ -85,9 +128,42 @@ class _GamePageState extends State<GamePage>
     });
   }
 
-  void _start(BoardView view) {
-    setState(() => _view = view);
-    _controller.startGame();
+  Future<void> _confirmResign(AppLocalizations l10n) async {
+    final points = _controller.game!.cube.value;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.resignQuestion),
+        content: Text(l10n.resignConsequence(points)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.resign),
+          ),
+        ],
+      ),
+    );
+    if ((confirmed ?? false) && _controller.canResign) {
+      _controller.resign();
+    }
+  }
+
+  void _chooseColor(BoardView view) {
+    setState(() {
+      _view = view;
+      _colorChosen = true;
+    });
+  }
+
+  void _start(Difficulty difficulty) {
+    _controller.startGame(
+      human: _view == BoardView.white ? Player.white : Player.black,
+      difficulty: difficulty,
+    );
   }
 
   int? _hit(BoardAssets assets, Size size, Offset position) {
@@ -165,28 +241,39 @@ class _GamePageState extends State<GamePage>
 
   List<Widget> _actions(AppLocalizations l10n) {
     final game = _controller.game;
-    if (game == null) {
+    if (game == null && !_colorChosen) {
       return [
         _Prompt(l10n.chooseColor),
         FilledButton(
-          onPressed: () => _start(BoardView.white),
+          onPressed: () => _chooseColor(BoardView.white),
           child: Text(l10n.playWhite),
         ),
         FilledButton(
-          onPressed: () => _start(BoardView.black),
+          onPressed: () => _chooseColor(BoardView.black),
           child: Text(l10n.playBlack),
         ),
+      ];
+    }
+    if (game == null) {
+      return [
+        _Prompt(l10n.chooseDifficulty),
+        for (final (difficulty, label) in [
+          (Difficulty.easy, l10n.difficultyEasy),
+          (Difficulty.medium, l10n.difficultyMedium),
+          (Difficulty.hard, l10n.difficultyHard),
+        ])
+          FilledButton(onPressed: () => _start(difficulty), child: Text(label)),
       ];
     }
     final result = game.result;
     if (result != null) {
       return [
         _Prompt(_resultText(l10n, result)),
-        FilledButton(
-          onPressed: _controller.startGame,
-          child: Text(l10n.newGame),
-        ),
+        FilledButton(onPressed: _restart, child: Text(l10n.newGame)),
       ];
+    }
+    if (!_controller.isHumanTurn) {
+      return const [];
     }
     return switch (game.phase) {
       GamePhase.awaitingRoll => [
@@ -195,6 +282,11 @@ class _GamePageState extends State<GamePage>
           OutlinedButton(
             onPressed: _controller.offerDouble,
             child: Text(l10n.doubleCube),
+          ),
+        if (_controller.canAutoFinish)
+          OutlinedButton(
+            onPressed: _controller.autoFinish,
+            child: Text(l10n.autoFinish),
           ),
       ],
       GamePhase.awaitingDoubleResponse => [
@@ -213,6 +305,11 @@ class _GamePageState extends State<GamePage>
           _Prompt(l10n.noMove),
           FilledButton(onPressed: _controller.pass, child: Text(l10n.pass)),
         ],
+        if (_controller.canAutoFinish && !_controller.mustPass)
+          OutlinedButton(
+            onPressed: _controller.autoFinish,
+            child: Text(l10n.autoFinish),
+          ),
         if (_controller.canConfirm)
           FilledButton(
             onPressed: _controller.confirm,
@@ -253,10 +350,22 @@ class _GamePageState extends State<GamePage>
           vertical: band.height * image.height * 0.14,
         ),
         child: FittedBox(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 8,
-            children: items,
+          child: SizedBox(
+            width: _actionBarWidth,
+            height: _actionHeight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 8,
+              children: [
+                for (final item in items)
+                  if (item is _Prompt)
+                    Flexible(
+                      child: SizedBox(height: _actionHeight, child: item),
+                    )
+                  else
+                    SizedBox(height: _actionHeight, child: item),
+              ],
+            ),
           ),
         ),
       ),
@@ -299,10 +408,35 @@ class _GamePageState extends State<GamePage>
             top: 8,
             right: 8,
             child: SafeArea(
-              child: IconButton.filledTonal(
-                onPressed: _switchView,
-                tooltip: l10n.switchViewTooltip,
-                icon: const Icon(Icons.sync),
+              child: Column(
+                spacing: 8,
+                children: [
+                  IconButton.filledTonal(
+                    onPressed: _switchView,
+                    tooltip: l10n.switchViewTooltip,
+                    icon: const Icon(Icons.sync),
+                  ),
+                  IconButton.filledTonal(
+                    onPressed: _openSettings,
+                    tooltip: l10n.settings,
+                    icon: const Icon(Icons.settings),
+                  ),
+                  IconButton.filledTonal(
+                    onPressed: () => showDialog<void>(
+                      context: context,
+                      builder: (context) =>
+                          StatsDialog(controller: _controller),
+                    ),
+                    tooltip: l10n.diceStats,
+                    icon: const Icon(Icons.bar_chart),
+                  ),
+                  if (_controller.canResign)
+                    IconButton.filledTonal(
+                      onPressed: () => _confirmResign(l10n),
+                      tooltip: l10n.resign,
+                      icon: const Icon(Icons.flag),
+                    ),
+                ],
               ),
             ),
           ),
@@ -325,8 +459,11 @@ class _Prompt extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        child: Text(text),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: Center(
+          widthFactor: 1,
+          child: Text(text, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
       ),
     );
   }

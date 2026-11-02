@@ -194,6 +194,35 @@ void main() {
     });
   });
 
+  group('Aufgeben:', () {
+    test('A-112: Aufgeben – erwartet: '
+        'Der Gegner gewinnt sofort den aktuellen Würfelwert', () {
+      final game = Game.at(
+        board: Board.start(),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+        cube: const Cube(value: 4, owner: Player.black),
+      );
+
+      final result = game.resign(Player.white).result!;
+
+      expect(result.winner, Player.black);
+      expect(result.points, 4);
+      expect(result.type, WinType.single);
+    });
+
+    test('A-112: Beendete Partie – erwartet: '
+        'Nach dem Ende kann niemand mehr aufgeben', () {
+      final over = Game.at(
+        board: Board.start(),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+      ).resign(Player.white);
+
+      expect(() => over.resign(Player.black), throwsStateError);
+    });
+  });
+
   group('Dopplerwürfel:', () {
     Game beforeRoll({Cube cube = const Cube()}) => Game.at(
       board: Board.start(),

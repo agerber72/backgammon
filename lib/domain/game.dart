@@ -122,6 +122,17 @@ class Game {
     );
   }
 
+  /// The player gives up and pays the current cube value.
+  Game resign(Player player) {
+    if (phase == GamePhase.finished) {
+      throw StateError('The game is already over');
+    }
+    return _copy(
+      phase: GamePhase.finished,
+      result: GameResult(player.opponent, WinType.single, cube.value),
+    );
+  }
+
   Game play(Play play) {
     _require(GamePhase.awaitingPlay);
     final allowed = plays.any((p) => p.result.key == play.result.key);

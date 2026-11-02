@@ -52,6 +52,10 @@ Wer zuerst alle 15 Steine ausgewürfelt hat, gewinnt.
 | Gammon | Kein Stein ausgewürfelt | 2 × Würfelwert |
 | Backgammon | Kein Stein ausgewürfelt, und ein Stein steht auf der Bar oder im Heimfeld des Siegers | 3 × Würfelwert |
 
+## Aufgeben (`A-112`)
+
+Ein Spieler darf jederzeit aufgeben. Er verliert sofort den aktuellen Würfelwert, auch wenn ihm ein Gammon gedroht hätte. Die Quelle kennt das Aufgeben nicht als Regel, diese Festlegung gilt nur für die App.
+
 ## Dopplerwürfel (`A-110`)
 
 - Die Partie beginnt mit dem Wert 1, und der Würfel gehört niemandem.

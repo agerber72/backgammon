@@ -124,6 +124,30 @@ abstract class AppLocalizations {
   /// **'Schwarz'**
   String get playBlack;
 
+  /// No description provided for @chooseDifficulty.
+  ///
+  /// In de, this message translates to:
+  /// **'Wie stark soll der Computer spielen?'**
+  String get chooseDifficulty;
+
+  /// No description provided for @difficultyEasy.
+  ///
+  /// In de, this message translates to:
+  /// **'Leicht'**
+  String get difficultyEasy;
+
+  /// No description provided for @difficultyMedium.
+  ///
+  /// In de, this message translates to:
+  /// **'Mittel'**
+  String get difficultyMedium;
+
+  /// No description provided for @difficultyHard.
+  ///
+  /// In de, this message translates to:
+  /// **'Schwer'**
+  String get difficultyHard;
+
   /// No description provided for @white.
   ///
   /// In de, this message translates to:
@@ -189,6 +213,120 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Neue Partie'**
   String get newGame;
+
+  /// No description provided for @autoFinish.
+  ///
+  /// In de, this message translates to:
+  /// **'Zu Ende spielen'**
+  String get autoFinish;
+
+  /// No description provided for @settings.
+  ///
+  /// In de, this message translates to:
+  /// **'Einstellungen'**
+  String get settings;
+
+  /// No description provided for @close.
+  ///
+  /// In de, this message translates to:
+  /// **'Schließen'**
+  String get close;
+
+  /// No description provided for @settingColor.
+  ///
+  /// In de, this message translates to:
+  /// **'Deine Farbe'**
+  String get settingColor;
+
+  /// No description provided for @settingDifficulty.
+  ///
+  /// In de, this message translates to:
+  /// **'Spielstärke'**
+  String get settingDifficulty;
+
+  /// No description provided for @settingView.
+  ///
+  /// In de, this message translates to:
+  /// **'Ansicht'**
+  String get settingView;
+
+  /// No description provided for @settingAutoDelay.
+  ///
+  /// In de, this message translates to:
+  /// **'Automatisch weiter nach'**
+  String get settingAutoDelay;
+
+  /// No description provided for @settingAutoDelayOff.
+  ///
+  /// In de, this message translates to:
+  /// **'Aus'**
+  String get settingAutoDelayOff;
+
+  /// No description provided for @settingAutoDelaySeconds.
+  ///
+  /// In de, this message translates to:
+  /// **'{seconds} s'**
+  String settingAutoDelaySeconds(int seconds);
+
+  /// No description provided for @settingsNextGame.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe und Spielstärke gelten ab der nächsten Partie.'**
+  String get settingsNextGame;
+
+  /// No description provided for @diceStats.
+  ///
+  /// In de, this message translates to:
+  /// **'Würfelstatistik'**
+  String get diceStats;
+
+  /// No description provided for @statsThisGame.
+  ///
+  /// In de, this message translates to:
+  /// **'Diese Partie'**
+  String get statsThisGame;
+
+  /// No description provided for @statsAllGames.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Partien'**
+  String get statsAllGames;
+
+  /// No description provided for @statsDoubles.
+  ///
+  /// In de, this message translates to:
+  /// **'Pasch'**
+  String get statsDoubles;
+
+  /// No description provided for @statsExpected.
+  ///
+  /// In de, this message translates to:
+  /// **'Bei fairen Würfeln kommt jede Zahl und ein Pasch im Schnitt zu 16,7 % vor. Bei wenigen Würfen sind größere Abweichungen normal.'**
+  String get statsExpected;
+
+  /// No description provided for @resign.
+  ///
+  /// In de, this message translates to:
+  /// **'Aufgeben'**
+  String get resign;
+
+  /// No description provided for @cancel.
+  ///
+  /// In de, this message translates to:
+  /// **'Abbrechen'**
+  String get cancel;
+
+  /// No description provided for @resignQuestion.
+  ///
+  /// In de, this message translates to:
+  /// **'Partie aufgeben?'**
+  String get resignQuestion;
+
+  /// No description provided for @resignConsequence.
+  ///
+  /// In de, this message translates to:
+  /// **'Du verlierst {points, plural, =1{1 Punkt} other{{points} Punkte}}.'**
+  String resignConsequence(int points);
 
   /// No description provided for @doubleOffered.
   ///

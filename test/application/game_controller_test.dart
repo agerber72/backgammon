@@ -34,7 +34,7 @@ void main() {
     controller.tap(8);
 
     expect(controller.selected, 8);
-    expect(controller.targets, {5, 7});
+    expect(controller.targets, {5, 7, 4});
   });
 
   test('A-202: Gesperrter Stein – erwartet: '
@@ -141,5 +141,62 @@ void main() {
 
     expect(controller.game!.cube.value, 2);
     expect(controller.game!.cube.owner, Player.black);
+  });
+
+  group('Kombinierter Zug:', () {
+    GameController playing(Board board, Dice dice) => GameController(
+      game: Game.at(
+        board: board,
+        turn: Player.white,
+        phase: GamePhase.awaitingPlay,
+        dice: dice,
+      ),
+    );
+
+    test('A-215: Beide Würfel in einem Zug – erwartet: '
+        'Ein Tipp auf das Summenziel setzt zwei Einzelzüge', () {
+      final controller = playing(Board.start(), const Dice(5, 1));
+
+      controller
+        ..tap(13)
+        ..tap(7);
+
+      expect(controller.board.count(Player.white, 7), 1);
+      expect(controller.canConfirm, isTrue);
+    });
+
+    test('A-215: Zurücknehmen einzeln – erwartet: '
+        'Der kombinierte Zug wird in zwei Schritten zurückgenommen', () {
+      final controller = playing(Board.start(), const Dice(5, 1));
+      final start = controller.board.key;
+
+      controller
+        ..tap(13)
+        ..tap(7)
+        ..undo();
+
+      expect(controller.board.count(Player.white, 7), 0);
+      expect(controller.hasPendingSteps, isTrue);
+
+      controller.undo();
+
+      expect(controller.board.key, start);
+      expect(controller.hasPendingSteps, isFalse);
+    });
+
+    test('A-215: Pasch – erwartet: '
+        'Nach zwei gezogenen Dreiern bietet der Stein noch 1× und 2× an', () {
+      final controller = playing(
+        Board.fromCounts(white: const {20: 1, 19: 1}),
+        const Dice(3, 3),
+      );
+
+      controller
+        ..tap(20)
+        ..tap(14);
+      controller.tap(14);
+
+      expect(controller.targets, {11, 8});
+    });
   });
 }

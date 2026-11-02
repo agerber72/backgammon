@@ -299,12 +299,19 @@ def doubling_cube(value, location):
 def build_board():
     wood = MATERIAL_SET['wood']
     felt = MATERIAL_SET['felt']
+    tray_left = HALF_FIELD_X + RAIL_WIDTH
+    tray_right = OUTER_RIGHT - RAIL_WIDTH
     parts = [
         box('field', -HALF_FIELD_X, HALF_FIELD_X, -HALF_FIELD_Y, HALF_FIELD_Y,
             -0.4, 0, felt),
-        box('tray_floor', HALF_FIELD_X + RAIL_WIDTH,
-            OUTER_RIGHT - RAIL_WIDTH, -HALF_FIELD_Y, HALF_FIELD_Y, BOARD_BOTTOM,
-            TRAY_FLOOR, felt),
+        box('tray_floor_white', tray_left, tray_right, -HALF_FIELD_Y,
+            -TRAY_COMPARTMENT / 2, BOARD_BOTTOM, TRAY_FLOOR,
+            MATERIAL_SET['tray_felt_white']),
+        box('tray_floor', tray_left, tray_right, -TRAY_COMPARTMENT / 2,
+            TRAY_COMPARTMENT / 2, BOARD_BOTTOM, TRAY_FLOOR, felt),
+        box('tray_floor_black', tray_left, tray_right, TRAY_COMPARTMENT / 2,
+            HALF_FIELD_Y, BOARD_BOTTOM, TRAY_FLOOR,
+            MATERIAL_SET['tray_felt_black']),
         box('rail_bottom', OUTER_LEFT, OUTER_RIGHT, -OUTER_Y, -HALF_FIELD_Y,
             BOARD_BOTTOM, RAIL_HEIGHT, wood, 0.12),
         box('rail_top', OUTER_LEFT, OUTER_RIGHT, HALF_FIELD_Y, OUTER_Y,
@@ -517,9 +524,10 @@ def render_tray_contents(view, board_parts, table):
     The tray floor catches the shadows; all other parts only cover the pieces.
     Their own shadows are already part of the board image.
     """
-    floor = next(part for part in board_parts if part.name == 'tray_floor')
-    floor.is_shadow_catcher = True
-    others = [part for part in (*board_parts, table) if part is not floor]
+    floors = [p for p in board_parts if p.name.startswith('tray_floor')]
+    for floor in floors:
+        floor.is_shadow_catcher = True
+    others = [p for p in (*board_parts, table) if p not in floors]
     for part in others:
         part.is_holdout = True
         part.visible_shadow = False
@@ -547,7 +555,8 @@ def render_tray_contents(view, board_parts, table):
     for obj in cube:
         bpy.data.objects.remove(obj)
 
-    floor.is_shadow_catcher = False
+    for floor in floors:
+        floor.is_shadow_catcher = False
     for part in others:
         part.is_holdout = False
         part.visible_shadow = True
@@ -696,6 +705,12 @@ def main():
     MATERIAL_SET = {
         'wood': wood_material(),
         'felt': felt_material(),
+        'tray_felt_white': principled('tray_felt_white',
+                                      COLORS['tray_felt_white'],
+                                      MATERIALS['felt_roughness']),
+        'tray_felt_black': principled('tray_felt_black',
+                                      COLORS['tray_felt_black'],
+                                      MATERIALS['felt_roughness']),
         'table': principled('table', COLORS['table'], 0.6),
         'point_light': principled('point_light', COLORS['point_light'],
                                   MATERIALS['point_roughness']),

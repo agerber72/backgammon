@@ -110,14 +110,15 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 - [x] **T3.2 Züge bedienen** (`A-202`, `A-203`)
     - [x] Stein auswählen und erlaubte Ziele anzeigen
     - [x] Gewählten Stein markieren, Ziele als durchsichtige Steine zeigen (`A-314`)
-    - [x] Knöpfe auf den Filz legen und mit dem Brett skalieren (`A-313`)
+    - [x] Knöpfe auf den Filz legen und mit dem Brett skalieren (`A-313`, `A-315`)
     - [x] Stein per Tippen, Klicken oder Ziehen bewegen
     - [x] Treffer auf der Zunge in beiden Ansichten zuverlässig machen
 - [x] **T3.3 Zug zurücknehmen** (`A-204`)
     - [x] Zurücknehmen bis zur Bestätigung des Zugs
-- [ ] **T3.4 Animationen** (`A-205`)
+- [x] **T3.4 Animationen** (`A-205`)
     - [x] Gezogene Steine gleiten auf ihr Ziel
-    - [ ] Schlagen, Auswürfeln und Würfelwurf animieren
+    - [x] Ausgewürfelte Steine gleiten ins Fach
+    - [x] Abnahme durch den Benutzer; Schlagen und Würfelwurf stehen unter Später
 - [x] **T3.5 Partieablauf** (`A-206`, `A-207`)
     - [x] Farbe wählen und Partie starten
     - [x] Dopplerwürfel bedienen
@@ -125,33 +126,33 @@ Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und p
 
 ### D4 Computer-Gegner
 
-- [ ] **T4.1 Stellungsbewertung** (`A-401`, `A-402`)
-    - [ ] Austauschbare Engine-Schnittstelle festlegen
-    - [ ] Stellungsbewertung in Dart schreiben
-- [ ] **T4.2 Zugwahl** (`A-402`, `A-403`)
-    - [ ] Besten Zug nach Bewertung wählen
-    - [ ] Stufen über Suchtiefe und gezielte Fehler abbilden
-- [ ] **T4.3 Würfelentscheidungen** (`A-404`)
-    - [ ] Doppeln, annehmen und ablehnen entscheiden
-- [ ] **T4.4 Ohne Ruckeln rechnen** (`A-405`)
-    - [ ] Berechnung vom Zeichnen entkoppeln, auch im Web
-- [ ] **T4.5 Stärke messen** (`A-406`, `A-702`)
-    - [ ] Skript um Würfelentscheidungen erweitern
-    - [ ] Zugwahl mit GNU Backgammon vergleichen
+- [x] **T4.1 Stellungsbewertung** (`A-401`, `A-402`)
+    - [x] Austauschbare Engine-Schnittstelle festlegen
+    - [x] Stellungsbewertung in Dart schreiben
+- [x] **T4.2 Zugwahl** (`A-402`, `A-403`)
+    - [x] Besten Zug nach Bewertung wählen
+    - [x] Drei Stufen über gezielte Bewertungsfehler abbilden
+- [x] **T4.3 Würfelentscheidungen** (`A-404`)
+    - [x] Doppeln, annehmen und ablehnen entscheiden
+- [x] **T4.4 Ohne Ruckeln rechnen** (`A-405`)
+    - [x] Berechnung so kurz halten, dass sie das Zeichnen nicht stört
+- [x] **T4.5 Stärke messen** (`A-406`, `A-702`)
+    - [x] Gewinnschätzung für Würfelentscheidungen gegen GNU Backgammon abstimmen
+    - [x] Zugwahl mit GNU Backgammon vergleichen
 
 ### D5 Fertigstellung
 
-- [ ] **T5.1 Partie speichern** (`A-208`)
-    - [ ] Laufende Partie lokal sichern und fortsetzen
-- [ ] **T5.2 Würfelstatistik** (`A-502`)
-    - [ ] Würfe je Partie und gesamt erfassen
-    - [ ] Statistik anzeigen
-- [ ] **T5.3 Einstellungen** (`A-209`)
-    - [ ] Stufe, Farbe und Ansicht wählen
+- [x] **T5.1 Partie speichern** (`A-208`)
+    - [x] Laufende Partie lokal sichern und fortsetzen
+- [x] **T5.2 Würfelstatistik** (`A-502`)
+    - [x] Würfe je Partie und gesamt erfassen
+    - [x] Statistik anzeigen
+- [x] **T5.3 Einstellungen** (`A-209`)
+    - [x] Stufe, Farbe und Ansicht wählen
 - [ ] **T5.4 Feinschliff**
     - [x] App-Symbol aus dem P2G-Logo (`tools/icon/`)
-    - [ ] Startbildschirm
-    - [ ] Texte auf Länge und Verständlichkeit prüfen (`A-602`)
+    - [x] Startbildschirm
+    - [x] Texte auf Länge und Verständlichkeit prüfen (`A-602`)
     - [ ] Bedienung mit jemandem testen, der die App nicht kennt
 
 ### D6 Release Version 1
@@ -202,6 +203,10 @@ Ein Task ist erledigt, wenn:
 | A-107 | Ein Pasch ergibt vier Züge. Beide Würfel müssen genutzt werden, wenn möglich; geht nur einer, dann der höhere. | D2 |
 | A-108 | Auswürfeln ist nur möglich, wenn alle eigenen Steine im Heimfeld sind. | D2 |
 | A-109 | Die Partie erkennt Sieg, Gammon und Backgammon und wertet einfach, doppelt und dreifach. | D2 |
+| A-112 | Der Spieler kann die Partie jederzeit nach einer Sicherheitsabfrage aufgeben und verliert den aktuellen Würfelwert. | D3 |
+| A-113 | Ist ein Zug vollständig gesetzt und wird er bis zum Ablauf der Wartezeit nicht beendet, endet er von selbst. Die Wartezeit beträgt 3 Sekunden und lässt sich in den Einstellungen auf 5 oder 10 Sekunden ändern oder ausschalten. | D3 |
+| A-116 | Nach dem Zug des Computers wird nach derselben Wartezeit automatisch gewürfelt. Bis dahin kann der Spieler selbst würfeln oder doppeln. | D3 |
+| A-114 | Können sich die Steine nicht mehr treffen, lässt sich die Partie mit einem Knopf animiert zu Ende spielen. | D3 |
 | A-111 | Version 1 spielt ohne die Zusatzregeln Jacoby, Beaver und automatisches Doppeln. Gammon und Backgammon zählen auch ohne gedrehten Dopplerwürfel. | D2 |
 | A-110 | Der Dopplerwürfel unterstützt Anbieten, Annehmen und Ablehnen, Besitz und Wert bis 64. Ablehnen beendet die Partie. | D2 |
 
@@ -213,6 +218,7 @@ Ein Task ist erledigt, wenn:
 | A-202 | Die App zeigt die erlaubten Züge des gewählten Steins an. | D3 |
 | A-203 | Züge lassen sich mit Finger und Maus zuverlässig ausführen. | D3 |
 | A-204 | Ein Zug lässt sich bis zu seiner Bestätigung zurücknehmen. | D3 |
+| A-215 | Ein Stein kann in einem Schritt mehrere Würfel ziehen, wenn mindestens eine Reihenfolge frei ist. Bei einem Pasch sind alle noch offenen Vielfachen wählbar. Zurücknehmen nimmt immer nur den letzten Einzelzug zurück. | D3 |
 | A-205 | Steine und Würfel bewegen sich animiert, damit der Gegnerzug nachvollziehbar ist. | D3 |
 | A-206 | Der Spieler wählt Schwarz oder Weiß. | D3 |
 | A-207 | Die App zeigt Ergebnis und Wertung und bietet eine neue Partie an. | D3 |
@@ -236,6 +242,8 @@ Ein Task ist erledigt, wenn:
 | A-312 | Licht und Schatten wirken in beiden Ansichten natürlich. | D1 |
 | A-313 | Die Knöpfe liegen auf dem Filz zwischen den Zungenspitzen, auf der Bretthälfte ohne Würfel, und skalieren mit dem Brett. | D3 |
 | A-314 | Der gewählte Stein trägt eine Markierung. Durchsichtige Steine zeigen die möglichen Ziele. | D3 |
+| A-315 | Alle Knöpfe auf dem Brett haben in jeder Spielphase dieselbe Höhe. | D3 |
+| A-316 | Das Fach, in das ein Spieler auswürfelt, trägt den Filz in dessen Farbe. | D3 |
 | A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |
 | A-309 | Bis zu fünf Steine liegen nebeneinander auf einem Dreieck. Steine am Rand werden vom vorderen Rahmen verdeckt wie auf einem echten Brett. | D1 |
 
@@ -294,6 +302,8 @@ Ein Task ist erledigt, wenn:
 
 Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 
+- Beim kombinierten Zug die Wahl zwischen Reihenfolgen mit und ohne Schlagen anbieten
+- Animation beim Schlagen und beim Würfelwurf
 - Zwei Spieler am selben Gerät (Version 2 oder 3)
 - Zusatzregeln Jacoby, Beaver und automatisches Doppeln als Einstellung (Version 3)
 - Matches auf mehrere Punkte

@@ -25,6 +25,18 @@ class AppLocalizationsDe extends AppLocalizations {
   String get playBlack => 'Schwarz';
 
   @override
+  String get chooseDifficulty => 'Wie stark soll der Computer spielen?';
+
+  @override
+  String get difficultyEasy => 'Leicht';
+
+  @override
+  String get difficultyMedium => 'Mittel';
+
+  @override
+  String get difficultyHard => 'Schwer';
+
+  @override
   String get white => 'Weiß';
 
   @override
@@ -56,6 +68,75 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get newGame => 'Neue Partie';
+
+  @override
+  String get autoFinish => 'Zu Ende spielen';
+
+  @override
+  String get settings => 'Einstellungen';
+
+  @override
+  String get close => 'Schließen';
+
+  @override
+  String get settingColor => 'Deine Farbe';
+
+  @override
+  String get settingDifficulty => 'Spielstärke';
+
+  @override
+  String get settingView => 'Ansicht';
+
+  @override
+  String get settingAutoDelay => 'Automatisch weiter nach';
+
+  @override
+  String get settingAutoDelayOff => 'Aus';
+
+  @override
+  String settingAutoDelaySeconds(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get settingsNextGame =>
+      'Farbe und Spielstärke gelten ab der nächsten Partie.';
+
+  @override
+  String get diceStats => 'Würfelstatistik';
+
+  @override
+  String get statsThisGame => 'Diese Partie';
+
+  @override
+  String get statsAllGames => 'Alle Partien';
+
+  @override
+  String get statsDoubles => 'Pasch';
+
+  @override
+  String get statsExpected =>
+      'Bei fairen Würfeln kommt jede Zahl und ein Pasch im Schnitt zu 16,7 % vor. Bei wenigen Würfen sind größere Abweichungen normal.';
+
+  @override
+  String get resign => 'Aufgeben';
+
+  @override
+  String get cancel => 'Abbrechen';
+
+  @override
+  String get resignQuestion => 'Partie aufgeben?';
+
+  @override
+  String resignConsequence(int points) {
+    String _temp0 = intl.Intl.pluralLogic(
+      points,
+      locale: localeName,
+      other: '$points Punkte',
+      one: '1 Punkt',
+    );
+    return 'Du verlierst $_temp0.';
+  }
 
   @override
   String doubleOffered(int value) {

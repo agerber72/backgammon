@@ -38,6 +38,13 @@ class BoardPainter extends CustomPainter {
 
   static const _rowLength = 5;
 
+  /// A plain see-through checker cannot be seen on top of a full row of the
+  /// same color, so there the target shows the marked checker.
+  static String targetSprite(String color, int checkersOnTarget) =>
+      checkersOnTarget < _rowLength
+      ? 'checker_$color'
+      : 'checker_${color}_selected';
+
   final BoardAssets assets;
   final BoardScene scene;
 
@@ -60,7 +67,8 @@ class BoardPainter extends CustomPainter {
 
     final layout = assets.layout;
     final view = assets.view.name;
-    for (final MapEntry(key: color, value: count) in scene.off.entries) {
+    for (final MapEntry(key: color, value: total) in scene.off.entries) {
+      final count = _isBearingOff(color) ? total - 1 : total;
       if (count > 0) {
         final image = assets.sprites['off_${view}_${color}_$count']!;
         _drawTray(canvas, size, image, layout.off[color]![count - 1], paint);
@@ -183,8 +191,8 @@ class BoardPainter extends CustomPainter {
         continue;
       }
       final own = scene.checkers[color]?[target] ?? 0;
-      final slot = layout.points[target]![own % _rowLength];
-      _drawSprite(canvas, size, 'checker_$color', slot, ghost);
+      final slot = layout.points[target]![own];
+      _drawSprite(canvas, size, targetSprite(color, own), slot, ghost);
     }
   }
 
@@ -197,14 +205,32 @@ class BoardPainter extends CustomPainter {
     return count > 0 ? layout.points[position]![count - 1] : null;
   }
 
+  bool _isBearingOff(String color) {
+    final moving = scene.moving;
+    return moving != null &&
+        moving.player.name == color &&
+        moving.to == Step.offOf(moving.player);
+  }
+
+  SlotPosition _trayCenter(BoardLayout layout, String color) {
+    final tray = layout.off[color]!.last;
+    return SlotPosition(
+      tray.left + tray.width / 2,
+      tray.top + tray.height / 2,
+      1,
+    );
+  }
+
   /// The checker on its way, between its old and its new place.
   _CheckerItem? _movingItem(BoardLayout layout) {
     final moving = scene.moving;
-    if (moving == null || moving.to < 1 || moving.to > Board.pointCount) {
+    if (moving == null) {
       return null;
     }
     final color = moving.player.name;
-    final target = _occupiedSlot(layout, color, moving.to);
+    final target = _isBearingOff(color)
+        ? _trayCenter(layout, color)
+        : _occupiedSlot(layout, color, moving.to);
     if (target == null) {
       return null;
     }

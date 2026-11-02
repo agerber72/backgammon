@@ -11,6 +11,10 @@
   "chooseColor": "Mit welcher Farbe spielst du?",
   "playWhite": "Weiß",
   "playBlack": "Schwarz",
+  "chooseDifficulty": "Wie stark soll der Computer spielen?",
+  "difficultyEasy": "Leicht",
+  "difficultyMedium": "Mittel",
+  "difficultyHard": "Schwer",
   "white": "Weiß",
   "black": "Schwarz",
   "roll": "Würfeln",
@@ -22,6 +26,31 @@
   "pass": "Weiter",
   "noMove": "Kein Zug möglich",
   "newGame": "Neue Partie",
+  "autoFinish": "Zu Ende spielen",
+  "settings": "Einstellungen",
+  "close": "Schließen",
+  "settingColor": "Deine Farbe",
+  "settingDifficulty": "Spielstärke",
+  "settingView": "Ansicht",
+  "settingAutoDelay": "Automatisch weiter nach",
+  "settingAutoDelayOff": "Aus",
+  "settingAutoDelaySeconds": "{seconds} s",
+  "@settingAutoDelaySeconds": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "settingsNextGame": "Farbe und Spielstärke gelten ab der nächsten Partie.",
+  "diceStats": "Würfelstatistik",
+  "statsThisGame": "Diese Partie",
+  "statsAllGames": "Alle Partien",
+  "statsDoubles": "Pasch",
+  "statsExpected": "Bei fairen Würfeln kommt jede Zahl und ein Pasch im Schnitt zu 16,7 % vor. Bei wenigen Würfen sind größere Abweichungen normal.",
+  "resign": "Aufgeben",
+  "cancel": "Abbrechen",
+  "resignQuestion": "Partie aufgeben?",
+  "resignConsequence": "Du verlierst {points, plural, =1{1 Punkt} other{{points} Punkte}}.",
+  "@resignConsequence": {
+    "placeholders": { "points": { "type": "int" } }
+  },
   "doubleOffered": "Doppeln auf {value}?",
   "@doubleOffered": {
     "placeholders": { "value": { "type": "int" } }

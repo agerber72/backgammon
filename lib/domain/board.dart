@@ -76,6 +76,24 @@ class Board {
     return true;
   }
 
+  /// True while checkers of both players can still meet.
+  bool get hasContact {
+    if (bar(Player.white) > 0 || bar(Player.black) > 0) {
+      return true;
+    }
+    var highestWhite = 0;
+    var lowestBlack = pointCount + 1;
+    for (var point = 1; point <= pointCount; point++) {
+      if (count(Player.white, point) > 0) {
+        highestWhite = point;
+      }
+      if (count(Player.black, point) > 0 && point < lowestBlack) {
+        lowestBlack = point;
+      }
+    }
+    return highestWhite > lowestBlack;
+  }
+
   bool isOpen(Player player, int point) => count(player.opponent, point) < 2;
 
   /// Moves one checker; `from` and `to` use the numbering of [Step].
