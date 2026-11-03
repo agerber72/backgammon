@@ -231,7 +231,7 @@ Aktueller Stand: `0.6.0+1`, D5 ist abgeschlossen, D6 ist in Arbeit, noch nichts 
     - [x] Android-Signatur einrichten: Upload-Schlüssel außerhalb des Repos, signiertes Bundle gebaut und auf einem Handy installiert (Stand 2026-11-03)
     - [ ] Im Play Store einreichen
     - [ ] Windows-Build bereitstellen
-    - [ ] Web-Version bereitstellen: Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
+    - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [ ] Version in `pubspec.yaml` auf `1.0.0` setzen und die Build-Nummer erhöhen (siehe [Versionen](#versionen))
     - [ ] Version 1.0.0 auf GitHub markieren
 
