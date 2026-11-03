@@ -174,8 +174,8 @@ void main() {
       expect(paths.keys, unorderedEquals([17, 14, 11]));
     });
 
-    test('A-215: Kein unbeabsichtigter Schlag – erwartet: '
-        'Geht es auch ohne Schlagen, nimmt der Zug diesen Weg', () {
+    test('A-215: Schlag unterwegs, erst 1 – erwartet: '
+        'Gibt es zwei Wege, nimmt der Zug den, der den Blot schlägt', () {
       final paths = pathsFrom(
         Board.fromCounts(white: const {20: 1}, black: const {19: 1}),
         Player.white,
@@ -184,7 +184,33 @@ void main() {
         20,
       );
 
+      expect(paths[14]!.map((step) => step.die), [1, 5]);
+    });
+
+    test('A-215: Schlag unterwegs, erst 5 – erwartet: '
+        'Gibt es zwei Wege, nimmt der Zug den, der den Blot schlägt', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {15: 1}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
       expect(paths[14]!.map((step) => step.die), [5, 1]);
+    });
+
+    test('A-215: Kein Blot unterwegs – erwartet: '
+        'Beide Reihenfolgen bleiben möglich, und der Zug kommt am Ziel an', () {
+      final paths = pathsFrom(
+        Board.fromCounts(white: const {20: 1}, black: const {1: 2}),
+        Player.white,
+        const Dice(5, 1),
+        const [],
+        20,
+      );
+
+      expect(paths[14]!.map((step) => step.die), unorderedEquals([5, 1]));
     });
 
     test('A-215: Geschlagen wird, wenn es nur so geht – erwartet: '

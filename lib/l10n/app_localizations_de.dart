@@ -79,6 +79,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get close => 'Schließen';
 
   @override
+  String get legalPrivacy => 'Datenschutz';
+
+  @override
+  String get legalImprint => 'Impressum';
+
+  @override
+  String get legalLicenses => 'Lizenzen';
+
+  @override
+  String get legalLicensesIntro =>
+      'Backgammon ist freie Software unter der GNU General Public License Version 3. Copyright © 2026 Achim Gerber. Den Quellcode gibt es auf GitHub.\n\nDie App baut auf fremden Programmteilen auf, vor allem auf Flutter von Google. Deren Lizenzen verlangen, dass sie hier genannt werden. Die folgende Liste wird automatisch erzeugt und nennt die Teile mit ihren technischen Namen. Für das Spiel musst du nichts davon beachten.';
+
+  @override
   String get settingColor => 'Deine Farbe';
 
   @override
@@ -136,6 +149,11 @@ class AppLocalizationsDe extends AppLocalizations {
       one: '1 Punkt',
     );
     return 'Du verlierst $_temp0.';
+  }
+
+  @override
+  String cubeValue(int value) {
+    return '×$value';
   }
 
   @override

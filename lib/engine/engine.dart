@@ -5,20 +5,25 @@ import '../domain/dice.dart';
 import '../domain/game.dart';
 import '../domain/move_generator.dart';
 import 'evaluation.dart';
+import 'mistakes.dart';
 
 enum Difficulty {
-  easy(noise: 0.5, doubleAt: 0.82, takeAt: 0.35),
+  easy(noise: 0.5, mistakeRate: 0.5, doubleAt: 0.95, takeAt: 0.1),
   medium(noise: 0.18, doubleAt: 0.74, takeAt: 0.28),
   hard(noise: 0, doubleAt: 0.70, takeAt: 0.25);
 
   const Difficulty({
     required this.noise,
+    this.mistakeRate = 0,
     required this.doubleAt,
     required this.takeAt,
   });
 
   /// Random error per rated play, which makes the computer misjudge moves.
   final double noise;
+
+  /// Share of turns with a typical beginner's mistake, see [Mistake].
+  final double mistakeRate;
 
   /// Win chance from which it doubles, and below which it gives up a double.
   final double doubleAt;
@@ -54,9 +59,17 @@ class HeuristicEngine implements Engine {
     Dice dice,
     Difficulty difficulty,
   ) async {
+    final plays = legalPlays(board, player, dice);
+    if (difficulty.mistakeRate > 0 &&
+        _random.nextDouble() < difficulty.mistakeRate) {
+      final mistake = _mistake(board, player, plays);
+      if (mistake != null) {
+        return mistake;
+      }
+    }
     Play? best;
     var bestValue = double.negativeInfinity;
-    for (final play in legalPlays(board, player, dice)) {
+    for (final play in plays) {
       final value = evaluate(play.result, player) + _noise(difficulty);
       if (value > bestValue) {
         bestValue = value;
@@ -64,6 +77,24 @@ class HeuristicEngine implements Engine {
       }
     }
     return best!;
+  }
+
+  /// A play with a typical beginner's mistake, if the roll allows one.
+  Play? _mistake(Board board, Player player, List<Play> plays) {
+    var best = plays.first;
+    var bestValue = double.negativeInfinity;
+    for (final play in plays) {
+      final value = evaluate(play.result, player);
+      if (value > bestValue) {
+        bestValue = value;
+        best = play;
+      }
+    }
+    final mistakes = [
+      for (final play in plays)
+        if (mistakeOf(board, player, best.result, play.result) != null) play,
+    ];
+    return mistakes.isEmpty ? null : mistakes[_random.nextInt(mistakes.length)];
   }
 
   double _noise(Difficulty difficulty) => difficulty.noise == 0

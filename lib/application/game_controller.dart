@@ -236,18 +236,23 @@ class GameController extends ChangeNotifier {
   void pass() => _update(_game!.pass());
 
   /// Offered once the checkers can no longer meet, so only the race is left.
+  /// It stays available during the computer's turn as well.
   bool get canAutoFinish {
     final game = _game;
     return game != null &&
-        isHumanTurn &&
-        !hasPendingSteps &&
+        !_autoFinishing &&
         !game.board.hasContact &&
         (game.phase == GamePhase.awaitingRoll ||
             game.phase == GamePhase.awaitingPlay);
   }
 
-  /// Plays both sides to the end of the game.
+  /// Plays both sides to the end of the game. Moves the person has set but
+  /// not confirmed are dropped.
   void autoFinish() {
+    if (isHumanTurn) {
+      _resetTurn();
+    }
+    _autoAction?.cancel();
     _autoFinishing = true;
     notifyListeners();
     _letComputerAct();

@@ -20,6 +20,7 @@ flutter test                                      # alle Tests
 flutter test test/app/backgammon_app_test.dart     # einzelne Testdatei
 flutter run -d windows                            # auf Windows starten
 flutter run -d chrome                             # im Browser starten
+flutter build web --no-web-resources-cdn          # Web-Version ohne Google-Server bauen
 flutter emulators --launch Medium_Phone_API_37.0  # Emulator starten
 flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/setup.ps1                           # GNU Backgammon einrichten
@@ -30,6 +31,7 @@ flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/update_engine_reference.ps1         # Zugbewertungen für die Engine neu erzeugen
 dart run tools/engine/tune.dart                   # Gewichte der Bewertung abstimmen
 dart run tools/engine/compare_levels.dart         # Spielstufen messen
+dart run tools/legal/build_pages.dart             # Rechtstexte als Seiten in web/ erzeugen
 ```
 
 GNU Backgammon ist nur Testwerkzeug (siehe [tools/gnubg/README.md](tools/gnubg/README.md)). Weder Code noch Binärdateien oder Gewichtsdateien dürfen in die App gelangen.
@@ -43,7 +45,7 @@ Vor jedem Abschluss einer Änderung müssen `flutter analyze` und `flutter test`
 - Mit dem Benutzer auf Deutsch kommunizieren.
 - Code, Bezeichner und Code-Kommentare auf Englisch.
 - Tests sind für Menschen lesbar: Der Testname nennt die geprüfte Anforderung und die Erwartung im Schema `A-308: Anforderung – erwartet: Erwartung`. Testnamen sind deutsch, das ist die einzige Ausnahme von Englisch im Code.
-- Sichtbare Texte kommen aus `lib/l10n/app_de.arb`, nie fest aus dem Code.
+- Sichtbare Texte kommen aus `lib/l10n/app_de.arb`, nie fest aus dem Code. Lange Rechtstexte liegen in `assets/legal/`.
 - Lint-Regeln: `flutter_lints` über `analysis_options.yaml`.
 - Spielregeln und Spiellogik getrennt von der UI halten, damit sie ohne Widgets testbar sind.
 - Neue Pakete nur nach Rücksprache mit dem Benutzer hinzufügen.

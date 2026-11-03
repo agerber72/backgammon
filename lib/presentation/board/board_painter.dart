@@ -34,9 +34,23 @@ class BoardFit {
 }
 
 class BoardPainter extends CustomPainter {
-  const BoardPainter(this.assets, this.scene);
+  const BoardPainter(this.assets, this.scene, {this.diceScale = 1});
 
   static const _rowLength = 5;
+
+  /// Colors of the checkers, from tools/blender/board_config.json.
+  static const _light = Color(0xFFEFE6D2);
+  static const _dark = Color(0xFF141414);
+  static const _arrowColor = Color(0xFFF2B632);
+
+  /// Size of a checker's top face within its sprite box.
+  static const _faceWidth = 0.64;
+  static const _faceHeight = 0.6;
+
+  /// A target ring in the color opposite to the moving checker stands out on
+  /// light and dark points and on checkers of either color.
+  static (Color ring, Color edge) ringColors(String color) =>
+      color == Player.white.name ? (_dark, _light) : (_light, _dark);
 
   /// A plain see-through checker cannot be seen on top of a full row of the
   /// same color, so there the target shows the marked checker.
@@ -47,6 +61,9 @@ class BoardPainter extends CustomPainter {
 
   final BoardAssets assets;
   final BoardScene scene;
+
+  /// Enlarges the dice around their place, so small displays stay readable.
+  final double diceScale;
 
   @override
   void paint(Canvas canvas, Size available) {
@@ -88,11 +105,14 @@ class BoardPainter extends CustomPainter {
     if (moving != null) {
       _drawSprite(canvas, size, moving.sprite, moving.position, paint);
     }
+    _drawDirection(canvas, size, layout);
 
     final diceSlots = layout.dice[scene.diceColor]!;
     for (var i = 0; i < scene.dice.length; i++) {
       final sprite = 'die_${scene.diceColor}_${scene.dice[i]}';
-      _drawSprite(canvas, size, sprite, diceSlots[i], paint);
+      final slot = diceSlots[i];
+      final position = SlotPosition(slot.u, slot.v, slot.scale * diceScale);
+      _drawSprite(canvas, size, sprite, position, paint);
     }
     final cubeOwner = scene.cubeOwner;
     if (cubeOwner != null) {
@@ -176,7 +196,7 @@ class BoardPainter extends CustomPainter {
     }
   }
 
-  /// See-through checkers show where the selected checker can go.
+  /// See-through checkers with a ring show where the selected checker can go.
   void _drawTargets(Canvas canvas, Size size, BoardLayout layout) {
     final color = scene.diceColor;
     final ghost = Paint()
@@ -187,14 +207,112 @@ class BoardPainter extends CustomPainter {
         final count = (scene.off[color] ?? 0) + 1;
         final image =
             assets.sprites['off_${assets.view.name}_${color}_$count']!;
-        _drawTray(canvas, size, image, layout.off[color]![count - 1], ghost);
+        final tray = layout.off[color]![count - 1];
+        _drawTray(canvas, size, image, tray, ghost);
+        _drawTrayRing(canvas, size, tray, color);
         continue;
       }
       final own = scene.checkers[color]?[target] ?? 0;
       final slot = layout.points[target]![own];
       _drawSprite(canvas, size, targetSprite(color, own), slot, ghost);
+      _drawRing(canvas, size, slot, color);
     }
   }
+
+  void _drawRing(Canvas canvas, Size size, SlotPosition slot, String color) {
+    final box = assets.layout.sprites['checker_$color']!;
+    final oval = Rect.fromCenter(
+      center: Offset(slot.u * size.width, slot.v * size.height),
+      width: box.width * _faceWidth * slot.scale * size.width,
+      height: box.height * _faceHeight * slot.scale * size.height,
+    );
+    final (ring, edge) = ringColors(color);
+    final width = oval.height * 0.1;
+    canvas
+      ..drawOval(oval, _stroke(edge, width * 1.8))
+      ..drawOval(oval, _stroke(ring, width));
+  }
+
+  void _drawTrayRing(Canvas canvas, Size size, TrayImage tray, String color) {
+    final rect = Rect.fromLTWH(
+      tray.left * size.width,
+      tray.top * size.height,
+      tray.width * size.width,
+      tray.height * size.height,
+    );
+    final width = rect.width * 0.08;
+    final frame = RRect.fromRectAndRadius(
+      rect.deflate(width),
+      Radius.circular(rect.width * 0.25),
+    );
+    final (ring, edge) = ringColors(color);
+    canvas
+      ..drawRRect(frame, _stroke(edge, width * 1.8))
+      ..drawRRect(frame, _stroke(ring, width));
+  }
+
+  Paint _stroke(Color color, double width) => Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = width
+    ..strokeJoin = StrokeJoin.round
+    ..strokeCap = StrokeCap.round
+    ..color = color;
+
+  /// A U lying along the points from the player's farthest checkers to the
+  /// home board.
+  void _drawDirection(Canvas canvas, Size size, BoardLayout layout) {
+    final player = scene.direction;
+    final opacity = scene.directionOpacity;
+    if (player == null || opacity <= 0) {
+      return;
+    }
+    // Points in the order the player passes them: start, both ends of the
+    // turn and the home board.
+    final route = player == Player.white
+        ? const [24, 13, 12, 1]
+        : const [1, 12, 13, 24];
+    Offset at(int point) {
+      final slot = layout.points[point]![3];
+      return Offset(slot.u * size.width, slot.v * size.height);
+    }
+
+    final [start, turnFrom, turnTo, end] = [for (final p in route) at(p)];
+    final ahead = _unit(turnFrom - start);
+    // Keeps the turn on the felt next to the outer points.
+    final reach = (turnTo - turnFrom).distance * 0.4;
+    final home = _unit(end - turnTo);
+    final head = size.height * 0.05;
+    final tip = end + home * head;
+    final line = Path()
+      ..moveTo(start.dx, start.dy)
+      ..lineTo(turnFrom.dx, turnFrom.dy)
+      ..cubicTo(
+        (turnFrom + ahead * reach).dx,
+        (turnFrom + ahead * reach).dy,
+        (turnTo + ahead * reach).dx,
+        (turnTo + ahead * reach).dy,
+        turnTo.dx,
+        turnTo.dy,
+      )
+      ..lineTo(end.dx, end.dy);
+    final side = Offset(-home.dy, home.dx) * head * 0.7;
+    final arrowhead = Path()
+      ..moveTo(tip.dx, tip.dy)
+      ..lineTo((end + side).dx, (end + side).dy)
+      ..lineTo((end - side).dx, (end - side).dy)
+      ..close();
+
+    final width = size.height * 0.018;
+    final edge = _dark.withValues(alpha: 0.6 * opacity);
+    final color = _arrowColor.withValues(alpha: opacity);
+    canvas
+      ..drawPath(line, _stroke(edge, width * 1.8))
+      ..drawPath(arrowhead, _stroke(edge, width * 0.8))
+      ..drawPath(line, _stroke(color, width))
+      ..drawPath(arrowhead, Paint()..color = color);
+  }
+
+  Offset _unit(Offset vector) => vector / vector.distance;
 
   SlotPosition? _occupiedSlot(BoardLayout layout, String color, int position) {
     if (position < 1 || position > Board.pointCount) {
@@ -298,7 +416,10 @@ class BoardPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(BoardPainter oldDelegate) =>
-      oldDelegate.assets != assets || oldDelegate.scene != scene;
+      oldDelegate.assets != assets ||
+      oldDelegate.scene != scene ||
+      oldDelegate.scene.directionOpacity != scene.directionOpacity ||
+      oldDelegate.diceScale != diceScale;
 }
 
 class _CheckerItem {

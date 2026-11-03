@@ -29,6 +29,10 @@
   "autoFinish": "Zu Ende spielen",
   "settings": "Einstellungen",
   "close": "Schließen",
+  "legalPrivacy": "Datenschutz",
+  "legalImprint": "Impressum",
+  "legalLicenses": "Lizenzen",
+  "legalLicensesIntro": "Backgammon ist freie Software unter der GNU General Public License Version 3. Copyright © 2026 Achim Gerber. Den Quellcode gibt es auf GitHub.\n\nDie App baut auf fremden Programmteilen auf, vor allem auf Flutter von Google. Deren Lizenzen verlangen, dass sie hier genannt werden. Die folgende Liste wird automatisch erzeugt und nennt die Teile mit ihren technischen Namen. Für das Spiel musst du nichts davon beachten.",
   "settingColor": "Deine Farbe",
   "settingDifficulty": "Spielstärke",
   "settingView": "Ansicht",
@@ -50,6 +54,14 @@
   "resignConsequence": "Du verlierst {points, plural, =1{1 Punkt} other{{points} Punkte}}.",
   "@resignConsequence": {
     "placeholders": { "points": { "type": "int" } }
+  },
+  "cubeValue": "×{value}",
+  "@cubeValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
   },
   "doubleOffered": "Doppeln auf {value}?",
   "@doubleOffered": {

@@ -62,7 +62,7 @@ Mehrsprachigkeit vorbereitet heißt: Alle Texte liegen von Anfang an in Sprachda
 
 ## Aussehen
 
-Die App soll aussehen wie ein Turnierbrett in 3D: sachlich und hochwertig, mit Brett, 24 Zungen, 30 Steinen, Würfeln, Würfelbechern und Dopplerwürfel.
+Die App soll aussehen wie ein Turnierbrett in 3D: sachlich und hochwertig, mit Brett, 24 Zungen, 30 Steinen, Würfeln und Dopplerwürfel, ab Version 2 auch mit Würfelbechern.
 
 Eine verbindliche Normgröße für Turnierbretter wurde nicht gefunden. Die [USBGF-Regeln](https://usbgf.org/wp-content/uploads/2023/06/USBGF-rules-2024_proposed_public_comment.pdf) nennen laut Recherche nur die Ausstattung, die Maße einzelner Bretter sind Herstellerangaben. Das Ziel ist deshalb die vertraute Turnier-Anmutung, keine maßstabsgetreue Kopie.
 

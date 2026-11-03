@@ -11,8 +11,10 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'assets' / 'icon' / 'app_icon.png'
 ROUNDED = ROOT / 'assets' / 'icon' / 'app_icon_rounded.png'
 RES = ROOT / 'android' / 'app' / 'src' / 'main' / 'res'
-# Launchers crop adaptive icons, so the art shrinks onto a canvas in its edge color.
+# Launchers crop adaptive icons, so the art shrinks onto a canvas in the brand
+# color of p2g-it; the points reach the edge, so the edge color would not fit.
 ADAPTIVE_ART_SCALE = 0.85
+BRAND = (0x5B / 255, 0x84 / 255, 0xC3 / 255, 1.0)
 CORNER_RADIUS = 0.22
 
 
@@ -38,7 +40,7 @@ def rounded(art):
 
 
 def adaptive(art):
-    """Places the art in the middle of a canvas filled with its edge color."""
+    """Places the art in the middle of a canvas in the brand color."""
     side = art.shape[0]
     inner = int(side * ADAPTIVE_ART_SCALE)
     image = bpy.data.images.new('inner', side, side, alpha=True)
@@ -46,7 +48,7 @@ def adaptive(art):
     image.scale(inner, inner)
     small = np.array(image.pixels[:], dtype=np.float32).reshape(inner, inner, 4)
     bpy.data.images.remove(image)
-    canvas = np.ones_like(art) * art[8, 8]
+    canvas = np.ones_like(art) * np.array(BRAND, dtype=np.float32)
     start = (side - inner) // 2
     canvas[start:start + inner, start:start + inner] = small
     return canvas

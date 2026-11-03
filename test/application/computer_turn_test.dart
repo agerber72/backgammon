@@ -1,10 +1,13 @@
 import 'package:backgammon/application/game_controller.dart';
 import 'package:backgammon/domain/board.dart';
 import 'package:backgammon/domain/dice.dart';
+import 'package:backgammon/domain/dice_stats.dart';
 import 'package:backgammon/domain/game.dart';
 import 'package:backgammon/domain/move_generator.dart';
 import 'package:backgammon/engine/engine.dart';
+import 'package:backgammon/persistence/session_store.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FixedRoller implements DiceRoller {
   FixedRoller(this.values);
@@ -320,6 +323,72 @@ void main() {
       expect(controller.game!.phase, GamePhase.finished);
       expect(controller.game!.result!.points, greaterThanOrEqualTo(1));
     });
+
+    test('A-114: Eigener Zug offen – erwartet: '
+        'Der noch nicht beendete Zug wird verworfen, und der Knopf bleibt nutzbar', () {
+      final controller = GameController(
+        roller: FixedRoller([6, 5, 4, 3]),
+        engine: ScriptedEngine(),
+        game: Game.at(
+          board: race,
+          turn: Player.white,
+          phase: GamePhase.awaitingPlay,
+          dice: const Dice(3, 1),
+        ),
+        autoFinishPause: const Duration(seconds: 5),
+      );
+      controller
+        ..tap(6)
+        ..tap(3);
+      expect(controller.hasPendingSteps, isTrue);
+      expect(controller.canAutoFinish, isTrue);
+
+      controller.autoFinish();
+
+      expect(controller.hasPendingSteps, isFalse);
+      expect(controller.board.key, race.key);
+      controller.dispose();
+    });
+
+    test(
+      'A-114: Im Zug des Computers – erwartet: '
+      'Der Knopf ist nutzbar, und die Partie läuft bis zum Ende durch',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final store = SharedPreferencesSessionStore();
+        await store.save(
+          Session(
+            game: Game.at(
+              board: race,
+              turn: Player.black,
+              phase: GamePhase.awaitingRoll,
+            ),
+            human: Player.white,
+            difficulty: Difficulty.medium,
+            gameStats: DiceStats(),
+            totalStats: DiceStats(),
+          ),
+        );
+        final controller = GameController(
+          roller: FixedRoller([6, 5, 4, 3, 2, 1]),
+          engine: HeuristicEngine(),
+          store: store,
+          computerPause: const Duration(milliseconds: 5),
+          autoFinishPause: Duration.zero,
+        );
+        await controller.restore();
+        expect(controller.isHumanTurn, isFalse);
+        expect(controller.canAutoFinish, isTrue);
+
+        controller.autoFinish();
+        while (controller.game!.phase != GamePhase.finished) {
+          await Future<void>.delayed(const Duration(milliseconds: 1));
+        }
+
+        expect(controller.game!.phase, GamePhase.finished);
+        controller.dispose();
+      },
+    );
 
     test('A-114: Keine Eingabe beim Abspielen – erwartet: '
         'Während des Abspielens kann niemand einen Stein wählen', () {

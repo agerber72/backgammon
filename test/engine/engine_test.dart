@@ -8,7 +8,11 @@ import 'package:backgammon/domain/game.dart';
 import 'package:backgammon/domain/move_generator.dart';
 import 'package:backgammon/domain/position_id.dart';
 import 'package:backgammon/engine/engine.dart';
+import 'package:backgammon/engine/evaluation.dart';
+import 'package:backgammon/engine/mistakes.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../tools/engine/players.dart' show BeginnerPlayer, playMatch;
 
 class Reference {
   Reference(this.board, this.player, this.dice, this.moves);
@@ -160,6 +164,61 @@ void main() {
       expect(await meanLoss(references, Difficulty.hard), lessThan(0.06));
     });
 
+    test('A-407: Leicht ist schlagbar – erwartet: '
+        'Ein einfacher Anfängerspieler gewinnt gegen Leicht mindestens 40 % '
+        'von 300 Partien mit Dopplerwürfel', () async {
+      final match = await playMatch(
+        BeginnerPlayer(Random(21)),
+        Difficulty.easy,
+        HeuristicEngine(random: Random(23)),
+        Difficulty.easy,
+        300,
+      );
+
+      // ignore: avoid_print
+      print('Anfänger gegen Leicht: ${match.games} von 300 Partien');
+      expect(match.games, greaterThanOrEqualTo(120));
+    }, timeout: const Timeout(Duration(minutes: 3)));
+
+    test('A-408: Erkennbare Fehler – erwartet: '
+        'Leicht macht in mindestens einem Viertel der Referenzstellungen einen '
+        'typischen Anfängerfehler, Schwer in keiner', () async {
+      final engine = HeuristicEngine(random: Random(9));
+      var easyMistakes = 0;
+      var hardMistakes = 0;
+      for (final reference in references) {
+        final best = await engine.choosePlay(
+          reference.board,
+          reference.player,
+          reference.dice,
+          Difficulty.hard,
+        );
+        for (final (level, count) in [
+          (Difficulty.easy, () => easyMistakes++),
+          (Difficulty.hard, () => hardMistakes++),
+        ]) {
+          final play = await engine.choosePlay(
+            reference.board,
+            reference.player,
+            reference.dice,
+            level,
+          );
+          final mistake = mistakeOf(
+            reference.board,
+            reference.player,
+            best.result,
+            play.result,
+          );
+          if (mistake != null) {
+            count();
+          }
+        }
+      }
+
+      expect(easyMistakes, greaterThanOrEqualTo(references.length / 4));
+      expect(hardMistakes, 0);
+    });
+
     test('A-403: Stufen im Spiel – erwartet: '
         'In je 300 Partien schlägt jede Stufe die schwächere klar', () async {
       final hardMedium = await wins(Difficulty.hard, Difficulty.medium, 300);
@@ -187,12 +246,42 @@ void main() {
     );
 
     test('A-404: Klarer Vorsprung – erwartet: '
-        'Der Computer doppelt auf jeder Stufe', () async {
+        'Der Computer doppelt auf Mittel und Schwer', () async {
       final engine = HeuristicEngine();
-      for (final level in Difficulty.values) {
+      for (final level in [Difficulty.medium, Difficulty.hard]) {
         expect(await engine.wantsToDouble(rollingWith(leading), level), isTrue);
       }
     });
+
+    test('A-409: Leicht doppelt selten – erwartet: '
+        'Leicht doppelt erst, wenn der Sieg fast sicher ist, also später als '
+        'Mittel', () {
+      expect(Difficulty.easy.doubleAt, greaterThanOrEqualTo(0.95));
+      expect(Difficulty.easy.doubleAt, greaterThan(Difficulty.medium.doubleAt));
+    });
+
+    test(
+      'A-409: Leicht nimmt schlechte Doppel an – erwartet: '
+      'Leicht nimmt ein Doppeln an, das Mittel und Schwer ablehnen',
+      () async {
+        final engine = HeuristicEngine();
+        // Black is clearly behind, though not without any chance.
+        final behind = Game.at(
+          board: Board.fromCounts(
+            white: const {1: 3, 2: 3, 3: 3, 4: 3, 5: 3},
+            black: const {19: 5, 20: 5, 18: 5},
+          ),
+          turn: Player.white,
+          phase: GamePhase.awaitingRoll,
+        ).offerDouble();
+        // About 14 %: below what Mittel and Schwer take, above Leicht's limit.
+        final chance = estimateWin(behind.board, Player.black);
+        expect(chance, inInclusiveRange(0.1, 0.25));
+        expect(await engine.acceptsDouble(behind, Difficulty.easy), isTrue);
+        expect(await engine.acceptsDouble(behind, Difficulty.medium), isFalse);
+        expect(await engine.acceptsDouble(behind, Difficulty.hard), isFalse);
+      },
+    );
 
     test(
       'A-404: Aussichtslos – erwartet: '

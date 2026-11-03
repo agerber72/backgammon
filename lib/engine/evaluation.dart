@@ -80,7 +80,7 @@ double evaluate(
       (mine.outerPoints - theirs.outerPoints) * weights.outerPoints +
       (mine.prime - theirs.prime) * weights.prime -
       (mine.blots - theirs.blots) * weights.blots -
-      _exposure(board, player) * weights.exposure +
+      exposure(board, player) * weights.exposure +
       (board.bar(opponent) - board.bar(player)) * weights.bar +
       (board.off(player) - board.off(opponent)) * weights.off +
       (mine.anchors - theirs.anchors) * weights.anchors -
@@ -161,7 +161,7 @@ class _Side {
 
 /// Share of the 36 rolls that hit one of the player's blots, each weighted by
 /// the progress the blot would lose. Blocked paths are ignored for speed.
-double _exposure(Board board, Player player) {
+double exposure(Board board, Player player) {
   final opponent = player.opponent;
   final gaps = <int>{};
   final losses = <int, double>{};

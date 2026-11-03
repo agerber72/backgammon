@@ -232,6 +232,30 @@ abstract class AppLocalizations {
   /// **'Schließen'**
   String get close;
 
+  /// No description provided for @legalPrivacy.
+  ///
+  /// In de, this message translates to:
+  /// **'Datenschutz'**
+  String get legalPrivacy;
+
+  /// No description provided for @legalImprint.
+  ///
+  /// In de, this message translates to:
+  /// **'Impressum'**
+  String get legalImprint;
+
+  /// No description provided for @legalLicenses.
+  ///
+  /// In de, this message translates to:
+  /// **'Lizenzen'**
+  String get legalLicenses;
+
+  /// No description provided for @legalLicensesIntro.
+  ///
+  /// In de, this message translates to:
+  /// **'Backgammon ist freie Software unter der GNU General Public License Version 3. Copyright © 2026 Achim Gerber. Den Quellcode gibt es auf GitHub.\n\nDie App baut auf fremden Programmteilen auf, vor allem auf Flutter von Google. Deren Lizenzen verlangen, dass sie hier genannt werden. Die folgende Liste wird automatisch erzeugt und nennt die Teile mit ihren technischen Namen. Für das Spiel musst du nichts davon beachten.'**
+  String get legalLicensesIntro;
+
   /// No description provided for @settingColor.
   ///
   /// In de, this message translates to:
@@ -327,6 +351,12 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Du verlierst {points, plural, =1{1 Punkt} other{{points} Punkte}}.'**
   String resignConsequence(int points);
+
+  /// No description provided for @cubeValue.
+  ///
+  /// In de, this message translates to:
+  /// **'×{value}'**
+  String cubeValue(int value);
 
   /// No description provided for @doubleOffered.
   ///

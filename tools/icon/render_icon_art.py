@@ -13,21 +13,26 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'assets' / 'icon' / 'icon.png'
 OUTPUT = ROOT / 'assets' / 'icon' / 'app_icon.png'
 
-PRIMARY = '#5C84C3'
+PRIMARY = '#5B84C3'  # Brand color of p2g-it, from icon.png
+# The light darkens the field; this base color renders as PRIMARY.
+FIELD = '#669AE7'
 PALE_BLUE = '#9DAFCC'
 DEEP_BLUE = '#43608F'
 NIGHT_BLUE = '#262D38'
 LIGHT = '#F7F9FA'
 
+FRAME = 2.0
 COLUMNS = 6
 HALF = 20.0
-MIDDLE_GAP = 3.0
 POINT_WIDTH = 2 * HALF / COLUMNS
-POINT_LENGTH = HALF - MIDDLE_GAP / 2
+# Five checkers fill a point. Smaller checkers make shorter points and leave
+# more of the brand color in the middle.
+CHECKER_SCALE = 0.9
+POINT_LENGTH = (HALF - 1.5) * CHECKER_SCALE
 STACK = 5
 PITCH = POINT_LENGTH / STACK
 CHECKER_RADIUS = PITCH / 2 - 0.05
-CHECKER_HEIGHT = 0.7
+CHECKER_HEIGHT = 0.7 * CHECKER_SCALE
 LOGO_WIDTH = 30.0
 LOGO_LIFT = 1.0
 SHADOW_OFFSET = (0.9, -1.0)
@@ -201,8 +206,9 @@ def stack(column, top_row, count, mat):
 
 
 def build():
-    field = material('field', DEEP_BLUE, 0.85)
-    colors = [material('point_a', PRIMARY, 0.7), material('point_b', PALE_BLUE, 0.7)]
+    # The brand color fills the large background, the darker blue the points.
+    field = material('field', FIELD, 0.85)
+    colors = [material('point_a', DEEP_BLUE, 0.7), material('point_b', PALE_BLUE, 0.7)]
     white = material('white', LIGHT, 0.45)
     dark = material('dark', NIGHT_BLUE, 0.45)
 
@@ -251,15 +257,15 @@ def setup():
     world.node_tree.nodes['Background'].inputs['Strength'].default_value = 0.85
     scene.world = world
 
+    # Straight down without perspective: points at the top and the bottom have
+    # the same size and reach the edges of the icon, without a border.
     data = bpy.data.cameras.new('camera')
-    data.lens = 110
-    data.sensor_width = 36
+    data.type = 'ORTHO'
+    data.ortho_scale = FRAME * HALF
     camera = bpy.data.objects.new('camera', data)
     scene.collection.objects.link(camera)
-    distance = 2.1 * HALF * data.lens / data.sensor_width
-    tilt = math.radians(6)
-    camera.location = Vector((0, -math.sin(tilt), math.cos(tilt))) * distance
-    camera.rotation_euler = (-camera.location).to_track_quat('-Z', 'Y').to_euler()
+    camera.location = (0, 0, 100)
+    camera.rotation_euler = (0, 0, 0)
     scene.camera = camera
 
     light = bpy.data.lights.new('key', 'AREA')

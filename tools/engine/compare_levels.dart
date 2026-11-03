@@ -10,16 +10,9 @@ import 'package:backgammon/domain/game.dart';
 import 'package:backgammon/domain/position_id.dart';
 import 'package:backgammon/engine/engine.dart';
 
+import 'players.dart';
+
 const games = 300;
-
-class SeededRoller implements DiceRoller {
-  SeededRoller(this.random);
-
-  final Random random;
-
-  @override
-  int roll() => random.nextInt(6) + 1;
-}
 
 Map<int, int> counts(dynamic json) => (json as Map<String, dynamic>).map(
   (point, count) => MapEntry(int.parse(point), count as int),
@@ -98,4 +91,24 @@ Future<void> main() async {
     'Schwer gegen Mittel $hardMedium, Mittel gegen Leicht $mediumEasy, '
     'Schwer gegen Leicht $hardEasy, je von $games',
   );
+
+  // Simple opponents, with the doubling cube, show how beatable each level is.
+  for (final (name, opponent) in [
+    ('Anfänger', BeginnerPlayer(Random(21))),
+    ('Zufall', RandomPlayer(Random(22))),
+  ]) {
+    for (final level in Difficulty.values) {
+      final match = await playMatch(
+        opponent,
+        Difficulty.easy,
+        HeuristicEngine(random: Random(23)),
+        level,
+        games,
+      );
+      stdout.writeln(
+        '$name gegen ${level.name}: ${match.games} von $games Partien, '
+        'Punkte ${match.won}:${match.lost}',
+      );
+    }
+  }
 }

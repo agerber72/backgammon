@@ -24,6 +24,8 @@ class BoardScene {
     this.selected,
     this.targets = const {},
     this.moving,
+    this.direction,
+    this.directionOpacity = 0,
   });
 
   factory BoardScene.of(
@@ -32,6 +34,8 @@ class BoardScene {
     int? selected,
     Set<int> targets = const {},
     MovingChecker? moving,
+    Player? direction,
+    double directionOpacity = 0,
   }) {
     Map<int, int> pointsOf(Player player) => {
       for (var point = 1; point <= Board.pointCount; point++)
@@ -49,6 +53,8 @@ class BoardScene {
       selected: selected,
       targets: targets,
       moving: moving,
+      direction: direction,
+      directionOpacity: directionOpacity,
     );
   }
 
@@ -68,4 +74,9 @@ class BoardScene {
   final int? selected;
   final Set<int> targets;
   final MovingChecker? moving;
+
+  /// Player whose direction of play the board shows as an arrow, at the
+  /// start of a game.
+  final Player? direction;
+  final double directionOpacity;
 }

@@ -92,8 +92,8 @@ List<Step> nextSteps(Board start, Player player, Dice dice, List<Step> done) {
 /// All places one checker can reach from [from], using one or more of the
 /// remaining dice, each with the steps leading there. Only steps allowed by
 /// [nextSteps] count, so a combined move never crosses a blocked point. If
-/// several orders lead to the same place, the one that hits fewest checkers
-/// wins, so that a combined move never hits by surprise.
+/// several orders lead to the same place, the one that hits most checkers
+/// wins, since hitting on the way is almost always the better play.
 Map<int, List<Step>> pathsFrom(
   Board start,
   Player player,
@@ -122,7 +122,7 @@ Map<int, List<Step>> pathsFrom(
       final isBetter =
           known == null ||
           next.length < known.length ||
-          (next.length == known.length && nextHits < hits[step.to]!);
+          (next.length == known.length && nextHits > hits[step.to]!);
       if (isBetter) {
         paths[step.to] = next;
         hits[step.to] = nextHits;
