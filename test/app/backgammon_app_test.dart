@@ -351,7 +351,7 @@ void main() {
 
   testWidgets('A-805: Rechtliches – erwartet: '
       'Die Einstellungen öffnen Datenschutz und Impressum in der App, '
-      'und beide sind als Entwurf gekennzeichnet', (tester) async {
+      'beide sind veröffentlicht ohne Entwurfsvermerk', (tester) async {
     tester.view.physicalSize = const Size(1600, 1000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -376,12 +376,14 @@ void main() {
     await tester.tap(find.byTooltip('Einstellungen'));
     await tester.pumpAndSettle();
     await open('Datenschutz');
-    expect(find.textContaining('ENTWURF'), findsOneWidget);
+    expect(find.textContaining('ENTWURF'), findsNothing);
+    expect(find.textContaining('Stand: 3. November 2026'), findsOneWidget);
     expect(find.text('Verantwortlicher'), findsOneWidget);
 
     await tester.tap(find.byType(BackButton));
     await tester.pumpAndSettle();
     await open('Impressum');
+    expect(find.textContaining('ENTWURF'), findsNothing);
     expect(find.text('Anbieter'), findsOneWidget);
   });
 

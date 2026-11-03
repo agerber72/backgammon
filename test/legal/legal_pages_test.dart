@@ -39,6 +39,22 @@ void main() {
     );
   });
 
+  test('A-809: Datenschutz im Web – erwartet: '
+      'Die Seite enthält die Abschnitte aller Plattformen, keine Platzhalter '
+      'und lädt nichts von außen', () {
+    final html = File('web/datenschutz.html').readAsStringSync();
+
+    expect(html, isNot(contains('<script')));
+    expect(html, isNot(contains('<link')));
+    expect(html, isNot(contains('src=')));
+    expect(html, contains('<h2>Android- und Windows-App</h2>'));
+    expect(html, contains('<h2>Web-Version</h2>'));
+    expect(html, contains('Unter Android'));
+    expect(html, contains('Unter Windows'));
+    expect(html, isNot(contains('ENTWURF')));
+    expect(html, isNot(contains('[')));
+  });
+
   test('A-809: Auszeichnung – erwartet: '
       'Fett, Code, Links und Listen erscheinen als HTML, Sonderzeichen '
       'werden maskiert', () {

@@ -1,7 +1,5 @@
 # Impressum
 
-ENTWURF, nicht rechtlich geprüft.
-
 ## Anbieter
 
 Passion to Grow GmbH

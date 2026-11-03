@@ -142,7 +142,7 @@ flowchart LR
 - **Windows:** `shared_preferences` schreibt nach `%APPDATA%\Achim Gerber\Backgammon\shared_preferences.json`. Firmen- und Produktname kommen aus `windows/runner/Runner.rc`.
 - **Web:** Die App bekommt keinen `SessionStore`, sie speichert also nichts im Browser (`A-808`).
 - **Rechtstexte:** `legal_page.dart` zeigt aus `assets/legal/*.md` nur die Abschnitte der laufenden Plattform. Abschnitte stehen zwischen `<!-- nur: android, windows -->` und `<!-- ende -->`. Die Logik dafür liegt ohne Flutter in `lib/legal/legal_text.dart`.
-- **Rechtstexte im Web:** `tools/legal/build_pages.dart` erzeugt daraus mit den Web-Abschnitten eigenständige Seiten in `web/`, derzeit `impressum.html` (`A-809`). Der Web-Build kopiert sie neben die App. Ein Test schlägt fehl, wenn eine Seite nicht mehr zum Text passt.
+- **Rechtstexte im Web:** `tools/legal/build_pages.dart` erzeugt daraus mit den Abschnitten aller Plattformen eigenständige Seiten in `web/`: `impressum.html` und `datenschutz.html` (`A-809`). Die Datenschutzerklärung dient damit auch als öffentlicher Link für Google Play. Der Workflow `.github/workflows/pages.yml` prüft, baut mit `--no-web-resources-cdn --base-href /backgammon/` und veröffentlicht jeden Stand auf `main` über GitHub Pages. Der Web-Build kopiert sie neben die App. Ein Test schlägt fehl, wenn eine Seite nicht mehr zum Text passt.
 
 ## Computer-Gegner
 
@@ -184,6 +184,7 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 
 | Datum | Entscheidung | Grund | Status |
 | --- | --- | --- | --- |
+| 2026-11-03 | Die Web-Version wird per GitHub Actions bei jedem Push auf `main` nach Analyse und Tests auf GitHub Pages veröffentlicht; die Rechtstexte-Seiten enthalten die Abschnitte aller Plattformen | Kein eigener Server und kein manueller Upload; Google Play braucht die Android-Abschnitte unter einem öffentlichen Link | Entschieden |
 | 2026-11-03 | Versionierung folgt der Roadmap: vor dem Release `0.D.n` mit der laufenden Delivery `D`, Release von Version 1 als `1.0.0`; die Build-Nummer steigt mit jedem weitergegebenen Build und wird nie zurückgesetzt; einzige Quelle ist `pubspec.yaml` | An der Version ist abzulesen, wie weit die Roadmap ist, und `1.0.0` bedeutet wirklich veröffentlicht. Google Play verlangt einen steigenden `versionCode` | Entschieden |
 | 2026-11-03 | Ziele bekommen zusätzlich einen aufgemalten Ring in der Gegenfarbe; die Spielrichtung zeigt zu Beginn ein aufgemalter Pfeil; der Rahmen ist hellbraunes Birnenholz | Praxistest P-11 bis P-13: Durchsichtige Steine verschwanden auf hellen Zungen und hellen Steinen. Ring und Pfeil hängen von Zustand und Fenstergröße ab und werden deshalb gezeichnet, nicht gerendert. Ergänzt den Eintrag vom 2026-11-02 zu den Zielen | Entschieden |
 | 2026-11-03 | Play App Signing mit eigenem Upload-Schlüssel je App außerhalb des Repos; Gradle liest ihn über `android/key.properties` und nimmt ohne die Datei den Debug-Schlüssel | Das Repo ist öffentlich. Einen verlorenen Upload-Schlüssel kann Google zurücksetzen, und CI sowie `flutter run --release` laufen ohne den Schlüssel | Entschieden |

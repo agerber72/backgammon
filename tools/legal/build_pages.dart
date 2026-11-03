@@ -6,7 +6,10 @@ import 'dart:io';
 import 'package:backgammon/legal/legal_text.dart';
 
 /// Source in assets/legal/, page in web/ and its title.
-const pages = [('imprint_de.md', 'impressum.html', 'Impressum – Backgammon')];
+const pages = [
+  ('imprint_de.md', 'impressum.html', 'Impressum – Backgammon'),
+  ('privacy_de.md', 'datenschutz.html', 'Datenschutzerklärung – Backgammon'),
+];
 
 void main() {
   for (final (source, page, title) in pages) {

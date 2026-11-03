@@ -4,9 +4,7 @@ Plattformen an (android, windows, web). Die veröffentlichte Fassung enthält al
 -->
 # Datenschutzerklärung für die App Backgammon
 
-**ENTWURF, nicht veröffentlichen.** Der Text ist nicht rechtlich geprüft. Stellen in eckigen Klammern sind vor der Veröffentlichung zu klären.
-
-Stand: [Datum der Veröffentlichung]
+Stand: 3. November 2026
 
 ## Das Wichtigste in Kürze
 
@@ -66,9 +64,9 @@ Die Android-App erhältst du über Google Play, die Windows-App über GitHub. Be
 
 Die Web-Version wird über GitHub Pages bereitgestellt, einen Dienst der GitHub, Inc. in den USA. Beim Aufruf verarbeitet GitHub deine IP-Adresse, um die Seite auszuliefern und vor Angriffen zu schützen.
 
-Rechtsgrundlage ist unser berechtigtes Interesse, die Web-Version sicher und ohne eigenen Server anzubieten, Art. 6 Abs. 1 lit. f DSGVO. Wir halten dieses Interesse für überwiegend, weil nur die technisch nötigen Daten anfallen und wir selbst keine Protokolle erhalten oder auswerten. [Rolle von GitHub prüfen: eigene Verantwortung oder Verarbeitung in unserem Auftrag.]
+Rechtsgrundlage ist unser berechtigtes Interesse, die Web-Version sicher und ohne eigenen Server anzubieten, Art. 6 Abs. 1 lit. f DSGVO. Wir halten dieses Interesse für überwiegend, weil nur die technisch nötigen Daten anfallen und wir selbst keine Protokolle erhalten oder auswerten.
 
-Wie lange GitHub diese Daten speichert, legt GitHub fest; wir haben keinen Zugriff darauf. Dabei können Daten in die USA übertragen werden. GitHub stützt solche Übertragungen nach eigenen Angaben auf das EU-US Data Privacy Framework und auf Standardvertragsklauseln. [Angaben vor der Veröffentlichung bei GitHub prüfen.] Datenschutzhinweise von GitHub: https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement
+Wie lange GitHub diese Daten speichert, legt GitHub fest; wir haben keinen Zugriff darauf. Dabei können Daten in die USA übertragen werden. GitHub stützt solche Übertragungen nach eigenen Angaben auf das EU-US Data Privacy Framework und auf Standardvertragsklauseln. Datenschutzhinweise von GitHub: https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement
 
 Die Web-Version speichert nichts in deinem Browser, weder Cookies noch Local Storage. Spielstand, Einstellungen und Würfelstatistik bestehen nur, solange die Seite geöffnet ist. Mit dem Schließen oder Neuladen sind sie verloren.
 <!-- ende -->

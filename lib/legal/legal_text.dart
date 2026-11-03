@@ -11,8 +11,9 @@ final _sectionEnd = RegExp(r'^<!--\s*ende\s*-->$');
 
 /// The lines of [text] meant for [platform]. Lines between
 /// `<!-- nur: android, windows -->` and `<!-- ende -->` belong only to the
-/// platforms named there; any other comment is left out.
-List<String> legalLines(String text, LegalPlatform platform) {
+/// platforms named there; any other comment is left out. Without a
+/// [platform], the lines of all platforms are kept.
+List<String> legalLines(String text, LegalPlatform? platform) {
   final lines = <String>[];
   Set<String>? only;
   var inComment = false;
@@ -35,15 +36,16 @@ List<String> legalLines(String text, LegalPlatform platform) {
       inComment = !clean.endsWith('-->');
       continue;
     }
-    if (only == null || only.contains(platform.name)) {
+    if (only == null || platform == null || only.contains(platform.name)) {
       lines.add(line);
     }
   }
   return lines;
 }
 
-/// A complete, self-contained web page for the text as the web version sees
-/// it. It loads nothing from other servers.
+/// A complete, self-contained web page for the text with the sections of all
+/// platforms, because the published page also serves the store listings. It
+/// loads nothing from other servers.
 String legalHtml(String text, {required String title, required String back}) {
   final body = StringBuffer();
   final paragraph = <String>[];
@@ -63,7 +65,7 @@ String legalHtml(String text, {required String title, required String back}) {
     }
   }
 
-  for (final line in legalLines(text, LegalPlatform.web)) {
+  for (final line in legalLines(text, null)) {
     final clean = line.trim();
     if (clean.isEmpty) {
       closeParagraph();

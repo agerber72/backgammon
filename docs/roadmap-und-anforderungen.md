@@ -220,8 +220,9 @@ Aktueller Stand: `0.6.0+1`, D5 ist abgeschlossen, D6 ist in Arbeit, noch nichts 
     - [x] Web-Version ohne Google-Server ausliefern
     - [x] Datenschutzerklärung entwerfen, je Plattform passend angezeigt (`A-805`)
     - [x] Impressum als eigene Seite für GitHub Pages erzeugen: `web/impressum.html` aus `assets/legal/imprint_de.md` (`A-809`)
-    - [ ] Datenschutzerklärung ebenso als Seite für GitHub Pages erzeugen; Google Play verlangt einen öffentlichen Link
-    - [ ] Datenschutzerklärung und Impressum rechtlich prüfen lassen, ENTWURF und Platzhalter entfernen, Seiten neu erzeugen und mit der Web-Version auf GitHub Pages veröffentlichen
+    - [x] Datenschutzerklärung ebenso als Seite für GitHub Pages erzeugen, mit den Abschnitten aller Plattformen: `web/datenschutz.html`; Google Play verlangt einen öffentlichen Link
+    - [x] ENTWURF und Platzhalter entfernen, Stand 3. November 2026, Seiten neu erzeugen und mit der Web-Version auf GitHub Pages veröffentlichen
+    - [ ] Datenschutzerklärung und Impressum rechtlich prüfen lassen
     - [x] Android-Sicherung und Geräteübertragung abschalten (`A-807`)
     - [x] Berechtigungen des Release-APK geprüft: keine Internetberechtigung, nur die interne Berechtigung `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` von AndroidX (Stand 2026-11-03)
     - [x] Web-Version speichert nichts im Browser (`A-808`); geprüft: Local Storage, Session Storage und Cookies bleiben leer
@@ -230,7 +231,7 @@ Aktueller Stand: `0.6.0+1`, D5 ist abgeschlossen, D6 ist in Arbeit, noch nichts 
     - [x] Android-Signatur einrichten: Upload-Schlüssel außerhalb des Repos, signiertes Bundle gebaut und auf einem Handy installiert (Stand 2026-11-03)
     - [ ] Im Play Store einreichen
     - [ ] Windows-Build bereitstellen
-    - [ ] Web-Version bereitstellen
+    - [ ] Web-Version bereitstellen: Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [ ] Version in `pubspec.yaml` auf `1.0.0` setzen und die Build-Nummer erhöhen (siehe [Versionen](#versionen))
     - [ ] Version 1.0.0 auf GitHub markieren
 
@@ -368,7 +369,7 @@ Ein Task ist erledigt, wenn:
 | A-806 | Die Seite Lizenzen erklärt vor der technischen Liste, unter welcher Lizenz die App steht und was die Liste zeigt. | D6 |
 | A-807 | Unter Android sind die App-Daten von der Geräte-Sicherung und der Übertragung auf ein neues Gerät ausgeschlossen. | D6 |
 | A-808 | Die Web-Version speichert nichts im Browser; eine Partie besteht nur, solange die Seite geöffnet ist. | D6 |
-| A-809 | Das Impressum ist neben der Web-Version als eigene Seite erreichbar. Sie entsteht aus demselben Text wie in der App und lädt nichts von fremden Servern. | D6 |
+| A-809 | Impressum und Datenschutzerklärung sind neben der Web-Version als eigene Seiten erreichbar. Sie entstehen aus demselben Text wie in der App, die Datenschutzerklärung mit den Abschnitten aller Plattformen, und laden nichts von fremden Servern. | D6 |
 | A-803 | Die App zeigt ihre Lizenz GPL-3.0 und die Lizenzen der verwendeten Pakete. | D6 |
 | A-804 | Version 1 erscheint für Android, Windows und Web. | D6 |
 
@@ -403,7 +404,7 @@ Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 - [ ] Wie viele Spielstärken soll es geben? Vorschlag: drei.
 - [x] Play Store: Veröffentlichung nach dem Test aus T5.4 über das Konto der Passion to Grow GmbH.
 - [x] Rechtlicher Anbieter: Das Copyright bleibt bei Achim Gerber, die Passion to Grow GmbH veröffentlicht die App und stellt Impressum und Datenschutzerklärung. Die Nutzungserlaubnis an die GmbH ist noch fachlich zu prüfen.
-- [ ] Datenschutzerklärung und Impressum prüfen lassen, den Vermerk ENTWURF entfernen und auf GitHub Pages veröffentlichen. Die Texte liegen in `assets/legal/`, erscheinen in der App unter Einstellungen und werden mit `tools/legal/build_pages.dart` zu Seiten in `web/`.
+- [ ] Datenschutzerklärung und Impressum rechtlich prüfen lassen. Seit 2026-11-03 sind sie ohne Vermerk ENTWURF auf GitHub Pages veröffentlicht. Die Texte liegen in `assets/legal/`, erscheinen in der App unter Einstellungen und werden mit `tools/legal/build_pages.dart` zu Seiten in `web/`.
 - [x] Automatische Android-Sicherung des Spielstands: abgeschaltet (`A-807`).
 - [x] Wo läuft die Web-Version? Auf GitHub Pages, ohne Speicher im Browser (`A-808`).
 - [ ] Wie wird die Windows-Version verteilt? Vorschlag: als Download über GitHub Releases.
