@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 
 import '../../domain/board.dart' show Board, Player, Step;
+import '../brand.dart';
 import 'board_assets.dart';
 import 'board_layout.dart';
 import 'board_scene.dart';
@@ -41,7 +42,6 @@ class BoardPainter extends CustomPainter {
   /// Colors of the checkers, from tools/blender/board_config.json.
   static const _light = Color(0xFFEFE6D2);
   static const _dark = Color(0xFF141414);
-  static const _arrowColor = Color(0xFFF2B632);
 
   /// Size of a checker's top face within its sprite box.
   static const _faceWidth = 0.64;
@@ -258,53 +258,67 @@ class BoardPainter extends CustomPainter {
     ..strokeCap = StrokeCap.round
     ..color = color;
 
-  /// A U lying along the points from the player's farthest checkers to the
-  /// home board.
+  /// A U on the free felt between the point tips: from above the player's
+  /// farthest point, turning over the outer point and running past the home
+  /// board into the player's tray. Its width and corners follow the width of
+  /// a point, so it fits the board at every size and covers no checkers of the
+  /// start position.
   void _drawDirection(Canvas canvas, Size size, BoardLayout layout) {
     final player = scene.direction;
     final opacity = scene.directionOpacity;
     if (player == null || opacity <= 0) {
       return;
     }
-    // Points in the order the player passes them: start, both ends of the
-    // turn and the home board.
-    final route = player == Player.white
-        ? const [24, 13, 12, 1]
-        : const [1, 12, 13, 24];
-    Offset at(int point) {
-      final slot = layout.points[point]![3];
-      return Offset(slot.u * size.width, slot.v * size.height);
-    }
+    // Points in the order the player passes them: start, turn and home.
+    final (startPoint, turnPoint, homePoint, nextPoint) =
+        player == Player.white ? (24, 13, 1, 2) : (1, 12, 24, 23);
+    double u(int point) => layout.points[point]!.first.u * size.width;
+    final point = (u(nextPoint) - u(homePoint)).abs();
 
-    final [start, turnFrom, turnTo, end] = [for (final p in route) at(p)];
-    final ahead = _unit(turnFrom - start);
-    // Keeps the turn on the felt next to the outer points.
-    final reach = (turnTo - turnFrom).distance * 0.4;
-    final home = _unit(end - turnTo);
-    final head = size.height * 0.05;
-    final tip = end + home * head;
+    // Two lanes near the edges of the free felt between the point tips, so
+    // the arrow keeps clear of the checkers.
+    final band = layout.middleBand(leftHalf: true);
+    final top = (band.top + band.height * 0.15) * size.height;
+    final bottom = (band.top + band.height * 0.85) * size.height;
+    final startsAtTop = layout.points[startPoint]!.first.v < 0.5;
+    final (from, to) = startsAtTop ? (top, bottom) : (bottom, top);
+
+    final startX = u(startPoint);
+    final turnX = u(turnPoint);
+    final ahead = (turnX - startX).sign;
+    final down = (to - from).sign;
+    final radius = (to - from).abs() / 2;
+
+    // At the end the arrow bends into the player's own tray compartment.
+    final tray = layout.off[player.name]!.last;
+    final trayX = (tray.left + tray.width / 2) * size.width;
+    final trayDown = ((tray.top + tray.height / 2) * size.height - to).sign;
+    final tipY =
+        (tray.top + tray.height * (trayDown > 0 ? 0.35 : 0.65)) * size.height;
+    final head = point * 0.4;
+    final neckY = tipY - trayDown * head;
+    final corner = math.min(radius, (tipY - to).abs() / 2);
+
     final line = Path()
-      ..moveTo(start.dx, start.dy)
-      ..lineTo(turnFrom.dx, turnFrom.dy)
-      ..cubicTo(
-        (turnFrom + ahead * reach).dx,
-        (turnFrom + ahead * reach).dy,
-        (turnTo + ahead * reach).dx,
-        (turnTo + ahead * reach).dy,
-        turnTo.dx,
-        turnTo.dy,
+      ..moveTo(startX, from)
+      ..lineTo(turnX - ahead * radius, from)
+      ..arcToPoint(
+        Offset(turnX - ahead * radius, to),
+        radius: Radius.circular(radius),
+        clockwise: (ahead > 0) == (down > 0),
       )
-      ..lineTo(end.dx, end.dy);
-    final side = Offset(-home.dy, home.dx) * head * 0.7;
+      ..lineTo(trayX + ahead * corner, to)
+      ..quadraticBezierTo(trayX, to, trayX, to + trayDown * corner)
+      ..lineTo(trayX, neckY);
     final arrowhead = Path()
-      ..moveTo(tip.dx, tip.dy)
-      ..lineTo((end + side).dx, (end + side).dy)
-      ..lineTo((end - side).dx, (end - side).dy)
+      ..moveTo(trayX, tipY)
+      ..lineTo(trayX - head * 0.6, neckY)
+      ..lineTo(trayX + head * 0.6, neckY)
       ..close();
 
-    final width = size.height * 0.018;
+    final width = point * 0.16;
     final edge = _dark.withValues(alpha: 0.6 * opacity);
-    final color = _arrowColor.withValues(alpha: opacity);
+    final color = brandBlue.withValues(alpha: opacity);
     canvas
       ..drawPath(line, _stroke(edge, width * 1.8))
       ..drawPath(arrowhead, _stroke(edge, width * 0.8))
@@ -312,7 +326,6 @@ class BoardPainter extends CustomPainter {
       ..drawPath(arrowhead, Paint()..color = color);
   }
 
-  Offset _unit(Offset vector) => vector / vector.distance;
 
   SlotPosition? _occupiedSlot(BoardLayout layout, String color, int position) {
     if (position < 1 || position > Board.pointCount) {

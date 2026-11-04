@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `0.6.2+3`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Version ist öffentlich, im Play Store ist noch nichts veröffentlicht.
+Aktueller Stand: `0.6.3+4`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Version ist öffentlich, im Play Store ist noch nichts veröffentlicht.
 
 ## Tasks
 
@@ -246,7 +246,10 @@ Aktueller Stand: `0.6.2+3`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Vers
     - [x] App-Version rechts oben in den Einstellungen (`A-218`)
     - [x] Zweite Bildstufe für hohe Auflösungen, etwa 4K (`A-325`)
     - [x] Stein auf der Bar ist zum Einsetzen schon gewählt (`A-217`)
-    - [ ] Struktur des Filzes: Entscheidung nach einer Vorschau
+    - [x] Pfeil der Spielrichtung in P2G-Blau, auf dem freien Filz bis ins Auswurffach (`A-322`)
+    - [x] Filz in Billardgrün `#2D5746`
+    - [x] Ungenutzte Bilder `checker_*_edge.png` entfernt
+    - [x] Struktur des Filzes: Variante „fein“ aus drei Vorschauen gewählt, beide Stufen neu gerendert
 
 ### D7 Englisch
 
@@ -328,7 +331,7 @@ Ein Task ist erledigt, wenn:
 | A-210 | Die App läuft nur im Querformat. | D0 |
 | A-216 | Bei einer neuen Partie fragt die App erneut nach der Farbe. Die Spielstärke bleibt wie eingestellt. | D5 |
 | A-217 | Kann nur ein Stein ziehen, etwa ein geschlagener Stein auf der Bar, der zuerst eingesetzt werden muss, ist er zu Beginn des Zugs und nach jedem Teilzug schon gewählt und zeigt seine Ziele. Erneutes Antippen wählt ihn nicht ab. | D6 |
-| A-218 | Die Einstellungen zeigen rechts oben die App-Version mit Build-Nummer, zum Beispiel „Version 0.6.2 (3)“, vollständig lesbar in jeder Fenstergröße. Sie entspricht `version:` in `pubspec.yaml`. | D6 |
+| A-218 | Die Einstellungen zeigen rechts oben die App-Version mit Build-Nummer, zum Beispiel „Version 0.6.3 (4)“, vollständig lesbar in jeder Fenstergröße. Sie entspricht `version:` in `pubspec.yaml`. | D6 |
 
 ### 3xx Grafik
 
@@ -347,7 +350,7 @@ Ein Task ist erledigt, wenn:
 | A-313 | Gilt für Farbwahl, Stufenwahl und Ergebnis; Entscheidungen im Spiel regelt `A-320`. Die Knöpfe liegen auf dem Filz zwischen den Zungenspitzen, auf der Bretthälfte ohne Würfel, und skalieren mit dem Brett. Wäre ein Knopf dort niedriger als 48 dp, erscheinen sie stattdessen als Popup in voller Größe und dürfen Zungen überdecken. Das Popup ist mindestens 320 dp breit, damit Texte und Knöpfe einzeilig bleiben. | D3 |
 | A-317 | Auf kleinen Bildschirmen, auf denen die Knöpfe als Popup erscheinen, werden die Würfel doppelt so groß gezeichnet. | D3 |
 | A-314 | Der gewählte Stein trägt eine Markierung. Durchsichtige Steine zeigen die möglichen Ziele, jeweils mit einem Ring in der Gegenfarbe des ziehenden Steins: schwarz mit hellem Rand für Weiß, hell mit dunklem Rand für Schwarz. So bleibt das Ziel auf hellen und dunklen Zungen und auf Steinen beider Farben sichtbar. Beim Auswürfeln trägt das Fach den Ring. | D3 |
-| A-322 | Zu Beginn einer Partie zeigt ein Pfeil als liegendes U einige Sekunden lang die Spielrichtung des Spielers: von seinen hintersten Steinen bis ins Heimfeld. Danach blendet er aus. | D5 |
+| A-322 | Zu Beginn einer Partie zeigt ein Pfeil als liegendes U einige Sekunden lang die Spielrichtung des Spielers: von seinen hintersten Steinen über das Heimfeld bis in sein Auswurffach. Er ist P2G-blau, läuft auf dem freien Filz zwischen den Zungenspitzen, verdeckt keine Steine der Startaufstellung und richtet Breite und Bogen nach der Zungenbreite. Danach blendet er aus. | D5 |
 | A-323 | Der Rahmen des Bretts ist aus hellem Holz in der Art von Birne. | D5 |
 | A-315 | Alle Knöpfe auf dem Brett haben in jeder Spielphase dieselbe Höhe, alle Symbole in der Leiste dieselbe Größe. | D3 |
 | A-316 | Das Fach, in das ein Spieler auswürfelt, trägt den Filz in dessen Farbe. | D3 |

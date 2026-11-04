@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/services.dart';
 
-import '../../app/backgammon_app.dart' show brandBlue;
 import '../../application/game_controller.dart';
 import '../../domain/board.dart' show Player, Step;
 import '../../domain/game.dart';
@@ -15,6 +14,7 @@ import '../board/board_assets.dart';
 import '../board/board_hit_test.dart';
 import '../board/board_painter.dart';
 import '../board/board_scene.dart';
+import '../brand.dart';
 import 'settings_dialog.dart';
 import 'stats_dialog.dart';
 

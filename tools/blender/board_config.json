@@ -1,7 +1,7 @@
 {
   "colors": {
     "table": "#17191C",
-    "felt": "#1F4D3A",
+    "felt": "#2D5746",
     "tray_felt_white": "#CFC3A6",
     "tray_felt_black": "#232529",
     "frame_wood_light": "#D9B58F",
@@ -18,8 +18,10 @@
   },
   "materials": {
     "felt_roughness": 0.95,
-    "felt_noise_scale": 90.0,
-    "felt_bump_strength": 0.25,
+    "felt_noise_scale": 12.0,
+    "felt_noise_detail": 10.0,
+    "felt_bump_strength": 0.5,
+    "felt_color_variation": 0.06,
     "wood_roughness": 0.38,
     "point_roughness": 0.7,
     "checker_roughness": 0.62,

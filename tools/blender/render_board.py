@@ -17,6 +17,11 @@ from mathutils import Euler, Vector
 
 ROOT = Path(__file__).resolve().parents[2]
 CONFIG = json.loads((Path(__file__).parent / 'board_config.json').read_text())
+# Trying out variants without touching the file: BOARD_CONFIG_OVERRIDE holds a
+# JSON object whose sections are merged into the configuration.
+for section, values in json.loads(
+        os.environ.get('BOARD_CONFIG_OVERRIDE', '{}')).items():
+    CONFIG[section].update(values)
 ASSET_DIR = ROOT / 'assets' / 'board'
 PREVIEW_DIR = Path(__file__).parent / 'preview'
 
@@ -126,16 +131,75 @@ def wood_material():
 
 
 def felt_material():
+    """Felt with fibres from noise, optional colour variation and weave.
+
+    Scales are features per board unit; a point is 4.4 units wide, so a scale
+    of 20 gives fibres of a few pixels in the normal image.
+    """
     material = principled('felt', COLORS['felt'], MATERIALS['felt_roughness'])
     tree = material.node_tree
+    shader = tree.nodes['Principled BSDF']
+    coordinates = tree.nodes.new('ShaderNodeTexCoord')
     noise = tree.nodes.new('ShaderNodeTexNoise')
     noise.inputs['Scale'].default_value = MATERIALS['felt_noise_scale']
-    noise.inputs['Detail'].default_value = 6.0
+    noise.inputs['Detail'].default_value = MATERIALS.get('felt_noise_detail',
+                                                         6.0)
+    tree.links.new(coordinates.outputs['Object'], noise.inputs['Vector'])
+
+    def stretched(output):
+        """Noise stays mostly between 0.4 and 0.6; this spreads it to 0..1."""
+        spread = tree.nodes.new('ShaderNodeMapRange')
+        spread.inputs['From Min'].default_value = 0.35
+        spread.inputs['From Max'].default_value = 0.65
+        tree.links.new(output, spread.inputs['Value'])
+        return spread.outputs['Result']
+
+    height = stretched(noise.outputs['Fac'])
+
+    weave_scale = MATERIALS.get('felt_weave_scale', 0.0)
+    if weave_scale > 0:
+        # Threads in both directions, as in woven billiard cloth.
+        threads = []
+        for direction in ('X', 'Y'):
+            wave = tree.nodes.new('ShaderNodeTexWave')
+            wave.bands_direction = direction
+            wave.inputs['Scale'].default_value = weave_scale
+            wave.inputs['Distortion'].default_value = 0.6
+            tree.links.new(coordinates.outputs['Object'], wave.inputs['Vector'])
+            threads.append(wave.outputs['Fac'])
+        weave = tree.nodes.new('ShaderNodeMath')
+        weave.operation = 'MULTIPLY'
+        tree.links.new(threads[0], weave.inputs[0])
+        tree.links.new(threads[1], weave.inputs[1])
+        mix = tree.nodes.new('ShaderNodeMix')
+        mix.data_type = 'FLOAT'
+        mix.inputs['Factor'].default_value = MATERIALS.get(
+            'felt_weave_strength', 0.5)
+        tree.links.new(height, mix.inputs['A'])
+        tree.links.new(weave.outputs['Value'], mix.inputs['B'])
+        height = mix.outputs['Result']
+
     bump = tree.nodes.new('ShaderNodeBump')
     bump.inputs['Strength'].default_value = MATERIALS['felt_bump_strength']
-    tree.links.new(noise.outputs['Fac'], bump.inputs['Height'])
-    tree.links.new(bump.outputs['Normal'],
-                   tree.nodes['Principled BSDF'].inputs['Normal'])
+    tree.links.new(height, bump.inputs['Height'])
+    tree.links.new(bump.outputs['Normal'], shader.inputs['Normal'])
+
+    variation = MATERIALS.get('felt_color_variation', 0.0)
+    if variation > 0:
+        # Slightly lighter and darker patches, as in real cloth.
+        base = rgba(COLORS['felt'])
+        ramp = tree.nodes.new('ShaderNodeValToRGB')
+        ramp.color_ramp.elements[0].color = (
+            *[c * (1 - variation) for c in base[:3]], 1)
+        ramp.color_ramp.elements[1].color = (
+            *[min(c * (1 + variation), 1) for c in base[:3]], 1)
+        patches = tree.nodes.new('ShaderNodeTexNoise')
+        patches.inputs['Scale'].default_value = \
+            MATERIALS['felt_noise_scale'] / 4
+        patches.inputs['Detail'].default_value = 4.0
+        tree.links.new(coordinates.outputs['Object'], patches.inputs['Vector'])
+        tree.links.new(stretched(patches.outputs['Fac']), ramp.inputs['Fac'])
+        tree.links.new(ramp.outputs['Color'], shader.inputs['Base Color'])
     return material
 
 
@@ -645,7 +709,7 @@ def setup_scene():
     scene.render.image_settings.file_format = 'PNG'
     scene.render.image_settings.color_mode = 'RGBA'
     scene.view_settings.view_transform = 'Standard'
-    scene.cycles.use_denoising = True
+    scene.cycles.use_denoising = CONFIG['render'].get('denoise', True)
     preferences = bpy.context.preferences.addons['cycles'].preferences
     try:
         preferences.compute_device_type = 'OPTIX'
@@ -750,10 +814,13 @@ def main():
 
     if not high_resolution:
         placed = place_start_position()
-        for view in PLAYER_COLORS:
+        # PREVIEW_NAME renders a named preview of the white view with full
+        # samples, to compare variants of the configuration.
+        name = os.environ.get('PREVIEW_NAME')
+        for view in ('white',) if name else PLAYER_COLORS:
             set_view(view)
-            render(PREVIEW_DIR / f'preview_{view}.png',
-                   samples // 4 if preview_only else samples)
+            render(PREVIEW_DIR / f'preview_{name or view}.png',
+                   samples if name or not preview_only else samples // 4)
         for obj in placed:
             bpy.data.objects.remove(obj)
     if preview_only:
