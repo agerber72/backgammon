@@ -236,30 +236,34 @@ void main() {
       autoActionDelay: delay,
     );
 
-    test('A-117: Nach der Wartezeit – erwartet: '
-        'Ist nach dem Wurf kein Zug möglich, geht das Spiel von selbst weiter',
-        () async {
-      final controller = blocked(const Duration(milliseconds: 20))..roll();
-      expect(controller.mustPass, isTrue);
+    test(
+      'A-117: Nach der Wartezeit – erwartet: '
+      'Ist nach dem Wurf kein Zug möglich, geht das Spiel von selbst weiter',
+      () async {
+        final controller = blocked(const Duration(milliseconds: 20))..roll();
+        expect(controller.mustPass, isTrue);
 
-      await Future<void>.delayed(const Duration(milliseconds: 60));
+        await Future<void>.delayed(const Duration(milliseconds: 60));
 
-      expect(controller.game!.turn, Player.black);
-      controller.dispose();
-    });
+        expect(controller.game!.turn, Player.black);
+        controller.dispose();
+      },
+    );
 
-    test('A-117: Wartezeit ausgeschaltet – erwartet: '
-        'Ohne Wartezeit bleibt Kein Zug möglich stehen, bis man es drückt',
-        () async {
-      final controller = blocked(null)..roll();
+    test(
+      'A-117: Wartezeit ausgeschaltet – erwartet: '
+      'Ohne Wartezeit bleibt Kein Zug möglich stehen, bis man es drückt',
+      () async {
+        final controller = blocked(null)..roll();
 
-      await Future<void>.delayed(const Duration(milliseconds: 60));
+        await Future<void>.delayed(const Duration(milliseconds: 60));
 
-      expect(controller.mustPass, isTrue);
-      controller.pass();
-      expect(controller.game!.turn, Player.black);
-      controller.dispose();
-    });
+        expect(controller.mustPass, isTrue);
+        controller.pass();
+        expect(controller.game!.turn, Player.black);
+        controller.dispose();
+      },
+    );
   });
 
   group('Automatisch würfeln:', () {

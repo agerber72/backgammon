@@ -292,6 +292,12 @@ abstract class AppLocalizations {
   /// **'{seconds} s'**
   String settingAutoDelaySeconds(int seconds);
 
+  /// App version at the top right of the settings, with the build number in brackets.
+  ///
+  /// In de, this message translates to:
+  /// **'Version {version} ({build})'**
+  String appVersionLabel(String version, int build);
+
   /// No description provided for @settingsNextGame.
   ///
   /// In de, this message translates to:

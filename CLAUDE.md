@@ -25,7 +25,7 @@ flutter emulators --launch Medium_Phone_API_37.0  # Emulator starten
 flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/setup.ps1                           # GNU Backgammon einrichten
 ./tools/blender/setup.ps1                         # Blender einrichten
-./tools/blender/render.ps1                        # Assets neu rendern (-Preview: nur Vorschau)
+./tools/blender/render.ps1                        # Assets in beiden Auflösungen neu rendern (-Tier normal|hd, -Preview: nur Vorschau)
 ./tools/gnubg/hint.ps1 -PositionId <id> -Die1 3 -Die2 1  # Referenzbewertung
 ./tools/gnubg/update_reference.ps1                # Referenzdaten für die Tests neu erzeugen
 ./tools/gnubg/update_engine_reference.ps1         # Zugbewertungen für die Engine neu erzeugen

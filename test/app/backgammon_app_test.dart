@@ -1,3 +1,4 @@
+import 'package:backgammon/app/app_version.dart';
 import 'package:backgammon/app/backgammon_app.dart';
 import 'package:backgammon/application/game_controller.dart';
 import 'package:backgammon/domain/board.dart' show Board, Player;
@@ -13,6 +14,7 @@ import 'package:backgammon/presentation/board/board_scene.dart';
 import 'package:backgammon/presentation/game/game_page.dart';
 import 'package:backgammon/presentation/game/legal_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -550,6 +552,42 @@ void main() {
         );
         expect(scroll.position.maxScrollExtent, 0, reason: '$window');
         expect(find.text('Datenschutz'), findsOneWidget);
+        await tester.tap(find.text('Schließen'));
+        await tester.pumpAndSettle();
+      }
+    });
+
+    testWidgets('A-218: Version in den Einstellungen – erwartet: '
+        'Die App-Version steht rechts oben im Dialog, vollständig lesbar, im '
+        'kleinen Fenster, auf dem Handy und auf einem 4K-Bildschirm', (
+      tester,
+    ) async {
+      addTearDown(tester.view.reset);
+      final label = 'Version $appVersion ($appBuild)';
+      for (final (window, ratio) in [
+        (const Size(500, 420), 1.0),
+        (const Size(2400, 1080), 2.625),
+        (const Size(3840, 2160), 1.5),
+      ]) {
+        tester.view.physicalSize = window;
+        tester.view.devicePixelRatio = ratio;
+        await showScaledPage(tester, startPosition());
+        await tester.tap(find.byTooltip('Einstellungen'));
+        await tester.pumpAndSettle();
+
+        final dialog = tester.getRect(find.byType(AlertDialog));
+        final version = tester.getRect(find.text(label));
+        final title = tester.getRect(find.text('Einstellungen').last);
+        expect(version.top, lessThan(dialog.center.dy), reason: '$window');
+        expect(version.left, greaterThan(title.right), reason: '$window');
+        expect(
+          dialog.right - version.right,
+          lessThan(dialog.width / 6),
+          reason: '$window',
+        );
+        final text = tester.renderObject<RenderParagraph>(find.text(label));
+        expect(text.didExceedMaxLines, isFalse, reason: '$window');
+        expect(tester.takeException(), isNull, reason: '$window');
         await tester.tap(find.text('Schließen'));
         await tester.pumpAndSettle();
       }

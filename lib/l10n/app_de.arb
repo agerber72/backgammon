@@ -42,7 +42,15 @@
   "@settingAutoDelaySeconds": {
     "placeholders": { "seconds": { "type": "int" } }
   },
-  "settingsNextGame": "Farbe und Spielstärke gelten ab der nächsten Partie.",
+  "appVersionLabel": "Version {version} ({build})",
+  "@appVersionLabel": {
+    "description": "App version at the top right of the settings, with the build number in brackets.",
+    "placeholders": {
+      "version": { "type": "String" },
+      "build": { "type": "int" }
+    }
+  },
+  "settingsNextGame":"Farbe und Spielstärke gelten ab der nächsten Partie.",
   "diceStats": "Würfelstatistik",
   "statsThisGame": "Diese Partie",
   "statsAllGames": "Alle Partien",

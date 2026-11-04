@@ -138,12 +138,40 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _loadAssets() async {
+  Future<void> _loadAssets({bool highResolution = false}) async {
     final loaded = await Future.wait(
-      BoardView.values.map((view) => BoardAssets.load(view, rootBundle)),
+      BoardView.values.map(
+        (view) => BoardAssets.load(
+          view,
+          rootBundle,
+          highResolution: highResolution,
+        ),
+      ),
     );
     if (mounted) {
       setState(() => _assets = Map.fromIterables(BoardView.values, loaded));
+    }
+  }
+
+  /// Set once the larger images have been asked for, so they load only once,
+  /// even where the platform does not contain them.
+  bool _highResolutionRequested = false;
+
+  /// Switches to the larger images once the board is drawn wider than the
+  /// normal ones, as on a 4K display. The normal images stay until the larger
+  /// ones are ready.
+  void _checkResolution(BoardAssets assets, Size size) {
+    if (_highResolutionRequested ||
+        widget.preloadedAssets != null ||
+        assets.isHighResolution) {
+      return;
+    }
+    final layout = assets.layout;
+    final fit = BoardFit.compute(layout.bounds, layout.aspect, size);
+    final pixels = fit.imageSize.width * MediaQuery.devicePixelRatioOf(context);
+    if (pixels > BoardAssets.normalWidth) {
+      _highResolutionRequested = true;
+      _loadAssets(highResolution: true);
     }
   }
 
@@ -230,6 +258,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final size = constraints.biggest;
+          _checkResolution(assets, size);
           void tapAt(Offset position) {
             final hit = _hit(assets, size, position);
             if (hit != null) {
@@ -370,7 +399,11 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   ),
                   _controller.offerDouble,
                 ),
-              situational(l10n.roll, const Icon(Icons.casino), _controller.roll),
+              situational(
+                l10n.roll,
+                const Icon(Icons.casino),
+                _controller.roll,
+              ),
             ],
             GamePhase.awaitingDoubleResponse => [
               Tooltip(
@@ -393,7 +426,11 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             ],
             GamePhase.awaitingPlay => [
               if (_controller.hasPendingSteps)
-                situational(l10n.undo, const Icon(Icons.undo), _controller.undo),
+                situational(
+                  l10n.undo,
+                  const Icon(Icons.undo),
+                  _controller.undo,
+                ),
               if (_controller.mustPass)
                 situational(
                   l10n.noMove,

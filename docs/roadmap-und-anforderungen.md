@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `0.6.1+2`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Version ist öffentlich, im Play Store ist noch nichts veröffentlicht.
+Aktueller Stand: `0.6.2+3`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Version ist öffentlich, im Play Store ist noch nichts veröffentlicht.
 
 ## Tasks
 
@@ -242,6 +242,12 @@ Aktueller Stand: `0.6.1+2`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Vers
     | --- | --- | --- | --- | --- |
     | P-14 | Android | Ist nach dem Wurf kein Zug möglich, etwa weil ein geschlagener Stein nicht einsetzen kann, wartet die App auf „Kein Zug möglich“ (⏭). Die Spielerin empfand das als Hänger: Der Knopf sah aus wie alle anderen, und anders als beim Zug beenden und Würfeln läuft hier keine Wartezeit ab. | Knöpfe, die nur in bestimmten Situationen erscheinen, fallen auf: invertiert, weiß mit blauem Symbol. | `A-324` und `A-117`, umgesetzt am 2026-11-04 in Version 0.6.1: invertierte Farben, und „Kein Zug möglich“ geht nach der Wartezeit von selbst weiter |
 
+- [ ] **T6.4 Feinschliff vor dem Release**
+    - [x] App-Version rechts oben in den Einstellungen (`A-218`)
+    - [x] Zweite Bildstufe für hohe Auflösungen, etwa 4K (`A-325`)
+    - [x] Stein auf der Bar ist zum Einsetzen schon gewählt (`A-217`)
+    - [ ] Struktur des Filzes: Entscheidung nach einer Vorschau
+
 ### D7 Englisch
 
 Zwischenrelease 1.1.0 nach Version 1. Die Tasks werden nach dem Release von 1.0.0 verfeinert.
@@ -321,6 +327,8 @@ Ein Task ist erledigt, wenn:
 | A-209 | Spielstärke, Farbe und Ansicht lassen sich einstellen. | D5 |
 | A-210 | Die App läuft nur im Querformat. | D0 |
 | A-216 | Bei einer neuen Partie fragt die App erneut nach der Farbe. Die Spielstärke bleibt wie eingestellt. | D5 |
+| A-217 | Kann nur ein Stein ziehen, etwa ein geschlagener Stein auf der Bar, der zuerst eingesetzt werden muss, ist er zu Beginn des Zugs und nach jedem Teilzug schon gewählt und zeigt seine Ziele. Erneutes Antippen wählt ihn nicht ab. | D6 |
+| A-218 | Die Einstellungen zeigen rechts oben die App-Version mit Build-Nummer, zum Beispiel „Version 0.6.2 (3)“, vollständig lesbar in jeder Fenstergröße. Sie entspricht `version:` in `pubspec.yaml`. | D6 |
 
 ### 3xx Grafik
 
@@ -346,6 +354,7 @@ Ein Task ist erledigt, wenn:
 | A-318 | Knöpfe, Dialoge und Symbole wachsen und schrumpfen mit der Fenstergröße. Bezug ist ein quer gehaltenes Handy mit 900 × 420 dp. Nach oben gibt es keine Grenze, nach unten höchstens auf die Hälfte. Knöpfe haben auf allen Plattformen dieselbe Dichte, und der Einstellungsdialog passt ohne Scrollen auf den Bildschirm. | D5 |
 | A-319 | Die Symbolspalte rechts überdeckt das Brett nicht; das Brett lässt ihr Platz. | D5 |
 | A-320 | Im Spiel liegt keine Entscheidung auf dem Brett. Würfeln, Doppeln, Annehmen, Ablehnen, Weiter, Zurücknehmen, Zug beenden, Zu Ende spielen und Aufgeben stehen als Symbole am unteren Ende der rechten Leiste; alle in der Markenfarbe, Farben nach `A-324`. Aufgeben steht immer ganz unten, damit es nicht springt. Jedes Symbol hat einen Tooltip, ein Doppelangebot zeigt den neuen Einsatz. | D5 |
+| A-325 | Wird das Brett breiter als 2560 physische Pixel gezeichnet, etwa auf einem 4K-Bildschirm, nutzt die App eine zweite Stufe der Bilder in 3840 × 2160. Sie liegt in `assets/board/hd/` und gehört nur zu Web und Windows; Android nutzt immer die normalen Bilder. | D6 |
 | A-324 | Symbole in der rechten Leiste, die nur in bestimmten Situationen erscheinen (Würfeln, Doppeln, Annehmen, Ablehnen, Kein Zug möglich, Zurücknehmen, Zug beenden, Zu Ende spielen), sind invertiert: weißer Grund mit blauem Symbol. Symbole, die immer da sind (Ansicht, Einstellungen, Statistik, Aufgeben), bleiben blau mit weißem Symbol. Knöpfe in Dialogen sind nicht betroffen. | D6 |
 | A-321 | Knöpfe nutzen die Markenfarbe von p2g-it aus dem P2G-Logo (`assets/icon/icon.png`): Blau `#5B84C3` mit weißer Schrift für alle Knöpfe, Symbole und gewählten Auswahlen. | D5 |
 | A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |

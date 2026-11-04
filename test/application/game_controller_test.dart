@@ -56,6 +56,48 @@ void main() {
     expect(controller.selected, isNull);
   });
 
+  group('Stein auf der Bar:', () {
+    /// White has a checker on the bar; black waits on 1 to 5.
+    GameController hit() => GameController(
+      roller: FixedRoller([3, 1]),
+      game: Game.at(
+        board: Board.fromCounts(
+          white: const {13: 5, 6: 5, 8: 3, 24: 1},
+          black: const {1: 2, 12: 5, 17: 3, 19: 5},
+          whiteBar: 1,
+        ),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+      ),
+      autoActionDelay: null,
+    );
+
+    test('A-217: Einsetzen – erwartet: '
+        'Nach dem Wurf ist der Stein auf der Bar gewählt und zeigt seine Ziele, '
+        'ohne dass man ihn antippt', () {
+      final controller = hit()..roll();
+
+      expect(controller.selected, 25);
+      expect(controller.targets, {22, 24, 21});
+    });
+
+    test('A-217: Erneut antippen – erwartet: '
+        'Ein Tippen auf den einzigen ziehbaren Stein wählt ihn nicht ab', () {
+      final controller = hit()
+        ..roll()
+        ..tap(25);
+
+      expect(controller.selected, 25);
+    });
+
+    test('A-217: Mehrere Steine ziehbar – erwartet: '
+        'Ohne Stein auf der Bar ist zu Beginn kein Stein gewählt', () {
+      final controller = opened();
+
+      expect(controller.selected, isNull);
+    });
+  });
+
   test('A-203: Zug ausführen – erwartet: '
       'Tippen auf ein Ziel bewegt den Stein', () {
     final controller = opened();

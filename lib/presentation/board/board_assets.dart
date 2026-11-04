@@ -26,7 +26,36 @@ class BoardAssets {
   final ui.Image frontRail;
   final Map<String, ui.Image> sprites;
 
-  static Future<BoardAssets> load(BoardView view, AssetBundle bundle) async {
+  /// Whether the images come from the tier for high-resolution displays.
+  bool get isHighResolution => board.width > normalWidth;
+
+  /// Width of the normal board image; the high-resolution tier is larger.
+  static const normalWidth = 2560;
+
+  /// Loads the images of [view]. With [highResolution] they come from
+  /// `assets/board/hd/`, which only some platforms contain; without it, or
+  /// where it is missing, from `assets/board/`. The layout is the same for
+  /// both, because it describes positions as fractions of the image.
+  static Future<BoardAssets> load(
+    BoardView view,
+    AssetBundle bundle, {
+    bool highResolution = false,
+  }) async {
+    if (highResolution) {
+      try {
+        return await _load(view, bundle, 'assets/board/hd');
+      } on Object {
+        // Not part of this platform's bundle: use the normal tier.
+      }
+    }
+    return _load(view, bundle, 'assets/board');
+  }
+
+  static Future<BoardAssets> _load(
+    BoardView view,
+    AssetBundle bundle,
+    String directory,
+  ) async {
     final json = await bundle.loadString(
       'assets/board/layout_${view.name}.json',
     );
@@ -41,13 +70,13 @@ class BoardAssets {
           'off_${view.name}_${color}_$count',
     ];
     final images = await Future.wait(
-      names.map((name) => _decode('assets/board/$name.png', bundle)),
+      names.map((name) => _decode('$directory/$name.png', bundle)),
     );
     return BoardAssets(
       view,
       layout,
-      await _decode('assets/board/${layout.image}', bundle),
-      await _decode('assets/board/${layout.frontRail}', bundle),
+      await _decode('$directory/${layout.image}', bundle),
+      await _decode('$directory/${layout.frontRail}', bundle),
       Map.fromIterables(names, images),
     );
   }

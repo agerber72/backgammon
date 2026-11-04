@@ -95,6 +95,7 @@ class GameController extends ChangeNotifier {
         : Duration(seconds: session.autoDelaySeconds);
     _gameStats = session.gameStats;
     _totalStats = session.totalStats;
+    _selectOnlySource();
     notifyListeners();
     _letComputerAct();
   }
@@ -201,6 +202,7 @@ class GameController extends ChangeNotifier {
     _gameStats = DiceStats()..addOpening(game.dice!);
     _totalStats.addOpening(game.dice!);
     _resetTurn();
+    _selectOnlySource();
     _save();
     notifyListeners();
     _letComputerAct();
@@ -288,7 +290,10 @@ class GameController extends ChangeNotifier {
     if (_selected != null && targets.contains(position)) {
       _move(position);
     } else if (sources.contains(position)) {
-      _selected = position == _selected ? null : position;
+      // The only checker that can move stays selected; deselecting it would
+      // only add a tap.
+      final only = sources.length == 1;
+      _selected = position == _selected && !only ? null : position;
       notifyListeners();
     } else if (_selected != null) {
       _selected = null;
@@ -312,6 +317,8 @@ class GameController extends ChangeNotifier {
     }
   }
 
+  /// Selects the checker when only one can move, as with a checker on the
+  /// bar that must enter first, at the start of a turn and after each move.
   void _selectOnlySource() {
     _selected = null;
     final remaining = sources;
@@ -323,6 +330,7 @@ class GameController extends ChangeNotifier {
   void _update(Game next) {
     _game = next;
     _resetTurn();
+    _selectOnlySource();
     _save();
     notifyListeners();
     _letComputerAct();
@@ -438,6 +446,7 @@ class GameController extends ChangeNotifier {
   void _set(Game next) {
     _game = next;
     _resetTurn();
+    _selectOnlySource();
     _save();
     notifyListeners();
   }

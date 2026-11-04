@@ -18,6 +18,8 @@
   },
   "materials": {
     "felt_roughness": 0.95,
+    "felt_noise_scale": 90.0,
+    "felt_bump_strength": 0.25,
     "wood_roughness": 0.38,
     "point_roughness": 0.7,
     "checker_roughness": 0.62,
@@ -54,6 +56,7 @@
   "render": {
     "width": 2560,
     "height": 1440,
+    "hd_scale": 1.5,
     "board_samples": 256,
     "sprite_samples": 128
   }

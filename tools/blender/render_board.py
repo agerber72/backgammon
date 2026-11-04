@@ -129,10 +129,10 @@ def felt_material():
     material = principled('felt', COLORS['felt'], MATERIALS['felt_roughness'])
     tree = material.node_tree
     noise = tree.nodes.new('ShaderNodeTexNoise')
-    noise.inputs['Scale'].default_value = 90.0
+    noise.inputs['Scale'].default_value = MATERIALS['felt_noise_scale']
     noise.inputs['Detail'].default_value = 6.0
     bump = tree.nodes.new('ShaderNodeBump')
-    bump.inputs['Strength'].default_value = 0.25
+    bump.inputs['Strength'].default_value = MATERIALS['felt_bump_strength']
     tree.links.new(noise.outputs['Fac'], bump.inputs['Height'])
     tree.links.new(bump.outputs['Normal'],
                    tree.nodes['Principled BSDF'].inputs['Normal'])
@@ -695,13 +695,24 @@ def setup_camera_and_lights():
 
 
 def main():
-    global MATERIAL_SET, PLAYER_COLORS
+    global ASSET_DIR, MATERIAL_SET, PLAYER_COLORS
     arguments = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     preview_only = 'preview' in arguments
+    # The second tier for high-resolution displays: the same images, larger.
+    # Positions in the layout are fractions of the image, so it stays the same
+    # and is only written by the normal tier.
+    high_resolution = 'hd' in arguments
     PLAYER_COLORS = ('white', 'black')
+    if high_resolution:
+        ASSET_DIR = ASSET_DIR / 'hd'
     ASSET_DIR.mkdir(parents=True, exist_ok=True)
     PREVIEW_DIR.mkdir(exist_ok=True)
     setup_scene()
+    if high_resolution:
+        scale = CONFIG['render']['hd_scale']
+        scene = bpy.context.scene
+        scene.render.resolution_x = round(CONFIG['render']['width'] * scale)
+        scene.render.resolution_y = round(CONFIG['render']['height'] * scale)
     MATERIAL_SET = {
         'wood': wood_material(),
         'felt': felt_material(),
@@ -737,13 +748,14 @@ def main():
                 MATERIAL_SET['table'])
     samples = CONFIG['render']['board_samples']
 
-    placed = place_start_position()
-    for view in PLAYER_COLORS:
-        set_view(view)
-        render(PREVIEW_DIR / f'preview_{view}.png',
-               samples // 4 if preview_only else samples)
-    for obj in placed:
-        bpy.data.objects.remove(obj)
+    if not high_resolution:
+        placed = place_start_position()
+        for view in PLAYER_COLORS:
+            set_view(view)
+            render(PREVIEW_DIR / f'preview_{view}.png',
+                   samples // 4 if preview_only else samples)
+        for obj in placed:
+            bpy.data.objects.remove(obj)
     if preview_only:
         return
 
@@ -764,6 +776,8 @@ def main():
     sprites = render_sprites()
     for part in (*board_parts, table):
         part.hide_render = False
+    if high_resolution:
+        return
     for view in PLAYER_COLORS:
         set_view(view)
         export_layout(view, sprites, *tray_contents[view])

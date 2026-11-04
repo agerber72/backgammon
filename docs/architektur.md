@@ -124,6 +124,8 @@ flowchart LR
 - **Vorderer Rahmen:** Er liegt zusammen mit dem Steg vor dem hinteren Fach als eigene transparente Ebene `rail_<ansicht>.png` vor und wird nach den Steinen gezeichnet, dann folgen Würfel und Dopplerwürfel. So verdeckt er die Unterkante der vorderen Steine wie auf einem echten Brett.
 - **Steingröße:** Sie ergibt sich aus der Geometrie: Fünf Steine passen auf ein Dreieck, und 15 hochkant stehende Steine füllen ein Fach exakt. Die Steindicke ist deshalb nicht konfigurierbar.
 - **Ablagefach:** Für jede Ansicht, Farbe und Anzahl von 1 bis 15 gibt es ein fertiges Bild `off_<ansicht>_<farbe>_<anzahl>.png`, dazu `cube_home_<ansicht>.png` für den Dopplerwürfel im mittleren Fach.
+- **Zwei Auflösungen:** `render.ps1` rendert alle Bilder in 2560 × 1440 nach `assets/board/` und mit `hd_scale` 1,5 in 3840 × 2160 nach `assets/board/hd/`. Die Koordinaten sind Bruchteile des Bildes und gelten für beide Stufen. `GamePage` lädt die zweite Stufe, sobald das Brett breiter als 2560 physische Pixel gezeichnet wird, und behält bis dahin die normalen Bilder. `pubspec.yaml` nimmt `assets/board/hd/` nur für Web und Windows auf; fehlen die Bilder, lädt `BoardAssets` die normalen (`A-325`).
+- **Filz:** Seine Struktur entsteht im Render-Skript aus Rauschen und Bump, gesteuert über `felt_noise_scale` und `felt_bump_strength` in `board_config.json`.
 - **Zwei Ansichten:** Für Schwarz und Weiß gibt es je einen Satz Bilder und Koordinaten. Der Spielzustand bleibt gleich, nur der Satz wechselt (`A-304`).
 - **Zeichnen:** `BoardPainter` zeichnet Brett, Steine, Würfel und Dopplerwürfel. Die Koordinaten skalieren mit der Bildschirmgröße. Steine weiter vorn liegen über denen dahinter.
 - **Eingabe:** Dieselben Koordinaten bestimmen, welche Zunge getroffen wurde. Eingabe und Darstellung können dadurch nicht auseinanderlaufen (`A-203`).
@@ -184,6 +186,8 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 
 | Datum | Entscheidung | Grund | Status |
 | --- | --- | --- | --- |
+| 2026-11-04 | Zweite Bildstufe 3840 × 2160 in `assets/board/hd/`, nur für Web und Windows; geladen erst, wenn das Brett breiter als 2560 physische Pixel gezeichnet wird | Auf einem 4K-Bildschirm wirkte das hochskalierte Brett unscharf. 1,5-fach deckt 4K vollständig ab und kostet ein Viertel der Daten von 2-fach; Handys erreichen die Schwelle nicht, deshalb wächst die Android-App nicht | Entschieden |
+| 2026-11-04 | Die App-Version steht als Konstante in `lib/app/app_version.dart`, ein Test vergleicht sie mit `pubspec.yaml` | Kein zusätzliches Paket wie `package_info_plus`; eine vergessene Anpassung fällt im Test auf | Entschieden |
 | 2026-11-04 | Situationsabhängige Symbole der rechten Leiste nutzen `situationalButtonStyle` aus `game_page.dart`: weiß mit blauem Symbol; feste Symbole und Dialoge behalten die Theme-Farben | Praxistest P-14: Eine neue Entscheidung wie „Kein Zug möglich“ fiel zwischen den festen Symbolen nicht auf und wirkte wie ein Hänger. Ergänzt die Farbwahl vom 2026-11-03 | Entschieden |
 | 2026-11-04 | Englisch kommt als Zwischenrelease 1.1.0 in der neuen Delivery D7; der Coach wird zu D8 | Das Release 1.0.0 hängt nicht an übersetzten Rechtstexten und gegengelesenen Fachbegriffen | Entschieden |
 | 2026-11-04 | Öffentliche Kontaktadresse ist `apps@passion-to-grow.com`; die Seiten zeigen E-Mail-Adressen als Text ohne `mailto:`-Link | Die persönliche Adresse und das Play-Console-Login bleiben privat; einfache Adresssammler finden die Adresse schlechter, die Pflichtangabe im Impressum bleibt erfüllt | Entschieden |

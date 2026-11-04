@@ -143,4 +143,7 @@ final _link = RegExp(r'https://[^\s<]+[^\s<.,;:)]');
 String _inline(String text) => _escape(text)
     .replaceAllMapped(_bold, (match) => '<strong>${match[1]}</strong>')
     .replaceAllMapped(_code, (match) => '<code>${match[1]}</code>')
-    .replaceAllMapped(_link, (match) => '<a href="${match[0]}">${match[0]}</a>');
+    .replaceAllMapped(
+      _link,
+      (match) => '<a href="${match[0]}">${match[0]}</a>',
+    );

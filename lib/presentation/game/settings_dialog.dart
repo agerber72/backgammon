@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Step;
 
+import '../../app/app_version.dart';
 import '../../application/game_controller.dart';
 import '../../domain/board.dart' show Player;
 import '../../engine/engine.dart';
@@ -50,8 +51,29 @@ class _SettingsDialogState extends State<SettingsDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
     return AlertDialog(
-      title: Text(l10n.settings),
+      // The version sits flush at the top right; title and version share the
+      // width, so neither pushes the other out of a narrow dialog.
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.baseline,
+        textBaseline: TextBaseline.alphabetic,
+        spacing: 16,
+        children: [
+          Expanded(child: Text(l10n.settings)),
+          Expanded(
+            child: Text(
+              l10n.appVersionLabel(appVersion, appBuild),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -196,6 +218,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
               onPressed: () => showLicensePage(
                 context: context,
                 applicationName: l10n.appTitle,
+                applicationVersion: l10n.appVersionLabel(appVersion, appBuild),
                 applicationLegalese: l10n.legalLicensesIntro,
               ),
               child: Text(l10n.legalLicenses),

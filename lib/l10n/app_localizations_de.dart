@@ -112,6 +112,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String appVersionLabel(String version, int build) {
+    return 'Version $version ($build)';
+  }
+
+  @override
   String get settingsNextGame =>
       'Farbe und Spielstärke gelten ab der nächsten Partie.';
 
