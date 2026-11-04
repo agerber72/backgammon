@@ -42,18 +42,20 @@ void main() {
     });
   });
 
-  testWidgets('A-325: Ohne zweite Stufe – erwartet: '
-      'Fehlen die großen Bilder wie unter Android, nimmt die App die normalen',
-      (tester) async {
-    await tester.runAsync(() async {
-      final assets = await BoardAssets.load(
-        BoardView.black,
-        _WithoutHighResolution(),
-        highResolution: true,
-      );
+  testWidgets(
+    'A-325: Ohne zweite Stufe – erwartet: '
+    'Fehlen die großen Bilder wie unter Android, nimmt die App die normalen',
+    (tester) async {
+      await tester.runAsync(() async {
+        final assets = await BoardAssets.load(
+          BoardView.black,
+          _WithoutHighResolution(),
+          highResolution: true,
+        );
 
-      expect(assets.isHighResolution, isFalse);
-      expect(assets.board.width, BoardAssets.normalWidth);
-    });
-  });
+        expect(assets.isHighResolution, isFalse);
+        expect(assets.board.width, BoardAssets.normalWidth);
+      });
+    },
+  );
 }

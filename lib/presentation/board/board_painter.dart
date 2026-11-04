@@ -270,8 +270,9 @@ class BoardPainter extends CustomPainter {
       return;
     }
     // Points in the order the player passes them: start, turn and home.
-    final (startPoint, turnPoint, homePoint, nextPoint) =
-        player == Player.white ? (24, 13, 1, 2) : (1, 12, 24, 23);
+    final (startPoint, turnPoint, homePoint, nextPoint) = player == Player.white
+        ? (24, 13, 1, 2)
+        : (1, 12, 24, 23);
     double u(int point) => layout.points[point]!.first.u * size.width;
     final point = (u(nextPoint) - u(homePoint)).abs();
 
@@ -325,7 +326,6 @@ class BoardPainter extends CustomPainter {
       ..drawPath(line, _stroke(color, width))
       ..drawPath(arrowhead, Paint()..color = color);
   }
-
 
   SlotPosition? _occupiedSlot(BoardLayout layout, String color, int position) {
     if (position < 1 || position > Board.pointCount) {

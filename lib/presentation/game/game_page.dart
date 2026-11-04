@@ -141,11 +141,8 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   Future<void> _loadAssets({bool highResolution = false}) async {
     final loaded = await Future.wait(
       BoardView.values.map(
-        (view) => BoardAssets.load(
-          view,
-          rootBundle,
-          highResolution: highResolution,
-        ),
+        (view) =>
+            BoardAssets.load(view, rootBundle, highResolution: highResolution),
       ),
     );
     if (mounted) {
@@ -634,9 +631,12 @@ class _ActionPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // Based on the theme's label style, so the buttons keep the app's font.
     final buttonStyle = ButtonStyle(
       minimumSize: const WidgetStatePropertyAll(Size(0, _buttonHeight)),
-      textStyle: const WidgetStatePropertyAll(TextStyle(fontSize: _fontSize)),
+      textStyle: WidgetStatePropertyAll(
+        theme.textTheme.labelLarge?.copyWith(fontSize: _fontSize),
+      ),
     );
     return Theme(
       data: theme.copyWith(

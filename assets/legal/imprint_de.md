@@ -10,6 +10,7 @@ Deutschland
 Geschäftsführer: Achim Gerber
 E-Mail: apps@passion-to-grow.com
 Handelsregister: HRB 770710, Amtsgericht Stuttgart
+Umsatzsteuer-Identifikationsnummer nach § 27a UStG: DE326044499
 
 ## Urheberrecht
 

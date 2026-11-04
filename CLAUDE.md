@@ -21,6 +21,7 @@ flutter test test/app/backgammon_app_test.dart     # einzelne Testdatei
 flutter run -d windows                            # auf Windows starten
 flutter run -d chrome                             # im Browser starten
 flutter build web --no-web-resources-cdn          # Web-Version ohne Google-Server bauen
+./tools/android/build_bundle.ps1                  # Bundle für Google Play als build/release/<paket>_<version>-<code>.aab
 flutter emulators --launch Medium_Phone_API_37.0  # Emulator starten
 flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/setup.ps1                           # GNU Backgammon einrichten
@@ -32,6 +33,7 @@ flutter run -d emulator-5554                      # auf dem Emulator starten
 dart run tools/engine/tune.dart                   # Gewichte der Bewertung abstimmen
 dart run tools/engine/compare_levels.dart         # Spielstufen messen
 dart run tools/legal/build_pages.dart             # Rechtstexte als Seiten in web/ erzeugen
+flutter test tools/store/store_graphics_test.dart # Screenshots und Vorstellungsgrafik für Google Play in docs/store/
 ```
 
 GNU Backgammon ist nur Testwerkzeug (siehe [tools/gnubg/README.md](tools/gnubg/README.md)). Weder Code noch Binärdateien oder Gewichtsdateien dürfen in die App gelangen.

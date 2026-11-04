@@ -31,6 +31,12 @@ void main() {
     expect(html, contains('<h2>Anbieter</h2>'));
     expect(html, contains('Passion to Grow GmbH<br>'));
     expect(html, contains('E-Mail: apps@passion-to-grow.com<br>'));
+    expect(
+      html,
+      contains(
+        'Umsatzsteuer-Identifikationsnummer nach § 27a UStG: DE326044499',
+      ),
+    );
   });
 
   test('A-809: Kontaktadresse – erwartet: '

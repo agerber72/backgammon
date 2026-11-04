@@ -379,7 +379,7 @@ void main() {
     await tester.pumpAndSettle();
     await open('Datenschutz');
     expect(find.textContaining('ENTWURF'), findsNothing);
-    expect(find.textContaining('Stand: 3. November 2026'), findsOneWidget);
+    expect(find.textContaining('Stand: 4. November 2026'), findsOneWidget);
     expect(find.text('Verantwortlicher'), findsOneWidget);
 
     await tester.tap(find.byType(BackButton));

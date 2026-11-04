@@ -4,7 +4,7 @@ Plattformen an (android, windows, web). Die veröffentlichte Fassung enthält al
 -->
 # Datenschutzerklärung für die App Backgammon
 
-Stand: 3. November 2026
+Stand: 4. November 2026
 
 ## Das Wichtigste in Kürze
 

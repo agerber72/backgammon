@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `0.6.3+4`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Version ist öffentlich, im Play Store ist noch nichts veröffentlicht.
+Aktueller Stand: `1.0.0+6`, bereit für den Play Store. D6 ist abgeschlossen, sobald die App dort veröffentlicht und auf GitHub markiert ist. Die Web-Version ist öffentlich.
 
 ## Tasks
 
@@ -216,7 +216,7 @@ Aktueller Stand: `0.6.3+4`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Vers
 
 ### D6 Release Version 1
 
-- [ ] **T6.1 Release vorbereiten** (`A-801` bis `A-803`)
+- [x] **T6.1 Release vorbereiten** (`A-801` bis `A-803`)
     - [x] Fremdlizenzen in der App anzeigen
     - [x] Datenschutz und Impressum in der App anzeigen
     - [x] Web-Version ohne Google-Server ausliefern
@@ -224,17 +224,19 @@ Aktueller Stand: `0.6.3+4`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Vers
     - [x] Impressum als eigene Seite für GitHub Pages erzeugen: `web/impressum.html` aus `assets/legal/imprint_de.md` (`A-809`)
     - [x] Datenschutzerklärung ebenso als Seite für GitHub Pages erzeugen, mit den Abschnitten aller Plattformen: `web/datenschutz.html`; Google Play verlangt einen öffentlichen Link
     - [x] ENTWURF und Platzhalter entfernen, Stand 3. November 2026, Seiten neu erzeugen und mit der Web-Version auf GitHub Pages veröffentlichen
-    - [ ] Datenschutzerklärung und Impressum rechtlich prüfen lassen
+    - [x] Datenschutzerklärung und Impressum vom Benutzer geprüft und freigegeben (2026-11-04), ohne externe juristische Prüfung: Das Risiko gilt bei einer App ohne Datenverarbeitung als gering. Impressum mit USt-IdNr. DE326044499; ein Hinweis zur Verbraucherstreitbeilegung entfällt, weil die GmbH weniger als 10 Beschäftigte hat. Datenschutzerklärung mit Stand 4. November 2026
     - [x] Android-Sicherung und Geräteübertragung abschalten (`A-807`)
     - [x] Berechtigungen des Release-APK geprüft: keine Internetberechtigung, nur die interne Berechtigung `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` von AndroidX (Stand 2026-11-03)
     - [x] Web-Version speichert nichts im Browser (`A-808`); geprüft: Local Storage, Session Storage und Cookies bleiben leer
-    - [ ] Prüfen, dass keine Werbung, Tracker oder Konten enthalten sind
+    - [x] Geprüft am 2026-11-04, Version 0.6.3: keine Werbung, Tracker oder Konten. Laufzeit-Abhängigkeiten sind nur Flutter, `intl`, `cupertino_icons` und `shared_preferences`; das Release-Manifest fordert nur `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` an, keine Internetberechtigung und keine Werbe-ID; der Code im Bundle enthält keine Klassen von Google Ads, Firebase, Analytics, Facebook, Adjust, AppsFlyer, Sentry oder Google-Login
 - [ ] **T6.2 Veröffentlichen** (`A-804`)
     - [x] Android-Signatur einrichten: Upload-Schlüssel außerhalb des Repos, signiertes Bundle gebaut und auf einem Handy installiert (Stand 2026-11-03)
+    - [x] Interner Test über Google Play mit 1.0.0 (6) bestanden (2026-11-04): aus dem Play Store installiert und gespielt; automatischer Schutz aus, Bundle ohne `CHECK_LICENSE`
     - [ ] Im Play Store einreichen
     - [ ] Windows-Build bereitstellen
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
-    - [ ] Version in `pubspec.yaml` auf `1.0.0` setzen und die Build-Nummer erhöhen (siehe [Versionen](#versionen))
+    - [x] Version in `pubspec.yaml` auf `1.0.0+6` gesetzt; Build 5 wurde nur hochgeladen und verworfen, weil Google den automatischen Schutz mit `CHECK_LICENSE` eingefügt hatte (siehe [Versionen](#versionen))
+    - [x] Store-Eintrag vorbereitet: Texte in [store-eintrag.md](store-eintrag.md), Symbol, Vorstellungsgrafik und sechs Screenshots in `docs/store/` aus `tools/store/store_graphics_test.dart`
     - [ ] Version 1.0.0 auf GitHub markieren
 - [ ] **T6.3 Befunde vor dem Release** (Test auf echten Geräten)
 
@@ -266,7 +268,7 @@ Zwischenrelease 1.1.0 nach Version 1. Die Tasks werden nach dem Release von 1.0.
     - [ ] Englische Seiten für GitHub Pages erzeugen
 - [ ] **T7.3 Store-Eintrag auf Englisch**
     - [ ] Kurzbeschreibung, Beschreibung und Screenshots
-    - [ ] Länder über Deutschland, Österreich und die Schweiz hinaus freigeben
+    - [x] Länder: schon mit Version 1.0.0 weltweit freigegeben (Entscheidung vom 2026-11-04), weil der deutsche Store-Eintrag die Sprache klar zeigt
 - [ ] **T7.4 Release 1.1.0**
     - [ ] Version setzen, Bundle bauen, im Play Store und auf GitHub veröffentlichen
 
@@ -331,7 +333,7 @@ Ein Task ist erledigt, wenn:
 | A-210 | Die App läuft nur im Querformat. | D0 |
 | A-216 | Bei einer neuen Partie fragt die App erneut nach der Farbe. Die Spielstärke bleibt wie eingestellt. | D5 |
 | A-217 | Kann nur ein Stein ziehen, etwa ein geschlagener Stein auf der Bar, der zuerst eingesetzt werden muss, ist er zu Beginn des Zugs und nach jedem Teilzug schon gewählt und zeigt seine Ziele. Erneutes Antippen wählt ihn nicht ab. | D6 |
-| A-218 | Die Einstellungen zeigen rechts oben die App-Version mit Build-Nummer, zum Beispiel „Version 0.6.3 (4)“, vollständig lesbar in jeder Fenstergröße. Sie entspricht `version:` in `pubspec.yaml`. | D6 |
+| A-218 | Die Einstellungen zeigen rechts oben die App-Version mit Build-Nummer, zum Beispiel „Version 1.0.0 (6)“, vollständig lesbar in jeder Fenstergröße. Sie entspricht `version:` in `pubspec.yaml`. | D6 |
 
 ### 3xx Grafik
 
@@ -447,7 +449,7 @@ Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 - [ ] Wie viele Spielstärken soll es geben? Vorschlag: drei.
 - [x] Play Store: Veröffentlichung nach dem Test aus T5.4 über das Konto der Passion to Grow GmbH.
 - [x] Rechtlicher Anbieter: Das Copyright bleibt bei Achim Gerber, die Passion to Grow GmbH veröffentlicht die App und stellt Impressum und Datenschutzerklärung. Die Nutzungserlaubnis an die GmbH ist noch fachlich zu prüfen.
-- [ ] Datenschutzerklärung und Impressum rechtlich prüfen lassen. Seit 2026-11-03 sind sie ohne Vermerk ENTWURF auf GitHub Pages veröffentlicht. Die Texte liegen in `assets/legal/`, erscheinen in der App unter Einstellungen und werden mit `tools/legal/build_pages.dart` zu Seiten in `web/`.
+- [x] Datenschutzerklärung und Impressum: am 2026-11-04 vom Benutzer geprüft und freigegeben, ohne externe juristische Prüfung (siehe T6.1). Vor den englischen Fassungen in D7 erneut ansehen. Die Texte liegen in `assets/legal/`, erscheinen in der App unter Einstellungen und werden mit `tools/legal/build_pages.dart` zu Seiten in `web/`.
 - [x] Automatische Android-Sicherung des Spielstands: abgeschaltet (`A-807`).
 - [x] Wo läuft die Web-Version? Auf GitHub Pages, ohne Speicher im Browser (`A-808`).
 - [ ] Wie wird die Windows-Version verteilt? Vorschlag: als Download über GitHub Releases.
