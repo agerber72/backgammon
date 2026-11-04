@@ -220,6 +220,48 @@ void main() {
     });
   });
 
+  group('Kein Zug möglich:', () {
+    /// White has a checker on the bar and cannot enter with 6-6.
+    GameController blocked(Duration? delay) => GameController(
+      roller: FixedRoller([6, 6]),
+      game: Game.at(
+        board: Board.fromCounts(
+          white: const {24: 1},
+          black: const {18: 2, 19: 2, 20: 2, 21: 2, 22: 2, 23: 2},
+          whiteBar: 1,
+        ),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+      ),
+      autoActionDelay: delay,
+    );
+
+    test('A-117: Nach der Wartezeit – erwartet: '
+        'Ist nach dem Wurf kein Zug möglich, geht das Spiel von selbst weiter',
+        () async {
+      final controller = blocked(const Duration(milliseconds: 20))..roll();
+      expect(controller.mustPass, isTrue);
+
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+
+      expect(controller.game!.turn, Player.black);
+      controller.dispose();
+    });
+
+    test('A-117: Wartezeit ausgeschaltet – erwartet: '
+        'Ohne Wartezeit bleibt Kein Zug möglich stehen, bis man es drückt',
+        () async {
+      final controller = blocked(null)..roll();
+
+      await Future<void>.delayed(const Duration(milliseconds: 60));
+
+      expect(controller.mustPass, isTrue);
+      controller.pass();
+      expect(controller.game!.turn, Player.black);
+      controller.dispose();
+    });
+  });
+
   group('Automatisch würfeln:', () {
     /// Computer opens and has finished after the pauses.
     Future<GameController> afterComputer({bool doubles = false}) async {

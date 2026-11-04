@@ -13,7 +13,8 @@ Die Tasks werden von oben nach unten abgearbeitet. Ein Haken wird erst gesetzt, 
 | [D4 Computer-Gegner](#d4-computer-gegner) | Gegner in mehreren Stufen, inklusive Dopplerwürfel | 1 |
 | [D5 Fertigstellung](#d5-fertigstellung) | Speichern, Würfelstatistik, Einstellungen, Feinschliff | 1 |
 | [D6 Release Version 1](#d6-release-version-1) | Version 1 ist auf allen Plattformen veröffentlicht | 1 |
-| [D7 Coach](#d7-coach) | Coach und Regel-Nachschlagewerk | 2 |
+| [D7 Englisch](#d7-englisch) | App, Rechtstexte und Store-Eintrag auch auf Englisch | 1.1 |
+| [D8 Coach](#d8-coach) | Coach und Regel-Nachschlagewerk | 2 |
 
 Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und prüft das größte technische Risiko, die Grafik. Bis die Regel-Engine steht, zeigt er eine feste Beispielstellung. Was danach kommt, steht unter [Später](#später).
 
@@ -27,14 +28,15 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 | `1.0.0` | Release von Version 1, also D6 abgeschlossen |
 | `1.y.0` | Neue Funktionen aus [Später](#später) ohne neue Hauptversion |
 | `1.y.n` | Fehlerbehebungen ohne neue Funktion |
-| `2.0.0` | Release von Version 2 mit dem Coach aus D7 |
+| `1.1.0` | Zwischenrelease mit Englisch aus D7 |
+| `2.0.0` | Release von Version 2 mit dem Coach aus D8 |
 
 - Die Hauptversion entspricht der Spalte Version in der Tabelle oben.
 - Ist eine Delivery abgeschlossen, steigt die Nebenversion im selben Schritt, in dem der letzte Haken gesetzt wird.
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `0.6.0+1`, D5 ist abgeschlossen, D6 ist in Arbeit, noch nichts veröffentlicht.
+Aktueller Stand: `0.6.1+2`, D5 ist abgeschlossen, D6 ist in Arbeit. Die Web-Version ist öffentlich, im Play Store ist noch nichts veröffentlicht.
 
 ## Tasks
 
@@ -234,15 +236,39 @@ Aktueller Stand: `0.6.0+1`, D5 ist abgeschlossen, D6 ist in Arbeit, noch nichts 
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [ ] Version in `pubspec.yaml` auf `1.0.0` setzen und die Build-Nummer erhöhen (siehe [Versionen](#versionen))
     - [ ] Version 1.0.0 auf GitHub markieren
+- [ ] **T6.3 Befunde vor dem Release** (Test auf echten Geräten)
 
-### D7 Coach
+    | Nr. | Gerät | Befund | Wunsch | Anforderung |
+    | --- | --- | --- | --- | --- |
+    | P-14 | Android | Ist nach dem Wurf kein Zug möglich, etwa weil ein geschlagener Stein nicht einsetzen kann, wartet die App auf „Kein Zug möglich“ (⏭). Die Spielerin empfand das als Hänger: Der Knopf sah aus wie alle anderen, und anders als beim Zug beenden und Würfeln läuft hier keine Wartezeit ab. | Knöpfe, die nur in bestimmten Situationen erscheinen, fallen auf: invertiert, weiß mit blauem Symbol. | `A-324` und `A-117`, umgesetzt am 2026-11-04 in Version 0.6.1: invertierte Farben, und „Kein Zug möglich“ geht nach der Wartezeit von selbst weiter |
+
+### D7 Englisch
+
+Zwischenrelease 1.1.0 nach Version 1. Die Tasks werden nach dem Release von 1.0.0 verfeinert.
+
+- [ ] **T7.1 Oberfläche übersetzen** (`A-603`)
+    - [ ] `app_en.arb` mit allen Texten; Fachbegriffe wie *doubling cube*, *bear off*, *home board*
+    - [ ] Systemsprache wählt die Sprache: Deutsch bei `de`, sonst Englisch
+    - [ ] Test: Jeder Text hat eine englische Fassung; bestehende Tests laufen fest auf Deutsch
+    - [ ] Texte von jemandem gegenlesen lassen, der Backgammon auf Englisch spielt
+- [ ] **T7.2 Rechtstexte auf Englisch** (`A-604`)
+    - [ ] `privacy_en.md` und `imprint_en.md`, mit dem Hinweis, dass die deutsche Fassung maßgeblich ist
+    - [ ] App lädt die Rechtstexte in ihrer Sprache
+    - [ ] Englische Seiten für GitHub Pages erzeugen
+- [ ] **T7.3 Store-Eintrag auf Englisch**
+    - [ ] Kurzbeschreibung, Beschreibung und Screenshots
+    - [ ] Länder über Deutschland, Österreich und die Schweiz hinaus freigeben
+- [ ] **T7.4 Release 1.1.0**
+    - [ ] Version setzen, Bundle bauen, im Play Store und auf GitHub veröffentlichen
+
+### D8 Coach
 
 Die Tasks werden erst nach Version 1 verfeinert.
 
-- [ ] **T7.1 Regel-Nachschlagewerk** (`A-901`)
-- [ ] **T7.2 Merkmale berechnen** (`A-902`)
+- [ ] **T8.1 Regel-Nachschlagewerk** (`A-901`)
+- [ ] **T8.2 Merkmale berechnen** (`A-902`)
     - [ ] Blots, Trefferchancen, Pip-Stand, Punkte, Primes
-- [ ] **T7.3 Coach-Erklärungen** (`A-903`, `A-904`)
+- [ ] **T8.3 Coach-Erklärungen** (`A-903`, `A-904`)
     - [ ] Züge bewerten und in Alltagssprache erklären
     - [ ] Tipps von erfahrenen Spielern prüfen lassen
 
@@ -274,6 +300,7 @@ Ein Task ist erledigt, wenn:
 | A-112 | Der Spieler kann die Partie jederzeit nach einer Sicherheitsabfrage aufgeben und verliert den aktuellen Würfelwert. | D3 |
 | A-113 | Ist ein Zug vollständig gesetzt und wird er bis zum Ablauf der Wartezeit nicht beendet, endet er von selbst. Die Wartezeit beträgt 3 Sekunden und lässt sich in den Einstellungen auf 5 oder 10 Sekunden ändern oder ausschalten. | D3 |
 | A-116 | Nach dem Zug des Computers wird nach derselben Wartezeit automatisch gewürfelt. Bis dahin kann der Spieler selbst würfeln oder doppeln. | D3 |
+| A-117 | Ist nach dem Wurf kein Zug möglich, geht das Spiel nach derselben Wartezeit von selbst weiter. Bis dahin kann der Spieler selbst auf „Kein Zug möglich“ drücken; ist die Wartezeit ausgeschaltet, wartet die App darauf. | D6 |
 | A-114 | Können sich die Steine nicht mehr treffen, lässt sich die Partie jederzeit über einen festen Knopf rechts animiert zu Ende spielen, auch im Zug des Computers. Noch nicht beendete eigene Züge werden dabei verworfen. | D3 |
 | A-111 | Version 1 spielt ohne die Zusatzregeln Jacoby, Beaver und automatisches Doppeln. Gammon und Backgammon zählen auch ohne gedrehten Dopplerwürfel. | D2 |
 | A-110 | Der Dopplerwürfel unterstützt Anbieten, Annehmen und Ablehnen, Besitz und Wert bis 64. Ablehnen beendet die Partie. | D2 |
@@ -318,7 +345,8 @@ Ein Task ist erledigt, wenn:
 | A-316 | Das Fach, in das ein Spieler auswürfelt, trägt den Filz in dessen Farbe. | D3 |
 | A-318 | Knöpfe, Dialoge und Symbole wachsen und schrumpfen mit der Fenstergröße. Bezug ist ein quer gehaltenes Handy mit 900 × 420 dp. Nach oben gibt es keine Grenze, nach unten höchstens auf die Hälfte. Knöpfe haben auf allen Plattformen dieselbe Dichte, und der Einstellungsdialog passt ohne Scrollen auf den Bildschirm. | D5 |
 | A-319 | Die Symbolspalte rechts überdeckt das Brett nicht; das Brett lässt ihr Platz. | D5 |
-| A-320 | Im Spiel liegt keine Entscheidung auf dem Brett. Würfeln, Doppeln, Annehmen, Ablehnen, Weiter, Zurücknehmen, Zug beenden, Zu Ende spielen und Aufgeben stehen als Symbole am unteren Ende der rechten Leiste; alle in der Markenfarbe. Aufgeben steht immer ganz unten, damit es nicht springt. Jedes Symbol hat einen Tooltip, ein Doppelangebot zeigt den neuen Einsatz. | D5 |
+| A-320 | Im Spiel liegt keine Entscheidung auf dem Brett. Würfeln, Doppeln, Annehmen, Ablehnen, Weiter, Zurücknehmen, Zug beenden, Zu Ende spielen und Aufgeben stehen als Symbole am unteren Ende der rechten Leiste; alle in der Markenfarbe, Farben nach `A-324`. Aufgeben steht immer ganz unten, damit es nicht springt. Jedes Symbol hat einen Tooltip, ein Doppelangebot zeigt den neuen Einsatz. | D5 |
+| A-324 | Symbole in der rechten Leiste, die nur in bestimmten Situationen erscheinen (Würfeln, Doppeln, Annehmen, Ablehnen, Kein Zug möglich, Zurücknehmen, Zug beenden, Zu Ende spielen), sind invertiert: weißer Grund mit blauem Symbol. Symbole, die immer da sind (Ansicht, Einstellungen, Statistik, Aufgeben), bleiben blau mit weißem Symbol. Knöpfe in Dialogen sind nicht betroffen. | D6 |
 | A-321 | Knöpfe nutzen die Markenfarbe von p2g-it aus dem P2G-Logo (`assets/icon/icon.png`): Blau `#5B84C3` mit weißer Schrift für alle Knöpfe, Symbole und gewählten Auswahlen. | D5 |
 | A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |
 | A-309 | Bis zu fünf Steine liegen nebeneinander auf einem Dreieck. Steine am Rand werden vom vorderen Rahmen verdeckt wie auf einem echten Brett. | D1 |
@@ -348,8 +376,10 @@ Ein Task ist erledigt, wenn:
 
 | ID | Anforderung | Delivery |
 | --- | --- | --- |
-| A-601 | Alle sichtbaren Texte liegen in Sprachdateien. Die Oberfläche ist in Version 1 auf Deutsch. | D0 |
+| A-601 | Alle sichtbaren Texte liegen in Sprachdateien. Die Oberfläche ist in Version 1.0 auf Deutsch. | D0 |
 | A-602 | Das Layout verträgt längere Texte. Eine neue Sprache braucht nur eine Übersetzung. | D5 |
+| A-603 | Ab Version 1.1 gibt es die Oberfläche auch auf Englisch. Die Systemsprache entscheidet: Deutsch bei Deutsch, sonst Englisch. | D7 |
+| A-604 | Datenschutzerklärung und Impressum gibt es in der App und im Web auch auf Englisch; maßgeblich ist die deutsche Fassung. | D7 |
 
 ### 7xx Technik und Qualität
 
@@ -377,10 +407,10 @@ Ein Task ist erledigt, wenn:
 
 | ID | Anforderung | Delivery |
 | --- | --- | --- |
-| A-901 | Ein Regel-Nachschlagewerk erklärt alle Regeln verständlich. | D7 |
-| A-902 | Die App berechnet Merkmale wie Blots, Trefferchancen, Pip-Stand, Punkte und Primes. | D7 |
-| A-903 | Der Coach bewertet Züge und erklärt sie in Alltagssprache, regelbasiert und ohne Sprachmodell. | D7 |
-| A-904 | Fachbegriffe werden beim ersten Auftreten erklärt. | D7 |
+| A-901 | Ein Regel-Nachschlagewerk erklärt alle Regeln verständlich. | D8 |
+| A-902 | Die App berechnet Merkmale wie Blots, Trefferchancen, Pip-Stand, Punkte und Primes. | D8 |
+| A-903 | Der Coach bewertet Züge und erklärt sie in Alltagssprache, regelbasiert und ohne Sprachmodell. | D8 |
+| A-904 | Fachbegriffe werden beim ersten Auftreten erklärt. | D8 |
 
 ## Später
 
@@ -389,12 +419,13 @@ Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 - Beim kombinierten Zug die Wahl zwischen Reihenfolgen mit und ohne Schlagen anbieten
 - Animation beim Schlagen und beim Würfelwurf
 - Würfelbecher modellieren und anzeigen (Version 2, aus `A-302` verschoben)
+- Spielstärken Leicht und Mittel anpassen (Version 2, Wunsch vom 2026-11-04): Leicht lässt keine offensichtlichen Schlagmöglichkeiten aus, sondern übersieht nur Treffer, die nicht auf der Hand liegen. Ändert den Fehler „Treffer auslassen“ aus `A-408`. Was sich bei Mittel ändern soll, ist noch offen.
 - Zwei Spieler am selben Gerät (Version 2 oder 3)
 - Zusatzregeln Jacoby, Beaver und automatisches Doppeln als Einstellung (Version 3)
 - Matches auf mehrere Punkte
 - Interaktives Tutorial, Tagesaufgaben, Partie nachträglich durchgehen
 - Prüfbare Würfelfolge offenlegen
-- Englisch und weitere Sprachen
+- Weitere Sprachen
 - Weitere Brett-Designs
 
 ## Offene Punkte

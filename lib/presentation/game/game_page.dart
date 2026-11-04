@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/services.dart';
 
+import '../../app/backgammon_app.dart' show brandBlue;
 import '../../application/game_controller.dart';
 import '../../domain/board.dart' show Player, Step;
 import '../../domain/game.dart';
@@ -28,6 +29,13 @@ class GamePage extends StatefulWidget {
   @override
   State<GamePage> createState() => _GamePageState();
 }
+
+/// Symbols in the column on the right that appear only in some situations:
+/// the brand colors inverted, so that they stand out.
+final situationalButtonStyle = IconButton.styleFrom(
+  backgroundColor: Colors.white,
+  foregroundColor: brandBlue,
+);
 
 /// Layout values shared by the board and the buttons on it.
 abstract final class BoardPage {
@@ -330,20 +338,20 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   /// Everything a person decides during a game, as symbols at the bottom of
-  /// the column on the right, so that nothing covers the board. The main
-  /// decision is filled, the others are tonal.
+  /// the column on the right, so that nothing covers the board. Symbols that
+  /// appear only in some situations are inverted, white with a blue symbol,
+  /// so that a new decision stands out from the symbols that always show.
   List<Widget> _decisions(AppLocalizations l10n) {
     final game = _controller.game;
     if (game == null || game.result != null) {
       return const [];
     }
-    Widget main(String tooltip, Widget icon, VoidCallback onPressed) =>
-        IconButton.filled(onPressed: onPressed, tooltip: tooltip, icon: icon);
-    Widget other(String tooltip, Widget icon, VoidCallback onPressed) =>
-        IconButton.filledTonal(
+    Widget situational(String tooltip, Widget icon, VoidCallback onPressed) =>
+        IconButton.filled(
           onPressed: onPressed,
           tooltip: tooltip,
           icon: icon,
+          style: situationalButtonStyle,
         );
 
     final turn = !_controller.isHumanTurn
@@ -351,15 +359,18 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
         : switch (game.phase) {
             GamePhase.awaitingRoll => [
               if (game.canDouble)
-                other(
+                situational(
                   l10n.doubleCube,
                   Text(
                     l10n.cubeValue(game.cube.value * 2),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: brandBlue,
+                    ),
                   ),
                   _controller.offerDouble,
                 ),
-              main(l10n.roll, const Icon(Icons.casino), _controller.roll),
+              situational(l10n.roll, const Icon(Icons.casino), _controller.roll),
             ],
             GamePhase.awaitingDoubleResponse => [
               Tooltip(
@@ -369,12 +380,12 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
-              other(
+              situational(
                 l10n.refuse,
                 const Icon(Icons.close),
                 _controller.refuseDouble,
               ),
-              main(
+              situational(
                 l10n.accept,
                 const Icon(Icons.check),
                 _controller.acceptDouble,
@@ -382,15 +393,15 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             ],
             GamePhase.awaitingPlay => [
               if (_controller.hasPendingSteps)
-                other(l10n.undo, const Icon(Icons.undo), _controller.undo),
+                situational(l10n.undo, const Icon(Icons.undo), _controller.undo),
               if (_controller.mustPass)
-                main(
+                situational(
                   l10n.noMove,
                   const Icon(Icons.skip_next),
                   _controller.pass,
                 ),
               if (_controller.canConfirm)
-                main(
+                situational(
                   l10n.confirm,
                   const Icon(Icons.check),
                   _controller.confirm,
@@ -398,17 +409,22 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             ],
             GamePhase.finished => const <Widget>[],
           };
-    // Resign stays at the very bottom, so that it never moves.
+    // Resign shows during the whole game, so it keeps the regular colors, and
+    // it stays at the very bottom, so that it never moves.
     return [
       ...turn,
       if (_controller.canAutoFinish)
-        other(
+        situational(
           l10n.autoFinish,
           const Icon(Icons.fast_forward),
           _controller.autoFinish,
         ),
       if (_controller.canResign)
-        other(l10n.resign, const Icon(Icons.flag), () => _confirmResign(l10n)),
+        IconButton.filledTonal(
+          onPressed: () => _confirmResign(l10n),
+          tooltip: l10n.resign,
+          icon: const Icon(Icons.flag),
+        ),
     ];
   }
 

@@ -40,8 +40,9 @@ class GameController extends ChangeNotifier {
 
   Duration? _autoActionDelay;
 
-  /// Time after which a finished turn ends, or the person rolls after the
-  /// computer's turn, without any input; null turns this off.
+  /// Time after which a finished turn ends, the person rolls after the
+  /// computer's turn, or a roll without any move goes on, without any input;
+  /// null turns this off.
   Duration? get autoActionDelay => _autoActionDelay;
 
   Player? _human;
@@ -389,15 +390,19 @@ class GameController extends ChangeNotifier {
   }
 
   /// After the computer's turn the dice roll by themselves unless the person
-  /// rolls or doubles first.
+  /// rolls or doubles first. A roll without any move goes on by itself as
+  /// well, so the game never waits for a decision that is no choice.
   void _scheduleAutoRoll() {
     final delay = autoActionDelay;
-    if (delay != null &&
-        _human != null &&
-        _game?.phase == GamePhase.awaitingRoll &&
-        isHumanTurn) {
+    if (delay == null || !isHumanTurn) {
+      return;
+    }
+    if (_human != null && _game?.phase == GamePhase.awaitingRoll) {
       _autoAction?.cancel();
       _autoAction = Timer(delay, roll);
+    } else if (mustPass) {
+      _autoAction?.cancel();
+      _autoAction = Timer(delay, pass);
     }
   }
 

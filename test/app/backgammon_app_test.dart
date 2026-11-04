@@ -834,6 +834,50 @@ Für alle''';
       expect(controller.game!.turn, Player.black);
     });
 
+    testWidgets('A-324: Situationsabhängige Symbole – erwartet: '
+        'Kein Zug möglich ist weiß mit blauem Symbol, Einstellungen und '
+        'Aufgeben bleiben blau mit weißem Symbol', (tester) async {
+      final controller = GameController(
+        game: Game.at(
+          board: Board.fromCounts(
+            white: const {24: 1},
+            black: const {18: 2, 19: 2, 20: 2, 21: 2, 22: 2, 23: 2},
+            whiteBar: 1,
+          ),
+          turn: Player.white,
+          phase: GamePhase.awaitingPlay,
+          dice: const Dice(6, 6),
+        ),
+      );
+      await showPage(tester, controller);
+
+      IconButton button(String tooltip) => tester.widget<IconButton>(
+        find.ancestor(
+          of: find.byTooltip(tooltip),
+          matching: find.byType(IconButton),
+        ),
+      );
+      Color? symbol(String tooltip) => IconTheme.of(
+        tester.element(
+          find.descendant(
+            of: find.byTooltip(tooltip),
+            matching: find.byType(Icon),
+          ),
+        ),
+      ).color;
+
+      expect(
+        button('Kein Zug möglich').style?.backgroundColor?.resolve({}),
+        Colors.white,
+      );
+      expect(symbol('Kein Zug möglich'), brandBlue);
+      // Without a style of their own they take the brand colors of the theme,
+      // which A-321 checks.
+      for (final permanent in ['Einstellungen', 'Aufgeben']) {
+        expect(button(permanent).style, isNull, reason: permanent);
+      }
+    });
+
     testWidgets('A-321: Markenfarbe – erwartet: '
         'Knöpfe nutzen das Blau des P2G-Logos mit weißer Schrift', (
       tester,
