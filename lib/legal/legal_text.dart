@@ -137,13 +137,10 @@ String _escape(String text) => text
 final _bold = RegExp(r'\*\*(.+?)\*\*');
 final _code = RegExp('`(.+?)`');
 final _link = RegExp(r'https://[^\s<]+[^\s<.,;:)]');
-final _mail = RegExp(r'[\w.+-]+@[\w-]+(\.[\w-]+)+');
 
+// E-mail addresses stay plain text without a mailto link, so that simple
+// address harvesters find them less easily.
 String _inline(String text) => _escape(text)
     .replaceAllMapped(_bold, (match) => '<strong>${match[1]}</strong>')
     .replaceAllMapped(_code, (match) => '<code>${match[1]}</code>')
-    .replaceAllMapped(_link, (match) => '<a href="${match[0]}">${match[0]}</a>')
-    .replaceAllMapped(
-      _mail,
-      (match) => '<a href="mailto:${match[0]}">${match[0]}</a>',
-    );
+    .replaceAllMapped(_link, (match) => '<a href="${match[0]}">${match[0]}</a>');

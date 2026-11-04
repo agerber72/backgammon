@@ -1,6 +1,6 @@
 # Backgammon
 
-Backgammon als Flutter-App für Android, Windows und Web: kostenlos, ohne Werbung und ohne Konto. Das Projekt steht am Anfang, ein spielbarer Stand existiert noch nicht.
+Backgammon als Flutter-App für Android, Windows und Web: kostenlos, ohne Werbung und ohne Konto. Die Web-Version läuft unter https://agerber72.github.io/backgammon/.
 
 Ziele und Umfang stehen in [docs/vision.md](docs/vision.md).
 

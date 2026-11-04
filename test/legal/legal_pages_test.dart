@@ -30,13 +30,20 @@ void main() {
     expect(html, isNot(contains('src=')));
     expect(html, contains('<h2>Anbieter</h2>'));
     expect(html, contains('Passion to Grow GmbH<br>'));
-    expect(
-      html,
-      contains(
-        '<a href="mailto:apps@passion-to-grow.com">'
-        'apps@passion-to-grow.com</a>',
-      ),
-    );
+    expect(html, contains('E-Mail: apps@passion-to-grow.com<br>'));
+  });
+
+  test('A-809: Kontaktadresse – erwartet: '
+      'Rechtstexte und Seiten nennen nur die Adresse apps@, ohne mailto-Link '
+      'und ohne persönliche Adresse', () {
+    for (final (source, page, _) in pages) {
+      final text = File('assets/legal/$source').readAsStringSync();
+      final html = File('web/$page').readAsStringSync();
+
+      expect(text, contains('apps@passion-to-grow.com'), reason: source);
+      expect(text, isNot(contains('achim.gerber@')), reason: source);
+      expect(html, isNot(contains('mailto:')), reason: page);
+    }
   });
 
   test('A-809: Datenschutz im Web – erwartet: '
