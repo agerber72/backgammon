@@ -3,18 +3,18 @@ import 'dart:io';
 import 'package:backgammon/legal/legal_text.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../tools/legal/build_pages.dart' show pages;
+import '../../tools/legal/build_pages.dart' show pageHtml, pages;
 
 void main() {
   test('A-809: Impressum im Web – erwartet: '
       'Die Seiten in web/ entsprechen den Texten in assets/legal/; sonst '
       'tools/legal/build_pages.dart ausführen', () {
-    for (final (source, page, title) in pages) {
+    for (final (source, page, title, language) in pages) {
       final text = File('assets/legal/$source').readAsStringSync();
 
       expect(
         File('web/$page').readAsStringSync(),
-        legalHtml(text, title: title, back: './'),
+        pageHtml(text, title, language),
         reason: page,
       );
     }
@@ -42,7 +42,7 @@ void main() {
   test('A-809: Kontaktadresse – erwartet: '
       'Rechtstexte und Seiten nennen nur die Adresse apps@, ohne mailto-Link '
       'und ohne persönliche Adresse', () {
-    for (final (source, page, _) in pages) {
+    for (final (source, page, _, _) in pages) {
       final text = File('assets/legal/$source').readAsStringSync();
       final html = File('web/$page').readAsStringSync();
 
@@ -87,5 +87,16 @@ void main() {
       html,
       contains('<a href="https://example.org">https://example.org</a>.'),
     );
+  });
+
+  test('A-805: Windows-Zeilenenden – erwartet: '
+      'Ein Text mit CRLF ergibt dieselben Zeilen wie mit LF', () {
+    const text = '# Titel\n<!-- nur: web -->\n## Web-Version\n<!-- ende -->\n';
+
+    expect(
+      legalLines(text.replaceAll('\n', '\r\n'), LegalPlatform.web),
+      legalLines(text, LegalPlatform.web),
+    );
+    expect(legalLines(text, LegalPlatform.web), contains('## Web-Version'));
   });
 }

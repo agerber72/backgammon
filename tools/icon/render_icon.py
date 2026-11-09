@@ -13,7 +13,10 @@ ROUNDED = ROOT / 'assets' / 'icon' / 'app_icon_rounded.png'
 RES = ROOT / 'android' / 'app' / 'src' / 'main' / 'res'
 # Launchers crop adaptive icons, so the art shrinks onto a canvas in the brand
 # color of p2g-it; the points reach the edge, so the edge color would not fit.
-ADAPTIVE_ART_SCALE = 0.85
+# Every mask shows at least a circle of 66 of the 108 dp; at 0.70 the logo
+# stays inside it with a margin of about 5 dp, and the art still covers the
+# 72 dp a launcher shows at most (test/app/app_icon_test.dart).
+ADAPTIVE_ART_SCALE = 0.70
 BRAND = (0x5B / 255, 0x84 / 255, 0xC3 / 255, 1.0)
 CORNER_RADIUS = 0.22
 
@@ -104,6 +107,9 @@ def main():
     save(art, 512, web / 'icons' / 'Icon-512.png')
     save(safe, 192, web / 'icons' / 'Icon-maskable-192.png')
     save(safe, 512, web / 'icons' / 'Icon-maskable-512.png')
+
+    # Google Play rounds the corners of the store icon itself.
+    save(square, 512, ROOT / 'docs' / 'store' / 'icon_512.png')
 
     save_ico(art, [16, 32, 48, 256],
              ROOT / 'windows' / 'runner' / 'resources' / 'app_icon.ico')

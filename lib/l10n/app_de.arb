@@ -36,12 +36,28 @@
   "settingColor": "Deine Farbe",
   "settingDifficulty": "Spielstärke",
   "settingView": "Ansicht",
-  "settingAutoDelay": "Automatisch weiter nach",
-  "settingAutoDelayOff": "Aus",
-  "settingAutoDelaySeconds": "{seconds} s",
-  "@settingAutoDelaySeconds": {
-    "placeholders": { "seconds": { "type": "int" } }
+  "settingLanguage": "Sprache",
+  "languageGerman": "Deutsch",
+  "@languageGerman": {
+    "description": "Always in German, the name of the language itself."
   },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Always in English, the name of the language itself."
+  },
+  "settingPace": "Spieltempo",
+  "@settingPace": {
+    "description": "How quickly the game goes on by itself."
+  },
+  "paceOff": "Aus",
+  "paceRelaxed": "Ruhig",
+  "paceNormal": "Normal",
+  "paceFast": "Zügig",
+  "settingAutoForced": "Pflichtzüge selbst setzen",
+  "@settingAutoForced": {
+    "description": "The app plays a move by itself when the roll allows only one."
+  },
+  "settingAutoForcedHint": "Lässt der Wurf nur einen Zug zu, setzt die App die Steine.",
   "appVersionLabel": "Version {version} ({build})",
   "@appVersionLabel": {
     "description": "App version at the top right of the settings, with the build number in brackets.",
@@ -55,6 +71,32 @@
   "statsThisGame": "Diese Partie",
   "statsAllGames": "Alle Partien",
   "statsDoubles": "Pasch",
+  "statistics": "Statistik",
+  "statsDice": "Würfel",
+  "leaderboard": "Bestenliste",
+  "@leaderboard": {
+    "description": "The personal leaderboard of the games against the computer."
+  },
+  "leaderboardTotals": "Gesamtpunkte",
+  "leaderboardLatest": "Letzte Partien",
+  "leaderboardLevel": "Stufe",
+  "leaderboardAllLevels": "Alle Stufen",
+  "leaderboardGames": "Partien",
+  "leaderboardWins": "Siege",
+  "leaderboardYou": "Du",
+  "leaderboardComputer": "Computer",
+  "leaderboardDate": "Datum",
+  "leaderboardColor": "Farbe",
+  "leaderboardPlayTime": "Spielzeit",
+  "leaderboardEmpty": "Noch keine Partie gegen den Computer beendet.",
+  "playTime": "{minutes}:{seconds} min",
+  "@playTime": {
+    "description": "Play time of a game, seconds always with two digits.",
+    "placeholders": {
+      "minutes": { "type": "int" },
+      "seconds": { "type": "String" }
+    }
+  },
   "statsExpected": "Bei fairen Würfeln kommt jede Zahl und ein Pasch im Schnitt zu 16,7 % vor. Bei wenigen Würfen sind größere Abweichungen normal.",
   "resign": "Aufgeben",
   "cancel": "Abbrechen",
@@ -72,6 +114,15 @@
     }
   },
   "doubleOffered": "Doppeln auf {value}?",
+  "doubleLater": "Beim nächsten Wurf doppeln",
+  "@doubleLater": {
+    "description": "Tooltip of the cube while doubling is not allowed yet; a tap marks the wish."
+  },
+  "doubleRequested": "Doppeln vorgemerkt – erneut tippen zum Zurücknehmen",
+  "or": "oder",
+  "@or": {
+    "description": "Between the choices Double and Roll when the app asks before the roll."
+  },
   "@doubleOffered": {
     "placeholders": { "value": { "type": "int" } }
   },

@@ -10,8 +10,11 @@ import 'package:backgammon/app/backgammon_app.dart';
 import 'package:backgammon/application/game_controller.dart';
 import 'package:backgammon/domain/board.dart';
 import 'package:backgammon/domain/dice.dart';
+import 'package:backgammon/domain/dice_stats.dart';
 import 'package:backgammon/domain/game.dart';
+import 'package:backgammon/engine/engine.dart';
 import 'package:backgammon/l10n/app_localizations.dart';
+import 'package:backgammon/persistence/session_store.dart';
 import 'package:backgammon/presentation/app_scale.dart';
 import 'package:backgammon/presentation/board/board_assets.dart';
 import 'package:backgammon/presentation/board/board_painter.dart';
@@ -31,6 +34,55 @@ const _devices = [
   ('tablet7_', Size(1920, 1200), 2.0), // 7-inch tablet, 960 x 600 dp
   ('tablet10_', Size(2560, 1600), 2.0), // 10-inch tablet, 1280 x 800 dp
 ];
+
+/// Store languages with the folder of their pictures below docs/store/ and
+/// the line under the title of the feature graphic.
+const _languages = [
+  ('de', '', 'Kostenlos · ohne Werbung · ohne Konto'),
+  ('en', 'en/', 'Free · no ads · no account'),
+];
+
+/// Keeps a saved state in memory, so the leaderboard can be shown.
+class _MemoryStore implements SessionStore {
+  _MemoryStore(this.session);
+
+  Session? session;
+
+  @override
+  Future<Session?> load() async => session;
+
+  @override
+  Future<void> save(Session session) async => this.session = session;
+}
+
+/// A few finished games for the leaderboard picture.
+GameRecords _records() {
+  final records = GameRecords();
+  const games = [
+    (Difficulty.easy, Player.white, 9, 2, 0),
+    (Difficulty.easy, Player.black, 12, 1, 0),
+    (Difficulty.medium, Player.white, 15, 0, 2),
+    (Difficulty.medium, Player.white, 11, 2, 0),
+    (Difficulty.hard, Player.black, 18, 0, 1),
+    (Difficulty.medium, Player.black, 14, 4, 0),
+    (Difficulty.hard, Player.white, 21, 1, 0),
+  ];
+  var day = 0;
+  for (final (difficulty, color, minutes, points, computerPoints) in games) {
+    records.add(
+      GameRecord(
+        finishedAt: DateTime(2026, 11, 2 + day, 19 + day % 3, 7 * day % 60),
+        difficulty: difficulty,
+        color: color,
+        playTime: Duration(minutes: minutes, seconds: 13 * day % 60),
+        points: points,
+        computerPoints: computerPoints,
+      ),
+    );
+    day++;
+  }
+  return records;
+}
 
 class _Roller implements DiceRoller {
   _Roller(this.values);
@@ -103,6 +155,9 @@ void main() {
     await _loadFonts();
   });
 
+  var language = _languages.first.$1;
+  var folder = _languages.first.$2;
+  AppLocalizations l10n() => lookupAppLocalizations(Locale(language));
   var prefix = '';
   var size = _devices.first.$2;
   var ratio = _devices.first.$3;
@@ -110,6 +165,7 @@ void main() {
   Future<GlobalKey> show(WidgetTester tester, GameController controller) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = ratio;
+    tester.platformDispatcher.localesTestValue = [Locale(language)];
     addTearDown(tester.view.reset);
     assets = (await tester.runAsync(
       () async => {
@@ -126,6 +182,8 @@ void main() {
           theme: appTheme(),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          localeListResolutionCallback: (locales, supported) =>
+              appLocale(locales),
           builder: (context, child) => AppScale(child: child!),
           home: GamePage(preloadedAssets: assets, controller: controller),
         ),
@@ -135,164 +193,199 @@ void main() {
     return key;
   }
 
-  for (final device in _devices) {
-    group('Gerät ${device.$1}', () {
-      setUp(() {
-        (prefix, size, ratio) = device;
-      });
+  for (final (code, directory, _) in _languages) {
+    for (final device in _devices) {
+      group('Sprache $code, Gerät ${device.$1}', () {
+        setUp(() {
+          (prefix, size, ratio) = device;
+          language = code;
+          folder = directory;
+        });
 
-      testWidgets('Screenshot: Farbe wählen', (tester) async {
-        final key = await show(tester, _controller());
-        await _save(tester, key, '${prefix}screenshot_1_farbwahl');
-      });
+        testWidgets('Screenshot: Farbe wählen', (tester) async {
+          final key = await show(tester, _controller());
+          await _save(tester, key, '$folder${prefix}screenshot_1_farbwahl');
+        });
 
-      testWidgets('Screenshot: Spielbeginn mit Richtungspfeil', (tester) async {
-        final controller = _controller(dice: const [3, 1, 6, 4]);
-        final key = await show(tester, controller);
-        await tester.tap(find.text('Weiß'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Mittel'));
-        await tester.pump(const Duration(milliseconds: 600));
-        controller.tap(8);
-        await tester.pump(const Duration(milliseconds: 600));
-        await _save(tester, key, '${prefix}screenshot_2_spielbeginn');
-        await tester.pumpAndSettle();
-      });
-
-      testWidgets('Screenshot: Zug mit Zielen', (tester) async {
-        final controller = _controller(
-          game: Game.at(
-            board: _midGame(),
-            turn: Player.white,
-            phase: GamePhase.awaitingPlay,
-            dice: const Dice(6, 4),
-          ),
-        );
-        final key = await show(tester, controller);
-        controller.tap(13);
-        await tester.pumpAndSettle();
-        await _save(tester, key, '${prefix}screenshot_3_zug');
-      });
-
-      testWidgets('Screenshot: Doppelangebot', (tester) async {
-        final key = await show(
+        testWidgets('Screenshot: Spielbeginn mit Richtungspfeil', (
           tester,
-          _controller(
+        ) async {
+          final controller = _controller(dice: const [3, 1, 6, 4]);
+          final key = await show(tester, controller);
+          await tester.tap(find.text(l10n().playWhite));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(l10n().difficultyMedium));
+          await tester.pump(const Duration(milliseconds: 600));
+          controller.tap(8);
+          await tester.pump(const Duration(milliseconds: 600));
+          await _save(tester, key, '$folder${prefix}screenshot_2_spielbeginn');
+          await tester.pumpAndSettle();
+        });
+
+        testWidgets('Screenshot: Zug mit Zielen', (tester) async {
+          final controller = _controller(
             game: Game.at(
               board: _midGame(),
-              turn: Player.black,
-              phase: GamePhase.awaitingDoubleResponse,
+              turn: Player.white,
+              phase: GamePhase.awaitingPlay,
+              dice: const Dice(6, 4),
             ),
-          ),
-        );
-        await _save(tester, key, '${prefix}screenshot_4_doppeln');
-      });
+          );
+          final key = await show(tester, controller);
+          controller.tap(13);
+          await tester.pumpAndSettle();
+          await _save(tester, key, '$folder${prefix}screenshot_3_zug');
+        });
 
-      testWidgets('Screenshot: Ergebnis', (tester) async {
-        final key = await show(
-          tester,
-          _controller(
-            game: Game.at(
-              board: Board.fromCounts(
-                black: const {19: 3, 20: 4, 22: 4, 24: 4},
-                whiteOff: 15,
+        testWidgets('Screenshot: Doppelangebot', (tester) async {
+          final key = await show(
+            tester,
+            _controller(
+              game: Game.at(
+                board: _midGame(),
+                turn: Player.black,
+                phase: GamePhase.awaitingDoubleResponse,
               ),
-              turn: Player.white,
-              phase: GamePhase.finished,
-              cube: const Cube(value: 2, owner: Player.black),
-              result: const GameResult(Player.white, WinType.gammon, 4),
             ),
-          ),
-        );
-        await _save(tester, key, '${prefix}screenshot_5_ergebnis');
-      });
+          );
+          await _save(tester, key, '$folder${prefix}screenshot_4_doppeln');
+        });
 
-      testWidgets('Screenshot: Einstellungen', (tester) async {
-        // With the app's default waiting time; nobody rolls by itself here,
-        // because both sides are played by hand.
-        final key = await show(
-          tester,
-          GameController(
-            game: Game.at(
-              board: _midGame(),
-              turn: Player.white,
-              phase: GamePhase.awaitingRoll,
+        testWidgets('Screenshot: Ergebnis', (tester) async {
+          final key = await show(
+            tester,
+            _controller(
+              game: Game.at(
+                board: Board.fromCounts(
+                  black: const {19: 3, 20: 4, 22: 4, 24: 4},
+                  whiteOff: 15,
+                ),
+                turn: Player.white,
+                phase: GamePhase.finished,
+                cube: const Cube(value: 2, owner: Player.black),
+                result: const GameResult(Player.white, WinType.gammon, 4),
+              ),
             ),
+          );
+          await _save(tester, key, '$folder${prefix}screenshot_5_ergebnis');
+        });
+
+        testWidgets('Screenshot: Einstellungen', (tester) async {
+          // With the app's default waiting time; nobody rolls by itself here,
+          // because both sides are played by hand.
+          final key = await show(
+            tester,
+            GameController(
+              game: Game.at(
+                board: _midGame(),
+                turn: Player.white,
+                phase: GamePhase.awaitingRoll,
+              ),
+              computerPause: const Duration(hours: 1),
+            ),
+          );
+          await tester.tap(find.byTooltip(l10n().settings));
+          await tester.pumpAndSettle();
+          await _save(
+            tester,
+            key,
+            '$folder${prefix}screenshot_6_einstellungen',
+          );
+        });
+
+        testWidgets('Screenshot: Bestenliste', (tester) async {
+          final store = _MemoryStore(
+            Session(
+              gameStats: DiceStats(),
+              totalStats: DiceStats(),
+              preferredHuman: Player.white,
+              records: _records(),
+            ),
+          );
+          final controller = GameController(
+            store: store,
             computerPause: const Duration(hours: 1),
-          ),
-        );
-        await tester.tap(find.byTooltip('Einstellungen'));
-        await tester.pumpAndSettle();
-        await _save(tester, key, '${prefix}screenshot_6_einstellungen');
+            autoActionDelay: null,
+          );
+          final key = await show(tester, controller);
+          await tester.tap(find.byTooltip(l10n().statistics));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text(l10n().leaderboard));
+          await tester.pumpAndSettle();
+          await _save(tester, key, '$folder${prefix}screenshot_7_bestenliste');
+        });
       });
-    });
+    }
   }
 
-  testWidgets('Vorstellungsgrafik 1024 × 500', (tester) async {
-    tester.view.physicalSize = const Size(1024, 500);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.reset);
-    final board = (await tester.runAsync(
-      () => BoardAssets.load(BoardView.white, rootBundle, highResolution: true),
-    ))!;
-    final key = GlobalKey();
-    await tester.pumpWidget(
-      RepaintBoundary(
-        key: key,
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              const ColoredBox(color: Color(0xFF17191C)),
-              // The board in its start position, as the app draws it.
-              Positioned(
-                left: 470,
-                top: 20,
-                width: 620,
-                height: 460,
-                child: CustomPaint(
-                  painter: BoardPainter(
-                    board,
-                    BoardScene.of(Board.start(), null),
+  for (final (code, directory, tagline) in _languages) {
+    testWidgets('Vorstellungsgrafik 1024 × 500, Sprache $code', (tester) async {
+      tester.view.physicalSize = const Size(1024, 500);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final board = (await tester.runAsync(
+        () =>
+            BoardAssets.load(BoardView.white, rootBundle, highResolution: true),
+      ))!;
+      final key = GlobalKey();
+      await tester.pumpWidget(
+        RepaintBoundary(
+          key: key,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                const ColoredBox(color: Color(0xFF17191C)),
+                // The board in its start position, as the app draws it.
+                Positioned(
+                  left: 470,
+                  top: 20,
+                  width: 620,
+                  height: 460,
+                  child: CustomPaint(
+                    painter: BoardPainter(
+                      board,
+                      BoardScene.of(Board.start(), null),
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                left: 48,
-                top: 160,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Backgammon',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 58,
-                        color: Colors.white,
+                Positioned(
+                  left: 48,
+                  top: 160,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Backgammon',
+                        style: TextStyle(
+                          fontFamily: 'Roboto',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 58,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    Container(width: 72, height: 5, color: brandBlue),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Kostenlos · ohne Werbung · ohne Konto',
-                      style: TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 21,
-                        color: Color(0xFFDDE3EA),
+                      const SizedBox(height: 12),
+                      Container(width: 72, height: 5, color: brandBlue),
+                      const SizedBox(height: 20),
+                      Text(
+                        tagline,
+                        style: const TextStyle(
+                          fontFamily: 'Roboto',
+                          fontSize: 21,
+                          color: Color(0xFFDDE3EA),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
-    await _save(tester, key, 'feature_graphic');
-  });
+      );
+      await tester.pump();
+      await _save(tester, key, '${directory}feature_graphic');
+    });
+  }
 }

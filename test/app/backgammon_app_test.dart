@@ -236,10 +236,10 @@ void main() {
     );
     await showPage(tester, controller);
 
+    // The only possible move ends the turn by itself (A-221).
     controller
       ..tap(1)
-      ..tap(0)
-      ..confirm();
+      ..tap(0);
     await tester.pumpAndSettle();
 
     expect(find.text('Weiß gewinnt mit Gammon: 2 Punkte'), findsOneWidget);
@@ -379,7 +379,7 @@ void main() {
     await tester.pumpAndSettle();
     await open('Datenschutz');
     expect(find.textContaining('ENTWURF'), findsNothing);
-    expect(find.textContaining('Stand: 4. November 2026'), findsOneWidget);
+    expect(find.textContaining('Stand: 9. November 2026'), findsOneWidget);
     expect(find.text('Verantwortlicher'), findsOneWidget);
 
     await tester.tap(find.byType(BackButton));
@@ -513,8 +513,9 @@ void main() {
       for (final text in [
         'Deine Farbe',
         'Spielstärke',
-        'Automatisch weiter nach',
-        '10 s',
+        'Spieltempo',
+        'Pflichtzüge selbst setzen',
+        'Zügig',
         'Datenschutz',
         'Schließen',
       ]) {
@@ -654,8 +655,7 @@ void main() {
       await showScaledPage(tester, controller);
       controller
         ..tap(1)
-        ..tap(0)
-        ..confirm();
+        ..tap(0);
       await tester.pumpAndSettle();
 
       final button = tester.getSize(
@@ -757,7 +757,7 @@ Für alle''';
         'Nur unter Windows nennt die Datenschutzerklärung die Datei mit dem '
         'Spielstand', (tester) async {
       // Tall enough that the list builds the whole text.
-      tester.view.physicalSize = const Size(1000, 4000);
+      tester.view.physicalSize = const Size(1000, 6000);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
       Future<void> open(LegalPlatform platform) async {
@@ -1032,5 +1032,149 @@ Für alle''';
 
     await tester.pumpAndSettle();
     expect(scene().directionOpacity, 0);
+  });
+
+  testWidgets('A-223: Kein Zug möglich – erwartet: '
+      'Der Hinweis steht direkt neben dem Symbol Weiter, um das der '
+      'Countdown läuft', (tester) async {
+    tester.view.physicalSize = const Size(1600, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final controller = GameController(
+      roller: FixedRoller([6, 6]),
+      game: Game.at(
+        board: Board.fromCounts(
+          white: const {24: 1},
+          black: const {18: 2, 19: 2, 20: 2, 21: 2, 22: 2, 23: 2},
+          whiteBar: 1,
+        ),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+      ),
+    );
+    addTearDown(controller.dispose);
+    await showPage(tester, controller);
+
+    controller.roll();
+    await tester.pump();
+
+    expect(find.text('Kein Zug möglich'), findsOneWidget);
+    expect(find.byType(CountdownRing), findsOneWidget);
+    // The note sits right next to its symbol, and the ring does not make the
+    // symbol wider than the others.
+    final hint = tester.getRect(find.text('Kein Zug möglich'));
+    final pass = tester.getRect(find.byTooltip('Kein Zug möglich'));
+    expect(hint.right, lessThan(pass.left));
+    expect(pass.left - hint.right, lessThan(40));
+    expect((hint.center.dy - pass.center.dy).abs(), lessThan(4));
+    expect(pass.width, tester.getRect(find.byTooltip('Einstellungen')).width);
+    await tester.pump(const Duration(seconds: 2));
+    expect(controller.game!.turn, Player.black);
+  });
+
+  testWidgets('A-225: Würfel im eigenen Zug – erwartet: '
+      'Während des Ziehens steht der Dopplerwürfel rechts und merkt das '
+      'Doppeln vor', (tester) async {
+    tester.view.physicalSize = const Size(1600, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final controller = GameController(
+      roller: FixedRoller([3, 1]),
+      engine: InstantEngine(),
+      autoActionDelay: null,
+    )..startGame(human: Player.white);
+    addTearDown(controller.dispose);
+    await showPage(tester, controller);
+
+    expect(controller.game!.phase, GamePhase.awaitingPlay);
+    await tester.tap(find.byTooltip('Beim nächsten Wurf doppeln'));
+    await tester.pump();
+
+    expect(controller.doubleRequested, isTrue);
+    expect(
+      find.byTooltip('Doppeln vorgemerkt – erneut tippen zum Zurücknehmen'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('A-223: Sprechblase antippen – erwartet: '
+      'Ein Tipp auf „Kein Zug möglich“ neben dem Symbol geht weiter', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final controller = GameController(
+      roller: FixedRoller([6, 6]),
+      game: Game.at(
+        board: Board.fromCounts(
+          white: const {24: 1},
+          black: const {18: 2, 19: 2, 20: 2, 21: 2, 22: 2, 23: 2},
+          whiteBar: 1,
+        ),
+        turn: Player.white,
+        phase: GamePhase.awaitingRoll,
+      ),
+      autoActionDelay: null,
+    );
+    addTearDown(controller.dispose);
+    await showPage(tester, controller);
+    controller.roll();
+    await tester.pump();
+
+    await tester.tap(find.text('Kein Zug möglich'));
+    await tester.pump();
+
+    expect(controller.game!.turn, Player.black);
+  });
+
+  group('A-225: Nachfrage neben dem Würfel', () {
+    /// White has marked the wish to double and is about to roll.
+    Future<GameController> asking(WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1600, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final controller = GameController(
+        roller: FixedRoller([3, 1, 6, 5, 4, 2]),
+        engine: InstantEngine(),
+        computerPause: Duration.zero,
+        autoActionDelay: null,
+      )..startGame(human: Player.black);
+      addTearDown(controller.dispose);
+      await showPage(tester, controller);
+      controller.requestDouble();
+      for (var i = 0; i < 20 && !controller.asksToDouble; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      expect(controller.asksToDouble, isTrue);
+      return controller;
+    }
+
+    testWidgets('A-225: Doppeln antippen – erwartet: '
+        'Die Sprechblase bietet Doppeln oder Würfeln, Doppeln doppelt', (
+      tester,
+    ) async {
+      final controller = await asking(tester);
+
+      expect(find.text('oder'), findsOneWidget);
+      await tester.tap(find.text('Doppeln'));
+      await tester.pump();
+
+      expect(controller.game!.phase, GamePhase.awaitingDoubleResponse);
+      // The computer answers the double.
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(controller.game!.cube.value, 2);
+    });
+
+    testWidgets('A-225: Würfeln antippen – erwartet: '
+        'Würfeln in der Sprechblase würfelt ohne zu doppeln', (tester) async {
+      final controller = await asking(tester);
+
+      await tester.tap(find.text('Würfeln'));
+      await tester.pump();
+
+      expect(controller.game!.phase, GamePhase.awaitingPlay);
+      expect(controller.game!.cube.value, 1);
+    });
   });
 }

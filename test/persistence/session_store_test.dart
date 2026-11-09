@@ -147,25 +147,46 @@ void main() {
     },
   );
 
-  group('Wartezeit:', () {
-    test('A-113: Standard – erwartet: '
-        'Ohne Einstellung beträgt die Wartezeit 3 Sekunden', () {
-      expect(GameController().autoActionDelay, const Duration(seconds: 3));
+  group('Spieltempo:', () {
+    test('A-220: Standard – erwartet: '
+        'Ohne Einstellung gilt das Tempo Normal mit 2 Sekunden Wartezeit', () {
+      final controller = GameController();
+
+      expect(controller.pace, GamePace.normal);
+      expect(controller.autoActionDelay, const Duration(seconds: 2));
+      expect(controller.computerPause, const Duration(milliseconds: 550));
+    });
+
+    test('A-220: Stufen – erwartet: '
+        'Gemütlich wartet länger und der Computer zieht langsamer, Zügig '
+        'kürzer und schneller, Aus wartet immer auf den Spieler', () {
+      final controller = GameController()..updatePace(GamePace.relaxed);
+      expect(controller.autoActionDelay, const Duration(seconds: 4));
+      expect(controller.computerPause, const Duration(milliseconds: 800));
+
+      controller.updatePace(GamePace.fast);
+      expect(controller.autoActionDelay, const Duration(seconds: 1));
+      expect(controller.computerPause, const Duration(milliseconds: 300));
+
+      controller.updatePace(GamePace.off);
+      expect(controller.autoActionDelay, isNull);
     });
 
     test(
-      'A-113: Wartezeit speichern – erwartet: '
-      'Die gewählte Zeit und das Ausschalten bleiben nach einem Neustart',
+      'A-220: Tempo speichern – erwartet: '
+      'Das gewählte Tempo und Pflichtzüge bleiben nach einem Neustart',
       () async {
         final first = controllerWith([3, 1])
-          ..updateAutoDelay(const Duration(seconds: 10));
+          ..updatePace(GamePace.relaxed)
+          ..updateAutoForced(true);
         await Future<void>.delayed(const Duration(milliseconds: 20));
 
         final second = controllerWith([3, 1]);
         await second.restore();
-        expect(second.autoActionDelay, const Duration(seconds: 10));
+        expect(second.pace, GamePace.relaxed);
+        expect(second.autoForced, isTrue);
 
-        first.updateAutoDelay(null);
+        first.updatePace(GamePace.off);
         await Future<void>.delayed(const Duration(milliseconds: 20));
         final third = controllerWith([3, 1]);
         await third.restore();
@@ -174,19 +195,24 @@ void main() {
       },
     );
 
-    test('A-113: Älterer Spielstand – erwartet: '
-        'Ein Stand ohne Wartezeit nutzt den Standard', () {
-      final session = Session.fromJson({
+    test('A-220: Älterer Spielstand – erwartet: '
+        'Die Sekunden aus Version 1.0 werden zum passenden Tempo', () {
+      Session older(int? seconds) => Session.fromJson({
         'game': null,
         'human': null,
         'difficulty': 'medium',
         'preferredHuman': null,
         'preferredDifficulty': null,
+        'autoDelaySeconds': ?seconds,
         'gameStats': DiceStats().toJson(),
         'totalStats': DiceStats().toJson(),
       });
 
-      expect(session.autoDelaySeconds, 3);
+      expect(older(null).pace, GamePace.normal);
+      expect(older(0).pace, GamePace.off);
+      expect(older(3).pace, GamePace.normal);
+      expect(older(10).pace, GamePace.relaxed);
+      expect(older(null).autoForced, isFalse);
     });
 
     test(
@@ -222,7 +248,7 @@ void main() {
         ..tap(5)
         ..tap(6)
         ..tap(5)
-        ..updateAutoDelay(null);
+        ..updatePace(GamePace.off);
       await Future<void>.delayed(const Duration(milliseconds: 80));
 
       expect(controller.game!.turn, Player.white);

@@ -1,6 +1,6 @@
 # App-Architektur
 
-Stand: 2026-11-02 · Grundlage: [roadmap-und-anforderungen.md](roadmap-und-anforderungen.md)
+Stand: 2026-11-09 · Grundlage: [roadmap-und-anforderungen.md](roadmap-und-anforderungen.md)
 
 Die App besteht aus einer reinen Dart-Logik ohne Flutter-Abhängigkeit und einer dünnen Oberfläche darüber, die vorgerenderte Bilder anhand des Spielstands platziert. Sie läuft vollständig offline.
 
@@ -37,8 +37,8 @@ Abhängigkeiten zeigen nur nach unten: `domain` kennt keine andere Schicht, und 
 | `engine` | Stellungsbewertung, Zugwahl, Würfelentscheidungen, Spielstärken | Nein | `A-401` bis `A-406` |
 | `application` | Ablauf der Partie, verbindet Spieler, Computer und Speicherung | Nur `ChangeNotifier` | `A-201`, `A-204`, `A-208` |
 | `presentation` | Brett zeichnen, Eingaben, Animationen, Ansichtswechsel | Ja | `A-202` bis `A-207`, `A-209`, `A-302` bis `A-305`, `A-502` |
-| `persistence` | Laufende Partie, Einstellungen und Statistik sichern | Ja | `A-208`, `A-502` |
-| `l10n` | Texte je Sprache | Ja | `A-601`, `A-602` |
+| `persistence` | Laufende Partie, Einstellungen, Statistik und Bestenliste sichern | Ja | `A-208`, `A-219`, `A-502` |
+| `l10n` | Texte je Sprache: Deutsch und Englisch | Ja | `A-601` bis `A-603` |
 
 ## Projektstruktur
 
@@ -143,9 +143,9 @@ flowchart LR
 - **Android:** Sicherung und Geräteübertragung sind über `allowBackup="false"` und `data_extraction_rules.xml` abgeschaltet (`A-807`). Das Release-APK fordert keine Internetberechtigung an.
 - **Android-Signatur:** Google signiert die App über Play App Signing. Signiert wird mit dem Upload-Schlüssel `upload`, der außerhalb des Repos liegt. Auf ihn verweist `android/key.properties`, und die Datei steht in `.gitignore`. Fehlt sie, etwa in der CI, signiert der Release-Build mit dem Debug-Schlüssel, und das Bundle lässt sich nicht hochladen.
 - **Windows:** `shared_preferences` schreibt nach `%APPDATA%\Achim Gerber\Backgammon\shared_preferences.json`. Firmen- und Produktname kommen aus `windows/runner/Runner.rc`.
-- **Web:** Die App bekommt keinen `SessionStore`, sie speichert also nichts im Browser (`A-808`).
-- **Rechtstexte:** `legal_page.dart` zeigt aus `assets/legal/*.md` nur die Abschnitte der laufenden Plattform. Abschnitte stehen zwischen `<!-- nur: android, windows -->` und `<!-- ende -->`. Die Logik dafür liegt ohne Flutter in `lib/legal/legal_text.dart`.
-- **Rechtstexte im Web:** `tools/legal/build_pages.dart` erzeugt daraus mit den Abschnitten aller Plattformen eigenständige Seiten in `web/`: `impressum.html` und `datenschutz.html` (`A-809`). Die Datenschutzerklärung dient damit auch als öffentlicher Link für Google Play. Der Workflow `.github/workflows/pages.yml` prüft, baut mit `--no-web-resources-cdn --base-href /backgammon/` und veröffentlicht jeden Stand auf `main` über GitHub Pages. Der Web-Build kopiert sie neben die App. Ein Test schlägt fehl, wenn eine Seite nicht mehr zum Text passt.
+- **Web:** Die App bekommt keinen `SessionStore`, sie speichert also nichts im Browser (`A-808`). Ohne `SessionStore` führt `GameController` auch keine Bestenliste, und der Statistik-Dialog zeigt nur die Würfel.
+- **Rechtstexte:** `legal_page.dart` zeigt aus `assets/legal/*.md` nur die Abschnitte der laufenden Plattform, in der Sprache der Oberfläche: `privacy_<sprache>.md` und `imprint_<sprache>.md` mit `de` oder `en` aus `AppLocalizations.localeName`. Abschnitte stehen zwischen `<!-- nur: android, windows -->` und `<!-- ende -->`. Die Logik dafür liegt ohne Flutter in `lib/legal/legal_text.dart`.
+- **Rechtstexte im Web:** `tools/legal/build_pages.dart` erzeugt daraus mit den Abschnitten aller Plattformen eigenständige Seiten in `web/`: `impressum.html` und `datenschutz.html`, auf Englisch `imprint.html` und `privacy.html` (`A-809`, `A-604`). Die Datenschutzerklärung dient damit auch als öffentlicher Link für Google Play. Der Workflow `.github/workflows/pages.yml` prüft, baut mit `--no-web-resources-cdn --base-href /backgammon/` und veröffentlicht jeden Stand auf `main` über GitHub Pages. Der Web-Build kopiert sie neben die App. Ein Test schlägt fehl, wenn eine Seite nicht mehr zum Text passt.
 
 ## Computer-Gegner
 
@@ -173,7 +173,25 @@ Die drei Stufen unterscheiden sich durch einen gezielten Zufallsfehler in der Be
 | Anfänger gegen Mittel | 12 (4 %) |
 | Zufall gegen Leicht | 41 (14 %) |
 
+**Zu Ende spielen:** Ohne Kontakt spielt `GameController` beide Seiten nicht mit der `Engine`, sondern mit `racePlay` aus `lib/engine/race.dart` (`A-410`). Sie bewertet streng geordnet: zuerst ausgewürfelte Steine, dann die Zahl der Quadrantenwechsel bis ins Heimfeld, zuletzt die Pips mit den Korrekturen der Keith-Zählung für Stapel auf den untersten Punkten und Lücken auf den Punkten 4 bis 6. In 200 zufälligen Rennen braucht sie 13,1 Würfe bis zum Ende, die Stufe Schwer 15,5: Deren Bewertung zieht ausgewürfelte Pips ab und zieht deshalb lieber innerhalb des Heimfelds. Die Spielstufen selbst bleiben unverändert.
+
 `GameController` führt die Züge des Computers aus. Pausen zwischen den Schritten machen sie nachvollziehbar, und eine Partienummer verhindert, dass ein alter Lauf in eine neue Partie hineinwirkt.
+
+## Spielfluss
+
+`GamePace` in `lib/application/game_pace.dart` legt je Stufe die Wartezeit für Entscheidungen und die Pause zwischen den Zügen des Computers fest (`A-220`). `GameController` startet jede automatische Aktion über `_startCountdown` und legt sie als `Countdown` offen: Aktion, Start und Dauer. `GamePage` zeichnet daraus mit `CountdownRing` einen ablaufenden Ring auf den Rand des passenden Symbols, ohne es zu vergrößern (`A-222`). `HintedButton` setzt einen Hinweis als Sprechblase links neben sein Symbol. Die Sprechblase liegt über `OverlayPortal` in der Overlay-Ebene und folgt dem Symbol mit `CompositedTransformFollower`; so behält die Leiste ihre Breite, und die Wahlmöglichkeiten darin bleiben antippbar (`A-223`). Wo es keine Wahl gibt, entfällt die Wartezeit (`A-221`): Hat `Game.plays` nur einen Eintrag, endet der Zug mit dem letzten Stein; darf der Spieler nicht doppeln, würfelt die App nach 0,4 Sekunden. Mit `autoForced` setzt `_playForced` einen solchen Zug selbst; solange sperrt `playingForced` die Eingabe (`A-224`). Der Dopplerwürfel steht rechts, solange `mayDouble` gilt; `requestDouble` doppelt sofort oder merkt den Wunsch vor, und `asksToDouble` hält dann das automatische Würfeln an und zeigt die Nachfrage auf dem Filz (`A-225`). Der Wunsch wird nicht gespeichert. Tests geben Wartezeit und Computerpause weiter fest vor; ohne Vorgabe folgt die Pause dem Tempo.
+
+## Bestenliste
+
+`GameController` legt jede beendete Partie gegen den Computer als `GameRecord` in `GameRecords` aus `lib/persistence/game_records.dart` ab: Datum, Stufe, Farbe, Spielzeit und Punkte beider Seiten (`A-219`). Die Liste behält die letzten 100 Partien, neueste zuerst; die Gesamtpunkte je Stufe zählen getrennt weiter, auch für Partien, die aus der Liste fallen. Die Spielzeit läuft ab dem Start der Partie und wird mit jedem Sichern in `Session.playSeconds` festgehalten; nach einem Neustart läuft sie von dort weiter, die Zeit bei geschlossener App zählt also nicht. Eine Uhr lässt sich für Tests über `clock` vorgeben. Ein Stand aus Version 1.0 ohne Bestenliste lädt mit leerer Liste. Der Statistik-Dialog schaltet mit einem `SegmentedButton` zwischen Würfelstatistik und Bestenliste um.
+
+## Sprachen
+
+Vorlage ist `app_de.arb`, dazu kommt `app_en.arb`. `appLocale` in `backgammon_app.dart` wählt über `localeListResolutionCallback` Deutsch, wenn die erste Systemsprache Deutsch ist, sonst Englisch (`A-603`). In den Einstellungen lässt sich die Sprache wählen (`A-605`): Zwei Flaggen in der Titelzeile, denn eine weitere Zeile passte auf dem Handy nicht ohne Scrollen. Die Flagge der Gerätesprache speichert „System“, die andere die feste Sprache. `LanguageFlag` zeichnet die Flaggen selbst, weil Windows Emoji-Flaggen nur als Buchstaben zeigt; die Titelzeile ist deshalb senkrecht zentriert statt an der Schriftlinie ausgerichtet. Die Wahl liegt als Sprachcode in `GameController.language`, einem eigenen `ValueListenable`, und wird mit der `Session` gesichert. `BackgammonApp` erzeugt dafür den `GameController` selbst, reicht ihn an `GamePage` weiter und baut `MaterialApp` nur bei einem Sprachwechsel neu auf. Ohne diese Regel nähme Flutter bei einer nicht unterstützten Sprache die erste unterstützte, also Deutsch. `test/flutter_test_config.dart` setzt die Systemsprache in allen Tests auf Deutsch, damit sie die deutschen Texte nennen können; Tests für Englisch setzen ihre Sprache selbst. Datum und Uhrzeit formatiert `intl` in der Sprache der Oberfläche.
+
+## App-Symbol
+
+`tools/icon/render_icon_art.py` rendert das Motiv mit dem P2G-Logo in Blender, `tools/icon/render_icon.py` erzeugt daraus alle Größen für Android, Web, Windows und das Store-Symbol `docs/store/icon_512.png`. Für das adaptive Android-Symbol schrumpft das Motiv auf 70 % der 108 dp auf einem Grund in der Markenfarbe. So bleibt das Logo innerhalb der Schutzzone von 66 dp Durchmesser, die jede Maskenform zeigt, und das Motiv deckt die höchstens 72 dp sichtbare Fläche noch ganz ab. `test/app/app_icon_test.dart` misst die weißen Pixel des Logos in den fertigen Bildern (`A-326`).
 
 ## Qualität
 
@@ -187,6 +205,12 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 
 | Datum | Entscheidung | Grund | Status |
 | --- | --- | --- | --- |
+| 2026-11-09 | Spieltempo in Stufen statt einer Wartezeit in Sekunden; ohne Wahl keine Wartezeit; Countdown als Ring; Pflichtzüge auf Wunsch automatisch | Vorschlag zum Spielfluss: Eine Runde hatte rund 6 Sekunden Leerlauf, auch wenn es nichts zu entscheiden gab. Die Stufe „Gemütlich“ heißt „Ruhig“, weil sonst die Einstellungen auf dem Handy nicht ohne Scrollen passten | Entschieden |
+| 2026-11-09 | Die Sprache ist in den Einstellungen über zwei gezeichnete Flaggen wählbar, ohne eigene Option „System“; `BackgammonApp` besitzt dafür den `GameController` und hört nur auf dessen `language`; `appLocale` liegt in `lib/l10n/app_locale.dart` | Wunsch beim Testen; ein eigenes Listenable verhindert, dass jeder Zug die ganze App neu aufbaut; `presentation` braucht `appLocale`, ohne `app` zu importieren | Entschieden |
+| 2026-11-09 | Im adaptiven Android-Symbol füllt das Motiv 70 statt 85 % der Fläche; das Logo ist 8 % kleiner | Gemessen reichte das Logo 36,9 dp weit, die Schutzzone der Masken nur 33 dp; runde Masken schnitten die Spitze ab. 8 % kleiner allein hätte nicht gereicht | Entschieden |
+| 2026-11-09 | Englisch über `app_en.arb` und eigene Rechtstexte `*_en.md`; Deutsch nur bei deutscher Systemsprache, sonst Englisch; Tests laufen über `flutter_test_config.dart` auf Deutsch | Offizieller Flutter-Weg ohne neues Paket; die bestehenden Tests bleiben unverändert | Entschieden |
+| 2026-11-09 | Bestenliste als `GameRecords` in der `Session` von `persistence`, letzte 100 Partien und Gesamtpunkte je Stufe; nicht in der Web-Version; im bestehenden Statistik-Dialog | Ein JSON-Dokument wie bisher, ohne Schema-Änderung für alte Stände; die Web-Version bleibt ohne Speicher (`A-808`) | Entschieden |
+| 2026-11-09 | „Zu Ende spielen“ nutzt die eigene Rennbewertung `racePlay` statt der Engine | Rückmeldung eines Benutzers: Die Engine zog im Heimfeld, statt auszuwürfeln. Ohne Kontakt gibt es nur noch das Ziel, schnell fertig zu werden; die Rennbewertung braucht 13,1 statt 15,5 Würfe. Ergänzt den Eintrag vom 2026-11-02 zu „Zu Ende spielen“ | Entschieden |
 | 2026-11-04 | Store-Screenshots und Vorstellungsgrafik entstehen mit `tools/store/store_graphics_test.dart` als Widget-Test aus der echten `GamePage`, mit `appTheme()`, Roboto und den Material-Symbolen; das Theme steht dafür in einer eigenen Funktion | Feste Spielsituationen ohne Gerät und ohne Tippen im Emulator; ein erneuter Lauf erzeugt nach jeder Änderung der Oberfläche passende Bilder. Der Lauf fand eine echte Lücke: Die Knöpfe im Popup verloren die App-Schrift | Entschieden |
 | 2026-11-04 | Zweite Bildstufe 3840 × 2160 in `assets/board/hd/`, nur für Web und Windows; geladen erst, wenn das Brett breiter als 2560 physische Pixel gezeichnet wird | Auf einem 4K-Bildschirm wirkte das hochskalierte Brett unscharf. 1,5-fach deckt 4K vollständig ab und kostet ein Viertel der Daten von 2-fach; Handys erreichen die Schwelle nicht, deshalb wächst die Android-App nicht | Entschieden |
 | 2026-11-04 | Die App-Version steht als Konstante in `lib/app/app_version.dart`, ein Test vergleicht sie mit `pubspec.yaml` | Kein zusätzliches Paket wie `package_info_plus`; eine vergessene Anpassung fällt im Test auf | Entschieden |
@@ -211,7 +235,7 @@ Neue Einträge stehen oben. Eine überholte Entscheidung bleibt stehen und wird 
 | 2026-11-02 | Kombinierte Züge sind eine Folge einzelner `Step`s aus `pathsFrom` auf Basis von `nextSteps`; bei zwei Reihenfolgen gewinnt die mit den wenigsten Schlägen | Keine zweite Regelprüfung, Zurücknehmen bleibt einzeln möglich, und niemand schlägt unbeabsichtigt | Reihenfolge ersetzt am 2026-11-03 |
 | 2026-11-02 | Der Stand liegt als ein JSON-Dokument in `shared_preferences`, Speichervorgänge laufen nacheinander; ein beschädigter Stand zählt als keiner | Einfach und ohne Schema; ein älterer Stand kann keinen neueren überschreiben, und die App startet in jedem Fall | Entschieden |
 | 2026-11-02 | Gesichert wird nach jedem abgeschlossenen Zug samt gewürfelter Zahlen, halbe Züge nicht | Ein Neustart kann keinen Wurf ändern | Entschieden |
-| 2026-11-02 | „Zu Ende spielen“ nutzt die Abläufe des Computers für beide Seiten; `Board.hasContact` bestimmt, ab wann das angeboten wird | Keine zweite Spiel-Logik, und ohne Kontakt gibt es keine Entscheidungen mehr, die dem Spieler fehlen könnten | Entschieden |
+| 2026-11-02 | „Zu Ende spielen“ nutzt die Abläufe des Computers für beide Seiten; `Board.hasContact` bestimmt, ab wann das angeboten wird | Keine zweite Spiel-Logik, und ohne Kontakt gibt es keine Entscheidungen mehr, die dem Spieler fehlen könnten | Zugwahl ergänzt am 2026-11-09 |
 | 2026-11-02 | Keine Vorausschau über die Antworten des Gegners; die Engine bewertet nur die Stellung nach dem eigenen Zug | Vorausschau senkte den Fehler nicht (0,039 statt 0,035 Equity) und brachte im Spiel keinen Vorteil; ohne sie ist die Rechnung kurz genug für alle Plattformen, ein Isolate oder eine Aufteilung ist nicht nötig | Entschieden |
 | 2026-11-02 | Stufen entstehen durch gezielten Zufallsfehler in der Bewertung: 0,5 / 0,18 / 0 | Gemessen in je 300 Partien und zwei Läufen: Schwer schlägt Mittel zu 60 bis 64 %, Mittel schlägt Leicht zu 73 bis 76 % | Für Leicht ergänzt am 2026-11-03 |
 | 2026-11-02 | Der gewählte Stein ist ein eigenes gerendertes Sprite, Ziele sind normale Sprites mit Transparenz; die Knopfleiste liegt im aus dem Layout berechneten Filzstreifen | Passt zur 3D-Grafik statt aufgemalter Ringe, und Knöpfe bleiben bei jeder Größe auf dem Filz | Entschieden |

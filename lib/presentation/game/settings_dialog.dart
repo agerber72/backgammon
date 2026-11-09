@@ -4,8 +4,10 @@ import '../../app/app_version.dart';
 import '../../application/game_controller.dart';
 import '../../domain/board.dart' show Player;
 import '../../engine/engine.dart';
+import '../../l10n/app_locale.dart';
 import '../../l10n/app_localizations.dart';
 import '../board/board_assets.dart';
+import 'language_flag.dart';
 import 'legal_page.dart';
 
 /// Pops with the chosen board view.
@@ -27,7 +29,8 @@ class _SettingsDialogState extends State<SettingsDialog> {
   late Player _color = widget.controller.preferredHuman ?? Player.white;
   late Difficulty _difficulty = widget.controller.difficulty;
   late BoardView _view = widget.view;
-  late int _autoDelay = widget.controller.autoActionDelay?.inSeconds ?? 0;
+  late GamePace _pace = widget.controller.pace;
+  late bool _autoForced = widget.controller.autoForced;
 
   void _openLegal(String title, String asset) {
     Navigator.push(
@@ -42,9 +45,59 @@ class _SettingsDialogState extends State<SettingsDialog> {
   Widget _setting(String label, Widget choice) => Column(
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
-    spacing: 8,
+    spacing: 6,
     children: [Text(label), choice],
   );
+
+  /// Two flags in the title row, because a further row would not fit a
+  /// phone without scrolling. The flag of the device language means "follow
+  /// the system"; the other one fixes the other language.
+  Widget _languageFlags(AppLocalizations l10n, ThemeData theme) {
+    final current = l10n.localeName;
+    final system = appLocale(WidgetsBinding.instance.platformDispatcher.locales)
+        .languageCode;
+    Widget flag(String code, String name) {
+      final selected = code == current;
+      return Tooltip(
+        message: name,
+        child: Semantics(
+          selected: selected,
+          button: true,
+          label: name,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(6),
+            onTap: () =>
+                widget.controller.updateLanguage(code == system ? null : code),
+            child: Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  width: 2,
+                  color: selected
+                      ? theme.colorScheme.primary
+                      : Colors.transparent,
+                ),
+              ),
+              child: Opacity(
+                opacity: selected ? 1 : 0.6,
+                child: LanguageFlag(code),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 8,
+      children: [
+        flag('en', l10n.languageEnglish),
+        flag('de', l10n.languageGerman),
+      ],
+    );
+  }
 
   /// Laid out in two columns, with the legal texts next to Close, so that the
   /// dialog fits a landscape display without scrolling.
@@ -55,12 +108,12 @@ class _SettingsDialogState extends State<SettingsDialog> {
     return AlertDialog(
       // The version sits flush at the top right; title and version share the
       // width, so neither pushes the other out of a narrow dialog.
+      // Centered, because the painted flags have no text baseline.
       title: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
         spacing: 16,
         children: [
           Expanded(child: Text(l10n.settings)),
+          _languageFlags(l10n, theme),
           Expanded(
             child: Text(
               l10n.appVersionLabel(appVersion, appBuild),
@@ -78,7 +131,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 16,
+          spacing: 8,
           children: [
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -88,7 +141,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 16,
+                  spacing: 12,
                   children: [
                     _setting(
                       l10n.settingColor,
@@ -135,7 +188,7 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 16,
+                  spacing: 12,
                   children: [
                     _setting(
                       l10n.settingDifficulty,
@@ -164,28 +217,27 @@ class _SettingsDialogState extends State<SettingsDialog> {
                       ),
                     ),
                     _setting(
-                      l10n.settingAutoDelay,
-                      SegmentedButton<int>(
+                      l10n.settingPace,
+                      SegmentedButton<GamePace>(
+                        // Without the tick and with less padding, four words
+                        // fit a phone.
+                        showSelectedIcon: false,
+                        style: SegmentedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                        ),
                         segments: [
-                          ButtonSegment(
-                            value: 0,
-                            label: Text(l10n.settingAutoDelayOff),
-                          ),
-                          for (final seconds in const [3, 5, 10])
-                            ButtonSegment(
-                              value: seconds,
-                              label: Text(
-                                l10n.settingAutoDelaySeconds(seconds),
-                              ),
-                            ),
+                          for (final (pace, label) in [
+                            (GamePace.off, l10n.paceOff),
+                            (GamePace.relaxed, l10n.paceRelaxed),
+                            (GamePace.normal, l10n.paceNormal),
+                            (GamePace.fast, l10n.paceFast),
+                          ])
+                            ButtonSegment(value: pace, label: Text(label)),
                         ],
-                        selected: {_autoDelay},
+                        selected: {_pace},
                         onSelectionChanged: (choice) {
-                          final seconds = choice.single;
-                          setState(() => _autoDelay = seconds);
-                          widget.controller.updateAutoDelay(
-                            seconds == 0 ? null : Duration(seconds: seconds),
-                          );
+                          setState(() => _pace = choice.single);
+                          widget.controller.updatePace(choice.single);
                         },
                       ),
                     ),
@@ -193,9 +245,29 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 ),
               ],
             ),
-            Text(
-              l10n.settingsNextGame,
-              style: Theme.of(context).textTheme.bodySmall,
+            // Shares the row with the hint, because a further row would not
+            // fit a phone without scrolling.
+            Row(
+              spacing: 16,
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.settingsNextGame,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+                FilterChip(
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  label: Text(l10n.settingAutoForced),
+                  tooltip: l10n.settingAutoForcedHint,
+                  selected: _autoForced,
+                  onSelected: (value) {
+                    setState(() => _autoForced = value);
+                    widget.controller.updateAutoForced(value);
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -205,13 +277,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
         Wrap(
           children: [
             TextButton(
-              onPressed: () =>
-                  _openLegal(l10n.legalPrivacy, 'assets/legal/privacy_de.md'),
+              onPressed: () => _openLegal(
+                l10n.legalPrivacy,
+                'assets/legal/privacy_${l10n.localeName}.md',
+              ),
               child: Text(l10n.legalPrivacy),
             ),
             TextButton(
-              onPressed: () =>
-                  _openLegal(l10n.legalImprint, 'assets/legal/imprint_de.md'),
+              onPressed: () => _openLegal(
+                l10n.legalImprint,
+                'assets/legal/imprint_${l10n.localeName}.md',
+              ),
               child: Text(l10n.legalImprint),
             ),
             TextButton(

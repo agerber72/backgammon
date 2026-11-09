@@ -1,6 +1,6 @@
 # Anforderungen und Roadmap
 
-Stand: 2026-11-03 · Grundlage: [vision.md](vision.md)
+Stand: 2026-11-09 · Grundlage: [vision.md](vision.md)
 
 Die Tasks werden von oben nach unten abgearbeitet. Ein Haken wird erst gesetzt, wenn der Task die [Definition of Done](#definition-of-done) erfüllt. Verweise wie `A-101` zeigen auf die [Anforderungen](#anforderungen) weiter unten.
 
@@ -13,7 +13,7 @@ Die Tasks werden von oben nach unten abgearbeitet. Ein Haken wird erst gesetzt, 
 | [D4 Computer-Gegner](#d4-computer-gegner) | Gegner in mehreren Stufen, inklusive Dopplerwürfel | 1 |
 | [D5 Fertigstellung](#d5-fertigstellung) | Speichern, Würfelstatistik, Einstellungen, Feinschliff | 1 |
 | [D6 Release Version 1](#d6-release-version-1) | Version 1 ist auf allen Plattformen veröffentlicht | 1 |
-| [D7 Englisch](#d7-englisch) | App, Rechtstexte und Store-Eintrag auch auf Englisch | 1.1 |
+| [D7 Englisch](#d7-englisch) | App, Rechtstexte und Store-Eintrag auch auf Englisch; persönliche Bestenliste, schnelleres Zu-Ende-Spielen und besserer Spielfluss | 1.1 |
 | [D8 Coach](#d8-coach) | Coach und Regel-Nachschlagewerk | 2 |
 
 Der Brett-Prototyp kommt zuerst: Er macht das Look and Feel früh sichtbar und prüft das größte technische Risiko, die Grafik. Bis die Regel-Engine steht, zeigt er eine feste Beispielstellung. Was danach kommt, steht unter [Später](#später).
@@ -28,7 +28,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 | `1.0.0` | Release von Version 1, also D6 abgeschlossen |
 | `1.y.0` | Neue Funktionen aus [Später](#später) ohne neue Hauptversion |
 | `1.y.n` | Fehlerbehebungen ohne neue Funktion |
-| `1.1.0` | Zwischenrelease mit Englisch aus D7 |
+| `1.1.0` | Zwischenrelease mit Englisch, Bestenliste und schnellerem Zu-Ende-Spielen aus D7 |
 | `2.0.0` | Release von Version 2 mit dem Coach aus D8 |
 
 - Die Hauptversion entspricht der Spalte Version in der Tabelle oben.
@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `1.0.0+6`, bereit für den Play Store. D6 ist abgeschlossen, sobald die App dort veröffentlicht und auf GitHub markiert ist. Die Web-Version ist öffentlich.
+Aktueller Stand: `1.1.0+7`, Bundle gebaut. Version 1.0.0 (6) ist im Play Store in Produktion; D6 ist abgeschlossen, sobald sie auf GitHub markiert ist. Für 1.1.0 fehlen noch das Gegenlesen, die Prüfung der Rechtstexte, der Blick auf das Symbol am Gerät und das Hochladen. Die Web-Version ist öffentlich.
 
 ## Tasks
 
@@ -232,7 +232,8 @@ Aktueller Stand: `1.0.0+6`, bereit für den Play Store. D6 ist abgeschlossen, so
 - [ ] **T6.2 Veröffentlichen** (`A-804`)
     - [x] Android-Signatur einrichten: Upload-Schlüssel außerhalb des Repos, signiertes Bundle gebaut und auf einem Handy installiert (Stand 2026-11-03)
     - [x] Interner Test über Google Play mit 1.0.0 (6) bestanden (2026-11-04): aus dem Play Store installiert und gespielt; automatischer Schutz aus, Bundle ohne `CHECK_LICENSE`
-    - [ ] Im Play Store einreichen
+    - [x] Im Play Store eingereicht (2026-11-04): Produktion 1.0.0 (6), alle Länder, ohne verwaltete Veröffentlichung, also live direkt nach der Freigabe
+    - [ ] Freigabe durch Google abwarten
     - [ ] Windows-Build bereitstellen
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [x] Version in `pubspec.yaml` auf `1.0.0+6` gesetzt; Build 5 wurde nur hochgeladen und verworfen, weil Google den automatischen Schutz mit `CHECK_LICENSE` eingefügt hatte (siehe [Versionen](#versionen))
@@ -255,22 +256,51 @@ Aktueller Stand: `1.0.0+6`, bereit für den Play Store. D6 ist abgeschlossen, so
 
 ### D7 Englisch
 
-Zwischenrelease 1.1.0 nach Version 1. Die Tasks werden nach dem Release von 1.0.0 verfeinert.
+Zwischenrelease 1.1.0 nach Version 1.
 
-- [ ] **T7.1 Oberfläche übersetzen** (`A-603`)
-    - [ ] `app_en.arb` mit allen Texten; Fachbegriffe wie *doubling cube*, *bear off*, *home board*
-    - [ ] Systemsprache wählt die Sprache: Deutsch bei `de`, sonst Englisch
-    - [ ] Test: Jeder Text hat eine englische Fassung; bestehende Tests laufen fest auf Deutsch
-    - [ ] Texte von jemandem gegenlesen lassen, der Backgammon auf Englisch spielt
+- [x] **T7.1 Oberfläche übersetzen** (`A-603`)
+    - [x] `app_en.arb` mit allen Texten; Begriffe beim Dopplerwürfel wie im Englischen üblich: *Double*, *Take*, *Pass*
+    - [x] Systemsprache wählt die Sprache: Deutsch bei `de`, sonst Englisch (`appLocale` in `backgammon_app.dart`)
+    - [x] Sprache in den Einstellungen über zwei Flaggen wählbar, gespeichert auf Android und Windows (`A-605`, Wunsch vom 2026-11-09)
+    - [x] Test: Jeder Text hat eine englische Fassung; bestehende Tests laufen über `test/flutter_test_config.dart` fest auf Deutsch
+    - [x] Englische Texte gegengelesen (2026-11-09): in Ordnung
 - [ ] **T7.2 Rechtstexte auf Englisch** (`A-604`)
-    - [ ] `privacy_en.md` und `imprint_en.md`, mit dem Hinweis, dass die deutsche Fassung maßgeblich ist
-    - [ ] App lädt die Rechtstexte in ihrer Sprache
-    - [ ] Englische Seiten für GitHub Pages erzeugen
+    - [x] `privacy_en.md` und `imprint_en.md`, mit dem Hinweis, dass die deutsche Fassung maßgeblich ist; beide Fassungen nennen die Bestenliste, Stand 9. November 2026
+    - [x] App lädt die Rechtstexte in ihrer Sprache
+    - [x] Englische Seiten für GitHub Pages erzeugen: `web/imprint.html` und `web/privacy.html`
+    - [ ] Übersetzung und Ergänzung der Datenschutzerklärung durch den Anbieter prüfen
 - [ ] **T7.3 Store-Eintrag auf Englisch**
-    - [ ] Kurzbeschreibung, Beschreibung und Screenshots
+    - [x] Kurzbeschreibung, Beschreibung und Versionshinweise in [store-eintrag.md](store-eintrag.md); Screenshots und Vorstellungsgrafik in `docs/store/en/`
     - [x] Länder: schon mit Version 1.0.0 weltweit freigegeben (Entscheidung vom 2026-11-04), weil der deutsche Store-Eintrag die Sprache klar zeigt
-- [ ] **T7.4 Release 1.1.0**
-    - [ ] Version setzen, Bundle bauen, im Play Store und auf GitHub veröffentlichen
+    - [ ] Englischen Eintrag (en-US) in der Play Console anlegen
+- [x] **T7.4 Persönliche Bestenliste** (`A-219`, Rückmeldung eines Benutzers vom 2026-11-09)
+    - [x] Jede beendete Partie gegen den Computer festhalten: Datum, Spielstärke, Farbe, Spielzeit, Punkte des Spielers und Punkte des Computers
+    - [x] Bestenliste im Statistik-Dialog: Gesamtpunkte je Stufe und über alle Stufen, darunter die letzten 100 Partien, neueste zuerst; die Gesamtpunkte zählen auch Partien, die aus der Liste gefallen sind (Entscheidung vom 2026-11-09)
+    - [x] Spielzeit zählt, solange die App geöffnet ist; die Zeit bei geschlossener App zählt nicht
+    - [x] Web-Version: keine Bestenliste, `A-808` bleibt (Entscheidung vom 2026-11-09)
+- [x] **T7.5 Schneller auswürfeln beim Zu-Ende-Spielen** (`A-410`, Rückmeldung eines Benutzers vom 2026-11-09)
+    - [x] Beim automatischen Zu-Ende-Spielen (`A-114`) kommen alle Steine so schnell wie möglich ins Heimfeld, den letzten Quadranten (`lib/engine/race.dart`)
+    - [x] Im Heimfeld wird möglichst mit jedem Würfel ein Stein ausgewürfelt, statt Steine innerhalb des Heimfelds zu ziehen
+    - [x] Test mit Beispielstellungen und Vergleich der durchschnittlichen Zahl an Würfen bis zum Ende: 13,1 statt 15,5 Würfe in 200 zufälligen Rennen (Stand 2026-11-09)
+- [x] **T7.6 P2G-Logo im App-Symbol kleiner** (`A-326`, Wunsch vom 2026-11-09)
+    - [x] P2G-Logo im App-Symbol um 8 % verkleinern (`tools/icon/render_icon_art.py`), auf Android, Web und Windows verteilen
+    - [x] Test: Auf Android ist das Logo in jeder Maskenform des adaptiven Symbols (Kreis, Squircle, abgerundetes Quadrat) vollständig sichtbar und hat rundum einen angenehmen Abstand zum Rand. Gemessen reichte das Logo bisher 36,9 dp weit, die Schutzzone aber nur 33 dp, runde Masken schnitten also die Spitze ab. Mit 8 % kleinerem Logo und dem Motiv auf 70 statt 85 % im adaptiven Symbol reicht es 28,3 dp weit (`test/app/app_icon_test.dart`)
+    - [x] Auf dem Emulator angesehen (2026-11-09, runde Maske): Logo vollständig sichtbar
+    - [x] Auf dem echten Handy angesehen (2026-11-09): in Ordnung
+    - [x] Symbol im Store-Eintrag (`docs/store/icon_512.png`) erneuern, jetzt aus `tools/icon/render_icon.py`
+- [ ] **T7.8 Spielfluss** (`A-220` bis `A-224`, Vorschlag vom 2026-11-09)
+    - [x] Je nach Situation warten: Ein Zug ohne Alternative endet sofort; ohne Recht zum Doppeln würfelt die App nach dem Computer gleich; „Kein Zug möglich“ geht nach 60 % der Wartezeit weiter
+    - [x] Spieltempo statt Sekunden: Aus, Ruhig, Normal, Zügig; alte Einstellungen werden übernommen (0 s → Aus, 3 s → Normal, 5 und 10 s → Ruhig)
+    - [x] Countdown als Ring um das Symbol, das gleich ausgelöst wird; ein weiterer Tipp aufs Brett startet das Zugende neu
+    - [x] „Kein Zug möglich“ als Hinweis auf dem Filz
+    - [x] Schalter „Pflichtzüge selbst setzen“, voreingestellt aus
+    - [x] Dopplerwürfel immer zeigen, solange man doppeln darf; außerhalb des eigenen Wurfs merkt ein Tipp das Doppeln vor, und vor dem nächsten Wurf fragt die App nach, statt selbst zu würfeln (`A-225`, Rückmeldung vom 2026-11-09: im flüssigen Spiel blieb kaum Zeit zum Doppeln)
+    - [x] Der Name „Gemütlich“ aus dem Vorschlag passte auf dem Handy nicht in die Einstellungen; die Stufe heißt „Ruhig“
+    - [x] Rückmeldung vom 2026-11-09 umgesetzt: Der Ring machte die rechte Leiste breiter, und die Hinweise auf dem Filz gehörten optisch nicht zu ihrem Symbol; jetzt liegt der Ring auf dem Symbol, und die Hinweise stehen direkt daneben. Der vorgemerkte Würfel war bei der Nachfrage weiß auf weiß
+    - [ ] Praxistest am Handy
+- [ ] **T7.7 Release 1.1.0**
+    - [x] Version `1.1.0+7` setzen und Bundle bauen
+    - [ ] Im Play Store und auf GitHub veröffentlichen
 
 ### D8 Coach
 
@@ -309,9 +339,9 @@ Ein Task ist erledigt, wenn:
 | A-108 | Auswürfeln ist nur möglich, wenn alle eigenen Steine im Heimfeld sind. | D2 |
 | A-109 | Die Partie erkennt Sieg, Gammon und Backgammon und wertet einfach, doppelt und dreifach. | D2 |
 | A-112 | Der Spieler kann die Partie jederzeit nach einer Sicherheitsabfrage aufgeben und verliert den aktuellen Würfelwert. | D3 |
-| A-113 | Ist ein Zug vollständig gesetzt und wird er bis zum Ablauf der Wartezeit nicht beendet, endet er von selbst. Die Wartezeit beträgt 3 Sekunden und lässt sich in den Einstellungen auf 5 oder 10 Sekunden ändern oder ausschalten. | D3 |
-| A-116 | Nach dem Zug des Computers wird nach derselben Wartezeit automatisch gewürfelt. Bis dahin kann der Spieler selbst würfeln oder doppeln. | D3 |
-| A-117 | Ist nach dem Wurf kein Zug möglich, geht das Spiel nach derselben Wartezeit von selbst weiter. Bis dahin kann der Spieler selbst auf „Kein Zug möglich“ drücken; ist die Wartezeit ausgeschaltet, wartet die App darauf. | D6 |
+| A-113 | Ist ein Zug vollständig gesetzt und wird er bis zum Ablauf der Wartezeit nicht beendet, endet er von selbst. Die Wartezeit folgt dem Spieltempo (`A-220`). | D3, geändert D7 |
+| A-116 | Nach dem Zug des Computers wird nach derselben Wartezeit automatisch gewürfelt. Bis dahin kann der Spieler selbst würfeln oder doppeln; ohne Recht zum Doppeln gilt `A-221`. | D3, geändert D7 |
+| A-117 | Ist nach dem Wurf kein Zug möglich, geht das Spiel nach 60 % der Wartezeit von selbst weiter. Bis dahin kann der Spieler selbst auf „Kein Zug möglich“ drücken; bei Spieltempo Aus wartet die App darauf. | D6, geändert D7 |
 | A-114 | Können sich die Steine nicht mehr treffen, lässt sich die Partie jederzeit über einen festen Knopf rechts animiert zu Ende spielen, auch im Zug des Computers. Noch nicht beendete eigene Züge werden dabei verworfen. | D3 |
 | A-111 | Version 1 spielt ohne die Zusatzregeln Jacoby, Beaver und automatisches Doppeln. Gammon und Backgammon zählen auch ohne gedrehten Dopplerwürfel. | D2 |
 | A-110 | Der Dopplerwürfel unterstützt Anbieten, Annehmen und Ablehnen, Besitz und Wert bis 64. Ablehnen beendet die Partie. | D2 |
@@ -334,6 +364,13 @@ Ein Task ist erledigt, wenn:
 | A-216 | Bei einer neuen Partie fragt die App erneut nach der Farbe. Die Spielstärke bleibt wie eingestellt. | D5 |
 | A-217 | Kann nur ein Stein ziehen, etwa ein geschlagener Stein auf der Bar, der zuerst eingesetzt werden muss, ist er zu Beginn des Zugs und nach jedem Teilzug schon gewählt und zeigt seine Ziele. Erneutes Antippen wählt ihn nicht ab. | D6 |
 | A-218 | Die Einstellungen zeigen rechts oben die App-Version mit Build-Nummer, zum Beispiel „Version 1.0.0 (6)“, vollständig lesbar in jeder Fenstergröße. Sie entspricht `version:` in `pubspec.yaml`. | D6 |
+| A-220 | Die Einstellungen bieten ein Spieltempo: Aus, Ruhig, Normal (voreingestellt) und Zügig. Es setzt die Wartezeit für Zugende und Würfeln auf 4, 2 oder 1 Sekunde und die Pause zwischen den Zügen des Computers auf 0,8, 0,55 oder 0,3 Sekunden. Bei Aus geschieht nichts von selbst. | D7 |
+| A-221 | Wo es keine Wahl gibt, wartet die App nicht: Ein Zug ohne Alternative endet sofort, und darf der Spieler nicht doppeln, würfelt die App nach dem Zug des Computers, sobald dessen Stein angekommen ist. Gilt nicht bei Spieltempo Aus. | D7 |
+| A-222 | Um das Symbol, das die App gleich von selbst auslöst, läuft ein blauer Ring als Countdown ab. Er liegt auf dem Rand des Symbols und macht die rechte Leiste nicht breiter. Ein weiterer Tipp aufs Brett startet die Wartezeit bis zum Zugende neu. | D7 |
+| A-223 | Hinweise zu einem Symbol stehen als weiße Sprechblase in dessen Farben direkt links daneben und lassen sich antippen, etwa „Kein Zug möglich“ neben Weiter und „Doppeln oder Würfeln“ neben dem Dopplerwürfel. | D7 |
+| A-225 | Gegen den Computer steht der Dopplerwürfel rechts, solange der Spieler das Recht zum Doppeln hat, auch im Zug des Computers und beim eigenen Ziehen. Darf er gerade nicht doppeln, merkt ein Tipp das Doppeln vor, ein zweiter nimmt es zurück. Vor dem nächsten eigenen Wurf würfelt die App dann nicht von selbst, sondern fragt neben dem Würfel mit einer anklickbaren Sprechblase „×2 Doppeln oder Würfeln“; Würfeln oder Doppeln erledigt den Wunsch. | D7 |
+| A-224 | Der Schalter „Pflichtzüge selbst setzen“ lässt die App einen Zug ohne Alternative Stein für Stein setzen und beenden. Voreingestellt ist er aus; die Einstellung bleibt gespeichert. | D7 |
+| A-219 | Eine persönliche Bestenliste zeigt die gespielten Partien mit Spielstärke, Farbe, Spielzeit und Punkten des Spielers und des Computers sowie die Gesamtpunkte beider Seiten. | D7 |
 
 ### 3xx Grafik
 
@@ -361,6 +398,7 @@ Ein Task ist erledigt, wenn:
 | A-320 | Im Spiel liegt keine Entscheidung auf dem Brett. Würfeln, Doppeln, Annehmen, Ablehnen, Weiter, Zurücknehmen, Zug beenden, Zu Ende spielen und Aufgeben stehen als Symbole am unteren Ende der rechten Leiste; alle in der Markenfarbe, Farben nach `A-324`. Aufgeben steht immer ganz unten, damit es nicht springt. Jedes Symbol hat einen Tooltip, ein Doppelangebot zeigt den neuen Einsatz. | D5 |
 | A-325 | Wird das Brett breiter als 2560 physische Pixel gezeichnet, etwa auf einem 4K-Bildschirm, nutzt die App eine zweite Stufe der Bilder in 3840 × 2160. Sie liegt in `assets/board/hd/` und gehört nur zu Web und Windows; Android nutzt immer die normalen Bilder. | D6 |
 | A-324 | Symbole in der rechten Leiste, die nur in bestimmten Situationen erscheinen (Würfeln, Doppeln, Annehmen, Ablehnen, Kein Zug möglich, Zurücknehmen, Zug beenden, Zu Ende spielen), sind invertiert: weißer Grund mit blauem Symbol. Symbole, die immer da sind (Ansicht, Einstellungen, Statistik, Aufgeben), bleiben blau mit weißem Symbol. Knöpfe in Dialogen sind nicht betroffen. | D6 |
+| A-326 | Das P2G-Logo im App-Symbol ist 8 % kleiner als in Version 1.0. Auf Android bleibt es in jeder Maskenform des adaptiven Symbols vollständig sichtbar, mit einem für das Auge angenehmen Abstand zum Rand: Es reicht höchstens 29 dp weit, die Schutzzone 33 dp. | D7 |
 | A-321 | Knöpfe nutzen die Markenfarbe von p2g-it aus dem P2G-Logo (`assets/icon/icon.png`): Blau `#5B84C3` mit weißer Schrift für alle Knöpfe, Symbole und gewählten Auswahlen. | D5 |
 | A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |
 | A-309 | Bis zu fünf Steine liegen nebeneinander auf einem Dreieck. Steine am Rand werden vom vorderen Rahmen verdeckt wie auf einem echten Brett. | D1 |
@@ -378,6 +416,7 @@ Ein Task ist erledigt, wenn:
 | A-407 | Die Stufe Leicht ist für Einsteiger schlagbar: Ein einfacher Anfängerspieler gewinnt gegen sie mindestens 40 % der Partien. Gemessen am 2026-11-03: 46 %. | D5 |
 | A-408 | Leicht macht erkennbare, menschliche Fehler, etwa ungeschützte Steine oder ausgelassene Treffer, statt zufällig unter guten Zügen zu wählen. | D5 |
 | A-409 | Leicht doppelt selten oder nie und nimmt auch ungünstige Doppel an. | D5 |
+| A-410 | Beim Zu-Ende-Spielen (`A-114`) bringt die App alle Steine möglichst schnell ins Heimfeld und würfelt dort möglichst mit jedem Würfel einen Stein aus. | D7 |
 
 ### 5xx Fairness
 
@@ -394,6 +433,7 @@ Ein Task ist erledigt, wenn:
 | A-602 | Das Layout verträgt längere Texte. Eine neue Sprache braucht nur eine Übersetzung. | D5 |
 | A-603 | Ab Version 1.1 gibt es die Oberfläche auch auf Englisch. Die Systemsprache entscheidet: Deutsch bei Deutsch, sonst Englisch. | D7 |
 | A-604 | Datenschutzerklärung und Impressum gibt es in der App und im Web auch auf Englisch; maßgeblich ist die deutsche Fassung. | D7 |
+| A-605 | In den Einstellungen wählen zwei Flaggen die Sprache: Großbritannien für Englisch, Deutschland für Deutsch. Die Flagge der Gerätesprache folgt dem System, die andere legt die andere Sprache fest. Die Wahl gilt sofort und bleibt auf Android und Windows gespeichert. | D7 |
 
 ### 7xx Technik und Qualität
 

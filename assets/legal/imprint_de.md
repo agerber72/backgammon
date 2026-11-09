@@ -16,4 +16,4 @@ Umsatzsteuer-Identifikationsnummer nach § 27a UStG: DE326044499
 
 Copyright © 2026 Achim Gerber. Das Programm steht unter der GNU General Public License Version 3. Der Quellcode ist auf GitHub verfügbar.
 
-Das P2G-Logo und die App-Symbole sind von dieser Lizenz ausgenommen.
+Das Logo der Passion to Grow GmbH und die App-Symbole sind von dieser Lizenz ausgenommen.

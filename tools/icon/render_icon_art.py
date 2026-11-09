@@ -33,7 +33,8 @@ STACK = 5
 PITCH = POINT_LENGTH / STACK
 CHECKER_RADIUS = PITCH / 2 - 0.05
 CHECKER_HEIGHT = 0.7 * CHECKER_SCALE
-LOGO_WIDTH = 30.0
+# 8 % smaller than in version 1.0, so that the logo leaves more board around it.
+LOGO_WIDTH = 27.6
 LOGO_LIFT = 1.0
 SHADOW_OFFSET = (0.9, -1.0)
 SHADOW_BLUR = 14

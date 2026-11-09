@@ -372,34 +372,35 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
     if (game == null || game.result != null) {
       return const [];
     }
-    Widget situational(String tooltip, Widget icon, VoidCallback onPressed) =>
-        IconButton.filled(
-          onPressed: onPressed,
-          tooltip: tooltip,
-          icon: icon,
-          style: situationalButtonStyle,
-        );
+    final countdown = _controller.countdown;
+    Widget situational(
+      String tooltip,
+      Widget icon,
+      VoidCallback onPressed, [
+      AutoAction? action,
+      ButtonHint? hint,
+    ]) {
+      Widget button = IconButton.filled(
+        onPressed: onPressed,
+        tooltip: tooltip,
+        icon: icon,
+        style: situationalButtonStyle,
+      );
+      if (countdown != null && countdown.action == action) {
+        button = CountdownRing(countdown: countdown, child: button);
+      }
+      return hint == null ? button : HintedButton(hint: hint, child: button);
+    }
 
     final turn = !_controller.isHumanTurn
         ? const <Widget>[]
         : switch (game.phase) {
             GamePhase.awaitingRoll => [
-              if (game.canDouble)
-                situational(
-                  l10n.doubleCube,
-                  Text(
-                    l10n.cubeValue(game.cube.value * 2),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: brandBlue,
-                    ),
-                  ),
-                  _controller.offerDouble,
-                ),
               situational(
                 l10n.roll,
                 const Icon(Icons.casino),
                 _controller.roll,
+                AutoAction.roll,
               ),
             ],
             GamePhase.awaitingDoubleResponse => [
@@ -422,7 +423,7 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ],
             GamePhase.awaitingPlay => [
-              if (_controller.hasPendingSteps)
+              if (_controller.hasPendingSteps && !_controller.playingForced)
                 situational(
                   l10n.undo,
                   const Icon(Icons.undo),
@@ -433,19 +434,76 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                   l10n.noMove,
                   const Icon(Icons.skip_next),
                   _controller.pass,
+                  AutoAction.pass,
+                  ButtonHint([
+                    HintAction(
+                      l10n.noMove,
+                      const Icon(Icons.skip_next),
+                      _controller.pass,
+                    ),
+                  ]),
                 ),
               if (_controller.canConfirm)
                 situational(
                   l10n.confirm,
                   const Icon(Icons.check),
                   _controller.confirm,
+                  AutoAction.confirm,
                 ),
             ],
             GamePhase.finished => const <Widget>[],
           };
+    // The cube shows whenever the person may double, also while the computer
+    // moves, so that a quick game never leaves too little time for it.
+    final doubleNow = game.canDouble && _controller.isHumanTurn;
+    final requested = _controller.doubleRequested;
+    // Played by hand on both sides, it shows only when doubling is allowed.
+    final cubeButton = !_controller.mayDouble && !doubleNow
+        ? null
+        : IconButton.filled(
+            onPressed: _controller.requestDouble,
+            tooltip: doubleNow
+                ? l10n.doubleCube
+                : requested
+                ? l10n.doubleRequested
+                : l10n.doubleLater,
+            icon: Text(
+              l10n.cubeValue(game.cube.value * 2),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: doubleNow ? brandBlue : Colors.white,
+              ),
+            ),
+            // White when it doubles now, blue with a white ring once wished.
+            style: doubleNow
+                ? situationalButtonStyle
+                : IconButton.styleFrom(
+                    backgroundColor: requested ? brandBlue : null,
+                    side: requested
+                        ? const BorderSide(color: Colors.white, width: 2)
+                        : null,
+                  ),
+          );
+    final cube = cubeButton != null && _controller.asksToDouble
+        ? HintedButton(
+            hint: ButtonHint([
+              HintAction(
+                l10n.doubleCube,
+                Text(
+                  l10n.cubeValue(game.cube.value * 2),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                _controller.offerDouble,
+              ),
+              HintAction(l10n.roll, const Icon(Icons.casino), _controller.roll),
+            ], separator: l10n.or),
+            child: cubeButton,
+          )
+        : cubeButton;
     // Resign shows during the whole game, so it keeps the regular colors, and
     // it stays at the very bottom, so that it never moves.
     return [
+      ?cube,
       ...turn,
       if (_controller.canAutoFinish)
         situational(
@@ -598,7 +656,9 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
                           builder: (context) =>
                               StatsDialog(controller: _controller),
                         ),
-                        tooltip: l10n.diceStats,
+                        tooltip: _controller.keepsRecords
+                            ? l10n.statistics
+                            : l10n.diceStats,
                         icon: const Icon(Icons.bar_chart),
                       ),
                     ],
@@ -674,6 +734,162 @@ class _ActionPopup extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A ring around a symbol that runs down until the app acts by itself, so
+/// that a coming action never surprises (`A-222`).
+class CountdownRing extends StatelessWidget {
+  const CountdownRing({
+    super.key,
+    required this.countdown,
+    required this.child,
+  });
+
+  final Countdown countdown;
+  final Widget child;
+
+  /// The ring lies on the edge of the symbol, so the column keeps its width.
+  @override
+  Widget build(BuildContext context) {
+    final total = countdown.duration.inMilliseconds;
+    final elapsed = DateTime.now()
+        .difference(countdown.start)
+        .inMilliseconds
+        .clamp(0, total);
+    return TweenAnimationBuilder<double>(
+      // A new countdown starts a new animation.
+      key: ValueKey(countdown),
+      tween: Tween(begin: total == 0 ? 0 : 1 - elapsed / total, end: 0),
+      duration: Duration(milliseconds: total - elapsed),
+      builder: (context, left, child) => Stack(
+        alignment: Alignment.center,
+        children: [
+          child!,
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: CircularProgressIndicator(
+                  value: left,
+                  strokeWidth: 3,
+                  color: brandBlue,
+                  backgroundColor: brandBlue.withValues(alpha: 0.2),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+/// One choice in a [ButtonHint]: a label with a small symbol, tappable.
+class HintAction {
+  const HintAction(this.label, this.icon, this.onPressed);
+
+  final String label;
+  final Widget icon;
+  final VoidCallback onPressed;
+}
+
+/// A note that belongs to a symbol on the right, made of one or more choices,
+/// such as "No move possible" or "Double or roll".
+class ButtonHint {
+  const ButtonHint(this.actions, {this.separator});
+
+  final List<HintAction> actions;
+
+  /// Word between the choices, such as "or".
+  final String? separator;
+}
+
+/// Shows a [ButtonHint] as a white bubble right next to the left of its
+/// symbol, in the symbol's colors, so it is clear which symbol it means. The
+/// bubble lives in the overlay and follows the symbol, so the column keeps
+/// its width and the bubble can still be tapped.
+class HintedButton extends StatefulWidget {
+  const HintedButton({super.key, required this.hint, required this.child});
+
+  final ButtonHint hint;
+  final Widget child;
+
+  @override
+  State<HintedButton> createState() => _HintedButtonState();
+}
+
+class _HintedButtonState extends State<HintedButton> {
+  final _link = LayerLink();
+  final _portal = OverlayPortalController()..show();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final label = theme.textTheme.labelLarge?.copyWith(
+      color: brandBlue,
+      fontWeight: FontWeight.bold,
+    );
+    final hint = widget.hint;
+    final children = <Widget>[];
+    for (final action in hint.actions) {
+      if (children.isNotEmpty && hint.separator != null) {
+        children.add(
+          Text(
+            hint.separator!,
+            style: theme.textTheme.labelLarge?.copyWith(color: Colors.black54),
+          ),
+        );
+      }
+      children.add(
+        TextButton.icon(
+          onPressed: action.onPressed,
+          style: TextButton.styleFrom(
+            foregroundColor: brandBlue,
+            iconColor: brandBlue,
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+          ),
+          icon: IconTheme.merge(
+            data: const IconThemeData(size: 18, color: brandBlue),
+            child: DefaultTextStyle.merge(
+              style: const TextStyle(color: brandBlue),
+              child: action.icon,
+            ),
+          ),
+          label: Text(action.label, style: label, softWrap: false),
+        ),
+      );
+    }
+    return CompositedTransformTarget(
+      link: _link,
+      child: OverlayPortal(
+        controller: _portal,
+        overlayChildBuilder: (context) => Align(
+          alignment: Alignment.topLeft,
+          child: CompositedTransformFollower(
+            link: _link,
+            targetAnchor: Alignment.centerLeft,
+            followerAnchor: Alignment.centerRight,
+            offset: const Offset(-8, 0),
+            child: Material(
+              color: Colors.white,
+              elevation: 3,
+              borderRadius: BorderRadius.circular(24),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 2,
+                  children: children,
+                ),
+              ),
+            ),
+          ),
+        ),
+        child: widget.child,
       ),
     );
   }

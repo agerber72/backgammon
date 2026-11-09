@@ -101,15 +101,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingView => 'Ansicht';
 
   @override
-  String get settingAutoDelay => 'Automatisch weiter nach';
+  String get settingLanguage => 'Sprache';
 
   @override
-  String get settingAutoDelayOff => 'Aus';
+  String get languageGerman => 'Deutsch';
 
   @override
-  String settingAutoDelaySeconds(int seconds) {
-    return '$seconds s';
-  }
+  String get languageEnglish => 'English';
+
+  @override
+  String get settingPace => 'Spieltempo';
+
+  @override
+  String get paceOff => 'Aus';
+
+  @override
+  String get paceRelaxed => 'Ruhig';
+
+  @override
+  String get paceNormal => 'Normal';
+
+  @override
+  String get paceFast => 'Zügig';
+
+  @override
+  String get settingAutoForced => 'Pflichtzüge selbst setzen';
+
+  @override
+  String get settingAutoForcedHint =>
+      'Lässt der Wurf nur einen Zug zu, setzt die App die Steine.';
 
   @override
   String appVersionLabel(String version, int build) {
@@ -131,6 +151,57 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get statsDoubles => 'Pasch';
+
+  @override
+  String get statistics => 'Statistik';
+
+  @override
+  String get statsDice => 'Würfel';
+
+  @override
+  String get leaderboard => 'Bestenliste';
+
+  @override
+  String get leaderboardTotals => 'Gesamtpunkte';
+
+  @override
+  String get leaderboardLatest => 'Letzte Partien';
+
+  @override
+  String get leaderboardLevel => 'Stufe';
+
+  @override
+  String get leaderboardAllLevels => 'Alle Stufen';
+
+  @override
+  String get leaderboardGames => 'Partien';
+
+  @override
+  String get leaderboardWins => 'Siege';
+
+  @override
+  String get leaderboardYou => 'Du';
+
+  @override
+  String get leaderboardComputer => 'Computer';
+
+  @override
+  String get leaderboardDate => 'Datum';
+
+  @override
+  String get leaderboardColor => 'Farbe';
+
+  @override
+  String get leaderboardPlayTime => 'Spielzeit';
+
+  @override
+  String get leaderboardEmpty =>
+      'Noch keine Partie gegen den Computer beendet.';
+
+  @override
+  String playTime(int minutes, String seconds) {
+    return '$minutes:$seconds min';
+  }
 
   @override
   String get statsExpected =>
@@ -165,6 +236,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String doubleOffered(int value) {
     return 'Doppeln auf $value?';
   }
+
+  @override
+  String get doubleLater => 'Beim nächsten Wurf doppeln';
+
+  @override
+  String get doubleRequested =>
+      'Doppeln vorgemerkt – erneut tippen zum Zurücknehmen';
+
+  @override
+  String get or => 'oder';
 
   @override
   String resultSingle(String winner, int points) {

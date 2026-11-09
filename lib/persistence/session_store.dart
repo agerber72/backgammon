@@ -6,7 +6,11 @@ import '../domain/board.dart';
 import '../domain/dice.dart';
 import '../domain/dice_stats.dart';
 import '../domain/game.dart';
+import '../application/game_pace.dart';
 import '../engine/engine.dart';
+import 'game_records.dart';
+
+export 'game_records.dart';
 
 /// Everything that outlives the app: the running game and the settings.
 class Session {
@@ -18,10 +22,12 @@ class Session {
     this.difficulty = Difficulty.medium,
     this.preferredHuman,
     this.preferredDifficulty,
-    this.autoDelaySeconds = defaultAutoDelaySeconds,
-  });
-
-  static const defaultAutoDelaySeconds = 3;
+    this.pace = GamePace.normal,
+    this.autoForced = false,
+    this.playSeconds = 0,
+    this.language,
+    GameRecords? records,
+  }) : records = records ?? GameRecords();
 
   factory Session.fromJson(Map<String, dynamic> json) {
     final game = json['game'] as Map<String, dynamic>?;
@@ -33,12 +39,21 @@ class Session {
       preferredDifficulty: json['preferredDifficulty'] == null
           ? null
           : Difficulty.values.byName(json['preferredDifficulty'] as String),
-      autoDelaySeconds:
-          json['autoDelaySeconds'] as int? ?? defaultAutoDelaySeconds,
+      // Before version 1.1 the setting was a number of seconds.
+      pace: json['pace'] != null
+          ? GamePace.values.byName(json['pace'] as String)
+          : GamePace.fromSeconds(json['autoDelaySeconds'] as int? ?? 3),
+      autoForced: json['autoForced'] as bool? ?? false,
       gameStats: DiceStats.fromJson(json['gameStats'] as Map<String, dynamic>),
       totalStats: DiceStats.fromJson(
         json['totalStats'] as Map<String, dynamic>,
       ),
+      playSeconds: json['playSeconds'] as int? ?? 0,
+      language: json['language'] as String?,
+      // Saved before version 1.1 without a leaderboard.
+      records: json['records'] == null
+          ? null
+          : GameRecords.fromJson(json['records'] as Map<String, dynamic>),
     );
   }
 
@@ -51,10 +66,22 @@ class Session {
   final Player? preferredHuman;
   final Difficulty? preferredDifficulty;
 
-  /// Waiting time for automatic actions; 0 turns them off.
-  final int autoDelaySeconds;
+  /// How quickly the game goes on by itself.
+  final GamePace pace;
+
+  /// Whether forced moves play themselves.
+  final bool autoForced;
   final DiceStats gameStats;
   final DiceStats totalStats;
+
+  /// Time the app was open during the running game.
+  final int playSeconds;
+
+  /// Language code chosen in the settings; null follows the system.
+  final String? language;
+
+  /// The personal leaderboard.
+  final GameRecords records;
 
   Map<String, Object?> toJson() => {
     'game': game == null ? null : _gameToJson(game!),
@@ -62,9 +89,13 @@ class Session {
     'difficulty': difficulty.name,
     'preferredHuman': preferredHuman?.name,
     'preferredDifficulty': preferredDifficulty?.name,
-    'autoDelaySeconds': autoDelaySeconds,
+    'pace': pace.name,
+    'autoForced': autoForced,
     'gameStats': gameStats.toJson(),
     'totalStats': totalStats.toJson(),
+    'playSeconds': playSeconds,
+    'language': language,
+    'records': records.toJson(),
   };
 
   static Player? _playerOf(Object? name) =>

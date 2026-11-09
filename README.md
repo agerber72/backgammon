@@ -23,6 +23,6 @@ Dieses Programm ist freie Software und steht unter der GNU General Public Licens
 
 Die Entwicklung wird von Claude (Anthropic) als Werkzeug unterstützt. Claude ist kein Urheber dieses Projekts. Ziele, Entscheidungen und Verantwortung liegen bei Achim Gerber.
 
-Das P2G-Logo und die daraus erzeugten App-Symbole sind von der GPL ausgenommen. Alle Rechte daran liegen bei Achim Gerber. Abgeleitete Versionen dürfen sie nicht verwenden.
+Das Logo der Passion to Grow GmbH und die daraus erzeugten App-Symbole sind von der GPL ausgenommen. Alle Rechte daran liegen bei Achim Gerber. Abgeleitete Versionen dürfen sie nicht verwenden.
 
 Kontakt: apps@passion-to-grow.com

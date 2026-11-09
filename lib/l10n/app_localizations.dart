@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_de.dart';
+import 'app_localizations_en.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,7 +93,10 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('de')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('de'),
+    Locale('en'),
+  ];
 
   /// Application name shown in the title bar.
   ///
@@ -274,23 +278,65 @@ abstract class AppLocalizations {
   /// **'Ansicht'**
   String get settingView;
 
-  /// No description provided for @settingAutoDelay.
+  /// No description provided for @settingLanguage.
   ///
   /// In de, this message translates to:
-  /// **'Automatisch weiter nach'**
-  String get settingAutoDelay;
+  /// **'Sprache'**
+  String get settingLanguage;
 
-  /// No description provided for @settingAutoDelayOff.
+  /// Always in German, the name of the language itself.
+  ///
+  /// In de, this message translates to:
+  /// **'Deutsch'**
+  String get languageGerman;
+
+  /// Always in English, the name of the language itself.
+  ///
+  /// In de, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
+
+  /// How quickly the game goes on by itself.
+  ///
+  /// In de, this message translates to:
+  /// **'Spieltempo'**
+  String get settingPace;
+
+  /// No description provided for @paceOff.
   ///
   /// In de, this message translates to:
   /// **'Aus'**
-  String get settingAutoDelayOff;
+  String get paceOff;
 
-  /// No description provided for @settingAutoDelaySeconds.
+  /// No description provided for @paceRelaxed.
   ///
   /// In de, this message translates to:
-  /// **'{seconds} s'**
-  String settingAutoDelaySeconds(int seconds);
+  /// **'Ruhig'**
+  String get paceRelaxed;
+
+  /// No description provided for @paceNormal.
+  ///
+  /// In de, this message translates to:
+  /// **'Normal'**
+  String get paceNormal;
+
+  /// No description provided for @paceFast.
+  ///
+  /// In de, this message translates to:
+  /// **'Zügig'**
+  String get paceFast;
+
+  /// The app plays a move by itself when the roll allows only one.
+  ///
+  /// In de, this message translates to:
+  /// **'Pflichtzüge selbst setzen'**
+  String get settingAutoForced;
+
+  /// No description provided for @settingAutoForcedHint.
+  ///
+  /// In de, this message translates to:
+  /// **'Lässt der Wurf nur einen Zug zu, setzt die App die Steine.'**
+  String get settingAutoForcedHint;
 
   /// App version at the top right of the settings, with the build number in brackets.
   ///
@@ -327,6 +373,102 @@ abstract class AppLocalizations {
   /// In de, this message translates to:
   /// **'Pasch'**
   String get statsDoubles;
+
+  /// No description provided for @statistics.
+  ///
+  /// In de, this message translates to:
+  /// **'Statistik'**
+  String get statistics;
+
+  /// No description provided for @statsDice.
+  ///
+  /// In de, this message translates to:
+  /// **'Würfel'**
+  String get statsDice;
+
+  /// The personal leaderboard of the games against the computer.
+  ///
+  /// In de, this message translates to:
+  /// **'Bestenliste'**
+  String get leaderboard;
+
+  /// No description provided for @leaderboardTotals.
+  ///
+  /// In de, this message translates to:
+  /// **'Gesamtpunkte'**
+  String get leaderboardTotals;
+
+  /// No description provided for @leaderboardLatest.
+  ///
+  /// In de, this message translates to:
+  /// **'Letzte Partien'**
+  String get leaderboardLatest;
+
+  /// No description provided for @leaderboardLevel.
+  ///
+  /// In de, this message translates to:
+  /// **'Stufe'**
+  String get leaderboardLevel;
+
+  /// No description provided for @leaderboardAllLevels.
+  ///
+  /// In de, this message translates to:
+  /// **'Alle Stufen'**
+  String get leaderboardAllLevels;
+
+  /// No description provided for @leaderboardGames.
+  ///
+  /// In de, this message translates to:
+  /// **'Partien'**
+  String get leaderboardGames;
+
+  /// No description provided for @leaderboardWins.
+  ///
+  /// In de, this message translates to:
+  /// **'Siege'**
+  String get leaderboardWins;
+
+  /// No description provided for @leaderboardYou.
+  ///
+  /// In de, this message translates to:
+  /// **'Du'**
+  String get leaderboardYou;
+
+  /// No description provided for @leaderboardComputer.
+  ///
+  /// In de, this message translates to:
+  /// **'Computer'**
+  String get leaderboardComputer;
+
+  /// No description provided for @leaderboardDate.
+  ///
+  /// In de, this message translates to:
+  /// **'Datum'**
+  String get leaderboardDate;
+
+  /// No description provided for @leaderboardColor.
+  ///
+  /// In de, this message translates to:
+  /// **'Farbe'**
+  String get leaderboardColor;
+
+  /// No description provided for @leaderboardPlayTime.
+  ///
+  /// In de, this message translates to:
+  /// **'Spielzeit'**
+  String get leaderboardPlayTime;
+
+  /// No description provided for @leaderboardEmpty.
+  ///
+  /// In de, this message translates to:
+  /// **'Noch keine Partie gegen den Computer beendet.'**
+  String get leaderboardEmpty;
+
+  /// Play time of a game, seconds always with two digits.
+  ///
+  /// In de, this message translates to:
+  /// **'{minutes}:{seconds} min'**
+  String playTime(int minutes, String seconds);
 
   /// No description provided for @statsExpected.
   ///
@@ -370,6 +512,24 @@ abstract class AppLocalizations {
   /// **'Doppeln auf {value}?'**
   String doubleOffered(int value);
 
+  /// Tooltip of the cube while doubling is not allowed yet; a tap marks the wish.
+  ///
+  /// In de, this message translates to:
+  /// **'Beim nächsten Wurf doppeln'**
+  String get doubleLater;
+
+  /// No description provided for @doubleRequested.
+  ///
+  /// In de, this message translates to:
+  /// **'Doppeln vorgemerkt – erneut tippen zum Zurücknehmen'**
+  String get doubleRequested;
+
+  /// Between the choices Double and Roll when the app asks before the roll.
+  ///
+  /// In de, this message translates to:
+  /// **'oder'**
+  String get or;
+
   /// No description provided for @resultSingle.
   ///
   /// In de, this message translates to:
@@ -400,7 +560,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['de'].contains(locale.languageCode);
+      <String>['de', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -411,6 +571,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'de':
       return AppLocalizationsDe();
+    case 'en':
+      return AppLocalizationsEn();
   }
 
   throw FlutterError(

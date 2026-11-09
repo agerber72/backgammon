@@ -4,14 +4,14 @@ Plattformen an (android, windows, web). Die veröffentlichte Fassung enthält al
 -->
 # Datenschutzerklärung für die App Backgammon
 
-Stand: 4. November 2026
+Stand: 9. November 2026
 
 ## Das Wichtigste in Kürze
 
 Die App kommt ohne Konto, Werbung und Tracking aus.
 
 <!-- nur: android, windows -->
-- Android- und Windows-App: Die App sendet keine Daten an uns oder an Dritte. Spielstand und Einstellungen speichert sie nur auf deinem Gerät.
+- Android- und Windows-App: Die App sendet keine Daten an uns oder an Dritte. Spielstand, Einstellungen und Statistik speichert sie nur auf deinem Gerät.
 <!-- ende -->
 <!-- nur: web -->
 - Web-Version: Beim Aufruf verarbeitet der Hoster GitHub deine IP-Adresse. Die Web-Version selbst speichert nichts in deinem Browser.
@@ -36,8 +36,9 @@ Die App arbeitet offline. Sie enthält keine Funktionen, die Daten über das Int
 Auf deinem Gerät speichert die App:
 
 - den Stand der laufenden Partie,
-- deine Einstellungen, also Farbe, Spielstärke und Wartezeit,
-- die Würfelstatistik.
+- deine Einstellungen, also Farbe, Spielstärke, Spieltempo, Pflichtzüge und Sprache,
+- die Würfelstatistik,
+- die Bestenliste deiner Partien gegen den Computer mit Datum, Spielstärke, Farbe, Spielzeit und Punkten.
 
 Diese Daten verlassen dein Gerät nicht, und wir haben keinen Zugriff darauf. Du kannst sie jederzeit löschen, indem du die App deinstallierst.
 <!-- ende -->
@@ -68,7 +69,7 @@ Rechtsgrundlage ist unser berechtigtes Interesse, die Web-Version sicher und ohn
 
 Wie lange GitHub diese Daten speichert, legt GitHub fest; wir haben keinen Zugriff darauf. Dabei können Daten in die USA übertragen werden. GitHub stützt solche Übertragungen nach eigenen Angaben auf das EU-US Data Privacy Framework und auf Standardvertragsklauseln. Datenschutzhinweise von GitHub: https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement
 
-Die Web-Version speichert nichts in deinem Browser, weder Cookies noch Local Storage. Spielstand, Einstellungen und Würfelstatistik bestehen nur, solange die Seite geöffnet ist. Mit dem Schließen oder Neuladen sind sie verloren.
+Die Web-Version speichert nichts in deinem Browser, weder Cookies noch Local Storage, und führt keine Bestenliste. Spielstand, Einstellungen und Würfelstatistik bestehen nur, solange die Seite geöffnet ist. Mit dem Schließen oder Neuladen sind sie verloren.
 <!-- ende -->
 
 ## Kontakt per E-Mail

@@ -8,7 +8,11 @@ import '../domain/dice_stats.dart';
 import '../domain/game.dart';
 import '../domain/move_generator.dart';
 import '../engine/engine.dart';
+import '../engine/race.dart';
 import '../persistence/session_store.dart';
+import 'game_pace.dart';
+
+export 'game_pace.dart';
 
 /// Connects a running game with the user interface. During a turn it collects
 /// single checker moves, which only become part of the game on [confirm].
@@ -18,32 +22,62 @@ class GameController extends ChangeNotifier {
     Game? game,
     Engine? engine,
     SessionStore? store,
-    this.computerPause = const Duration(milliseconds: 550),
+    Duration? computerPause,
     this.autoFinishPause = const Duration(milliseconds: 300),
-    Duration? autoActionDelay = const Duration(seconds: 3),
+    Duration? autoActionDelay = defaultDelay,
+    DateTime Function()? clock,
   }) : _roller = roller ?? RandomDiceRoller(),
-       _engine = engine ?? HeuristicEngine() {
+       _engine = engine ?? HeuristicEngine(),
+       _clock = clock ?? DateTime.now,
+       _fixedComputerPause = computerPause {
     _store = store;
     _game = game;
     _autoActionDelay = autoActionDelay;
+    _pace = autoActionDelay == null ? GamePace.off : GamePace.normal;
   }
+
+  /// The waiting time of the default pace.
+  static const defaultDelay = Duration(seconds: 2);
+
+  /// How long the dice wait after the computer's turn when the person cannot
+  /// double: just long enough for the last checker to arrive.
+  static const _settleDelay = Duration(milliseconds: 400);
 
   final DiceRoller _roller;
   final Engine _engine;
+  final DateTime Function() _clock;
   late final SessionStore? _store;
 
+  /// Set by tests; otherwise the pace decides.
+  final Duration? _fixedComputerPause;
+
   /// Time between the computer's actions, so that a person can follow them.
-  final Duration computerPause;
+  Duration get computerPause => _fixedComputerPause ?? _pace.computerPause;
 
   /// Time between moves while the game plays itself to the end.
   final Duration autoFinishPause;
 
   Duration? _autoActionDelay;
+  late GamePace _pace;
+  var _autoForced = false;
+  var _playingForced = false;
+  var _doubleRequested = false;
+  Countdown? _countdown;
 
-  /// Time after which a finished turn ends, the person rolls after the
-  /// computer's turn, or a roll without any move goes on, without any input;
-  /// null turns this off.
+  /// Time to take back a move with alternatives, or to double before the
+  /// dice roll by themselves; null turns everything automatic off.
   Duration? get autoActionDelay => _autoActionDelay;
+
+  GamePace get pace => _pace;
+
+  /// Whether the app sets a forced move by itself.
+  bool get autoForced => _autoForced;
+
+  /// True while the app sets a forced move; the person waits meanwhile.
+  bool get playingForced => _playingForced;
+
+  /// The countdown running now, if any, for the ring around its symbol.
+  Countdown? get countdown => _countdown;
 
   Player? _human;
   Difficulty _difficulty = Difficulty.medium;
@@ -51,6 +85,10 @@ class GameController extends ChangeNotifier {
   Difficulty? _preferredDifficulty;
   DiceStats _gameStats = DiceStats();
   DiceStats _totalStats = DiceStats();
+  GameRecords _records = GameRecords();
+  final _language = ValueNotifier<String?>(null);
+  Duration _playedBefore = Duration.zero;
+  DateTime? _playingSince;
   var _gameNumber = 0;
   var _computerActive = false;
   var _disposed = false;
@@ -78,6 +116,30 @@ class GameController extends ChangeNotifier {
 
   DiceStats get totalStats => _totalStats;
 
+  /// Language code of the interface, `de` or `en`; null follows the system
+  /// language. A separate listenable, so the app only rebuilds on a change.
+  ValueListenable<String?> get language => _language;
+
+  /// Switches the language at once and keeps the choice.
+  void updateLanguage(String? code) {
+    _language.value = code;
+    _save();
+  }
+
+  /// The personal leaderboard. Only kept where the app saves its state, so
+  /// not in the web version.
+  GameRecords get records => _records;
+
+  bool get keepsRecords => _store != null;
+
+  /// Time the app has been open during the current game.
+  Duration get playTime {
+    final since = _playingSince;
+    return since == null
+        ? _playedBefore
+        : _playedBefore + _clock().difference(since);
+  }
+
   /// Continues a saved game. Its dice stay as they were, so restarting the app
   /// cannot change a roll.
   Future<void> restore() async {
@@ -90,23 +152,35 @@ class GameController extends ChangeNotifier {
     _difficulty = session.difficulty;
     _preferredHuman = session.preferredHuman;
     _preferredDifficulty = session.preferredDifficulty;
-    _autoActionDelay = session.autoDelaySeconds == 0
-        ? null
-        : Duration(seconds: session.autoDelaySeconds);
+    _pace = session.pace;
+    _autoActionDelay = _pace.decision;
+    _autoForced = session.autoForced;
     _gameStats = session.gameStats;
     _totalStats = session.totalStats;
+    _records = session.records;
+    _language.value = session.language;
+    _playedBefore = Duration(seconds: session.playSeconds);
+    _playingSince = _game == null ? null : _clock();
     _selectOnlySource();
     notifyListeners();
     _letComputerAct();
   }
 
-  /// Changes the waiting time at once; a running countdown stops, and a
-  /// new one starts with the next turn.
-  void updateAutoDelay(Duration? delay) {
-    _autoActionDelay = delay;
-    _autoAction?.cancel();
+  /// Changes the pace at once; a running countdown stops, and a new one
+  /// starts with the next decision.
+  void updatePace(GamePace pace) {
+    _pace = pace;
+    _autoActionDelay = pace.decision;
+    _cancelCountdown();
     _save();
     notifyListeners();
+  }
+
+  void updateAutoForced(bool value) {
+    _autoForced = value;
+    _save();
+    notifyListeners();
+    _scheduleAutoRoll();
   }
 
   /// Settings for the next game; a running game keeps its own.
@@ -150,7 +224,10 @@ class GameController extends ChangeNotifier {
 
   List<Step> get _options {
     final game = _game;
-    if (game == null || game.phase != GamePhase.awaitingPlay || !isHumanTurn) {
+    if (game == null ||
+        game.phase != GamePhase.awaitingPlay ||
+        !isHumanTurn ||
+        _playingForced) {
       return const [];
     }
     return nextSteps(game.board, game.turn, game.dice!, _steps);
@@ -187,6 +264,7 @@ class GameController extends ChangeNotifier {
     return game != null &&
         game.phase == GamePhase.awaitingPlay &&
         isHumanTurn &&
+        !_playingForced &&
         !mustPass &&
         _options.isEmpty;
   }
@@ -201,6 +279,8 @@ class GameController extends ChangeNotifier {
     _game = game;
     _gameStats = DiceStats()..addOpening(game.dice!);
     _totalStats.addOpening(game.dice!);
+    _playedBefore = Duration.zero;
+    _playingSince = _clock();
     _resetTurn();
     _selectOnlySource();
     _save();
@@ -217,11 +297,54 @@ class GameController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
-    _autoAction?.cancel();
+    _cancelCountdown();
+    _language.dispose();
     super.dispose();
   }
 
-  void roll() => _update(_rolled(_game!));
+  void roll() {
+    _doubleRequested = false;
+    _update(_rolled(_game!));
+  }
+
+  /// Whether the person holds the right to double in this game, whatever
+  /// the phase: the cube is in the middle or theirs and can still grow.
+  bool get mayDouble {
+    final game = _game;
+    final human = _human;
+    return game != null &&
+        human != null &&
+        !_autoFinishing &&
+        game.phase != GamePhase.finished &&
+        game.cube.value < Cube.maxValue &&
+        (game.cube.owner == null || game.cube.owner == human);
+  }
+
+  /// True while the person wants to double at the next chance.
+  bool get doubleRequested => _doubleRequested && mayDouble;
+
+  /// Doubles now if the rules allow it; otherwise marks the wish, and at the
+  /// next chance the dice wait for the person instead of rolling by
+  /// themselves. A second tap takes the wish back.
+  void requestDouble() {
+    final game = _game!;
+    if (game.canDouble && isHumanTurn) {
+      offerDouble();
+      return;
+    }
+    _doubleRequested = !_doubleRequested;
+    notifyListeners();
+  }
+
+  /// The person rolls with the wish to double still open: the app asks.
+  bool get asksToDouble {
+    final game = _game;
+    return game != null &&
+        doubleRequested &&
+        isHumanTurn &&
+        game.phase == GamePhase.awaitingRoll &&
+        game.canDouble;
+  }
 
   Game _rolled(Game game) {
     final next = game.roll(_roller);
@@ -230,7 +353,10 @@ class GameController extends ChangeNotifier {
     return next;
   }
 
-  void offerDouble() => _update(_game!.offerDouble());
+  void offerDouble() {
+    _doubleRequested = false;
+    _update(_game!.offerDouble());
+  }
 
   void acceptDouble() => _update(_game!.acceptDouble());
 
@@ -255,7 +381,7 @@ class GameController extends ChangeNotifier {
     if (isHumanTurn) {
       _resetTurn();
     }
-    _autoAction?.cancel();
+    _cancelCountdown();
     _autoFinishing = true;
     notifyListeners();
     _letComputerAct();
@@ -278,15 +404,20 @@ class GameController extends ChangeNotifier {
 
   /// Takes back the latest single move, also within a combined move.
   void undo() {
-    _autoAction?.cancel();
+    _cancelCountdown();
     _steps = _steps.sublist(0, _steps.length - 1);
     _lastStep = null;
     _selectOnlySource();
     notifyListeners();
   }
 
-  /// Handles a tap on a point, the bar or the tray.
+  /// Handles a tap on a point, the bar or the tray. A tap while a finished
+  /// move waits for its end starts the waiting time anew.
   void tap(int position) {
+    final countdown = _countdown;
+    if (countdown?.action == AutoAction.confirm) {
+      _startCountdown(AutoAction.confirm, countdown!.duration, confirm);
+    }
     if (_selected != null && targets.contains(position)) {
       _move(position);
     } else if (sources.contains(position)) {
@@ -312,9 +443,30 @@ class GameController extends ChangeNotifier {
     _selectOnlySource();
     notifyListeners();
     final delay = autoActionDelay;
-    if (delay != null && canConfirm) {
-      _autoAction = Timer(delay, confirm);
+    if (delay == null || !canConfirm) {
+      return;
     }
+    // Without any alternative there is nothing to take back.
+    if (_game!.plays.length == 1) {
+      confirm();
+    } else {
+      _startCountdown(AutoAction.confirm, delay, confirm);
+    }
+  }
+
+  void _startCountdown(AutoAction action, Duration delay, VoidCallback run) {
+    _autoAction?.cancel();
+    _countdown = Countdown(action, _clock(), delay);
+    _autoAction = Timer(delay, () {
+      _countdown = null;
+      run();
+    });
+    notifyListeners();
+  }
+
+  void _cancelCountdown() {
+    _autoAction?.cancel();
+    _countdown = null;
   }
 
   /// Selects the checker when only one can move, as with a checker on the
@@ -328,6 +480,7 @@ class GameController extends ChangeNotifier {
   }
 
   void _update(Game next) {
+    _recordIfFinished(next);
     _game = next;
     _resetTurn();
     _selectOnlySource();
@@ -348,12 +501,40 @@ class GameController extends ChangeNotifier {
       difficulty: _difficulty,
       preferredHuman: _preferredHuman,
       preferredDifficulty: _preferredDifficulty,
-      autoDelaySeconds: _autoActionDelay?.inSeconds ?? 0,
+      pace: _pace,
+      autoForced: _autoForced,
       gameStats: _gameStats,
       totalStats: _totalStats,
+      playSeconds: playTime.inSeconds,
+      language: _language.value,
+      records: _records,
     );
     // One after the other, so that an older state cannot overwrite a newer one.
     _lastSave = _lastSave.then((_) => store.save(session));
+  }
+
+  /// Adds a game against the computer to the leaderboard when it ends.
+  void _recordIfFinished(Game next) {
+    final human = _human;
+    final result = next.result;
+    if (human == null ||
+        result == null ||
+        _game?.phase == GamePhase.finished ||
+        !keepsRecords) {
+      return;
+    }
+    _records.add(
+      GameRecord(
+        finishedAt: _clock(),
+        difficulty: _difficulty,
+        color: human,
+        playTime: playTime,
+        points: result.winner == human ? result.points : 0,
+        computerPoints: result.winner == human ? 0 : result.points,
+      ),
+    );
+    _playedBefore = playTime;
+    _playingSince = null;
   }
 
   /// Runs the computer's actions until a person has to decide again.
@@ -398,19 +579,65 @@ class GameController extends ChangeNotifier {
   }
 
   /// After the computer's turn the dice roll by themselves unless the person
-  /// rolls or doubles first. A roll without any move goes on by itself as
-  /// well, so the game never waits for a decision that is no choice.
+  /// rolls or doubles first; without the right to double they roll at once.
+  /// A roll without any move goes on by itself as well, and a forced move
+  /// plays itself if the person wants that.
   void _scheduleAutoRoll() {
-    final delay = autoActionDelay;
-    if (delay == null || !isHumanTurn) {
+    final game = _game;
+    if (game == null || !isHumanTurn || _countdown != null) {
       return;
     }
-    if (_human != null && _game?.phase == GamePhase.awaitingRoll) {
-      _autoAction?.cancel();
-      _autoAction = Timer(delay, roll);
+    if (_autoForced &&
+        _human != null &&
+        game.phase == GamePhase.awaitingPlay &&
+        _steps.isEmpty &&
+        game.plays.length == 1) {
+      _playForced(game);
+      return;
+    }
+    final delay = autoActionDelay;
+    if (delay == null) {
+      return;
+    }
+    if (_human != null && game.phase == GamePhase.awaitingRoll) {
+      // The person asked to double: no roll by itself, the app asks.
+      if (asksToDouble) {
+        return;
+      }
+      final wait = game.canDouble
+          ? delay
+          : (delay < _settleDelay ? delay : _settleDelay);
+      _startCountdown(AutoAction.roll, wait, roll);
     } else if (mustPass) {
-      _autoAction?.cancel();
-      _autoAction = Timer(delay, pass);
+      _startCountdown(AutoAction.pass, delay * 0.6, pass);
+    }
+  }
+
+  /// Sets the only possible move checker by checker, like the computer does,
+  /// and ends the turn.
+  Future<void> _playForced(Game game) async {
+    final number = _gameNumber;
+    final play = game.plays.single;
+    bool stopped() =>
+        _disposed || number != _gameNumber || !identical(_game, game);
+    _playingForced = true;
+    _selected = null;
+    notifyListeners();
+    for (final step in play.steps) {
+      await Future<void>.delayed(computerPause);
+      if (stopped()) {
+        _playingForced = false;
+        return;
+      }
+      _steps = [..._steps, step];
+      _lastStep = step;
+      _selected = null;
+      notifyListeners();
+    }
+    await Future<void>.delayed(computerPause);
+    _playingForced = false;
+    if (!stopped()) {
+      _update(game.play(play));
     }
   }
 
@@ -423,12 +650,16 @@ class GameController extends ChangeNotifier {
       _set(game.pass());
       return;
     }
-    final play = await _engine.choosePlay(
-      game.board,
-      game.turn,
-      game.dice!,
-      _autoFinishing ? Difficulty.hard : _difficulty,
-    );
+    // While the game plays itself to the end, both sides race home and bear
+    // off as fast as they can, whatever the chosen level.
+    final play = _autoFinishing
+        ? racePlay(game.board, game.turn, game.dice!)
+        : await _engine.choosePlay(
+            game.board,
+            game.turn,
+            game.dice!,
+            _difficulty,
+          );
     for (final step in play.steps) {
       if (stopped()) {
         return;
@@ -444,6 +675,7 @@ class GameController extends ChangeNotifier {
   }
 
   void _set(Game next) {
+    _recordIfFinished(next);
     _game = next;
     _resetTurn();
     _selectOnlySource();
@@ -452,7 +684,7 @@ class GameController extends ChangeNotifier {
   }
 
   void _resetTurn() {
-    _autoAction?.cancel();
+    _cancelCountdown();
     _steps = const [];
     _selected = null;
     _lastStep = null;
