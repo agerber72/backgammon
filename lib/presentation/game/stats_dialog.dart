@@ -6,11 +6,13 @@ import '../../domain/board.dart' show Player;
 import '../../domain/dice_stats.dart';
 import '../../engine/engine.dart';
 import '../../l10n/app_localizations.dart';
+import '../scroll_hint.dart';
 import '../../persistence/session_store.dart';
 
-enum _StatsPage { dice, leaderboard }
+enum _StatsPage { leaderboard, dice }
 
-/// Dice statistics and, where the app keeps its state, the leaderboard.
+/// The leaderboard first, where the app keeps its state, then the dice
+/// statistics.
 class StatsDialog extends StatefulWidget {
   const StatsDialog({super.key, required this.controller});
 
@@ -21,7 +23,9 @@ class StatsDialog extends StatefulWidget {
 }
 
 class _StatsDialogState extends State<StatsDialog> {
-  var _page = _StatsPage.dice;
+  late var _page = widget.controller.keepsRecords
+      ? _StatsPage.leaderboard
+      : _StatsPage.dice;
 
   @override
   Widget build(BuildContext context) {
@@ -30,44 +34,48 @@ class _StatsDialogState extends State<StatsDialog> {
     final withLeaderboard = controller.keepsRecords;
     return AlertDialog(
       title: Text(withLeaderboard ? l10n.statistics : l10n.diceStats),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 12,
-          children: [
-            if (withLeaderboard)
-              SegmentedButton<_StatsPage>(
-                segments: [
-                  ButtonSegment(
-                    value: _StatsPage.dice,
-                    label: Text(l10n.statsDice),
-                  ),
-                  ButtonSegment(
-                    value: _StatsPage.leaderboard,
-                    label: Text(l10n.leaderboard),
-                  ),
-                ],
-                selected: {_page},
-                onSelectionChanged: (choice) =>
-                    setState(() => _page = choice.single),
-              ),
-            if (_page == _StatsPage.dice) ...[
-              _StatsTable(
-                title: l10n.statsThisGame,
-                stats: controller.gameStats,
-              ),
-              _StatsTable(
-                title: l10n.statsAllGames,
-                stats: controller.totalStats,
-              ),
-              Text(
-                l10n.statsExpected,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ] else
-              _Leaderboard(records: controller.records),
-          ],
+      content: ScrollHint(
+        builder: (context, scroll) => SingleChildScrollView(
+          controller: scroll,
+          padding: const EdgeInsets.only(right: ScrollHint.reserve),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 12,
+            children: [
+              if (withLeaderboard)
+                SegmentedButton<_StatsPage>(
+                  segments: [
+                    ButtonSegment(
+                      value: _StatsPage.leaderboard,
+                      label: Text(l10n.leaderboard),
+                    ),
+                    ButtonSegment(
+                      value: _StatsPage.dice,
+                      label: Text(l10n.statsDice),
+                    ),
+                  ],
+                  selected: {_page},
+                  onSelectionChanged: (choice) =>
+                      setState(() => _page = choice.single),
+                ),
+              if (_page == _StatsPage.dice) ...[
+                _StatsTable(
+                  title: l10n.statsThisGame,
+                  stats: controller.gameStats,
+                ),
+                _StatsTable(
+                  title: l10n.statsAllGames,
+                  stats: controller.totalStats,
+                ),
+                Text(
+                  l10n.statsExpected,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ] else
+                _Leaderboard(records: controller.records),
+            ],
+          ),
         ),
       ),
       actions: [

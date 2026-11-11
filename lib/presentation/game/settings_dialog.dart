@@ -6,6 +6,7 @@ import '../../domain/board.dart' show Player;
 import '../../engine/engine.dart';
 import '../../l10n/app_locale.dart';
 import '../../l10n/app_localizations.dart';
+import '../scroll_hint.dart';
 import '../board/board_assets.dart';
 import 'language_flag.dart';
 import 'legal_page.dart';
@@ -127,149 +128,160 @@ class _SettingsDialogState extends State<SettingsDialog> {
           ),
         ],
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 32,
-              children: [
-                Column(
+      content: ScrollHint(
+        builder: (context, scroll) => SingleChildScrollView(
+          controller: scroll,
+          padding: const EdgeInsets.only(right: ScrollHint.reserve),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              // Shrinks a little where the scroll arrows leave too little room.
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 12,
+                  spacing: 32,
                   children: [
-                    _setting(
-                      l10n.settingColor,
-                      SegmentedButton<Player>(
-                        segments: [
-                          ButtonSegment(
-                            value: Player.white,
-                            label: Text(l10n.white),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 12,
+                      children: [
+                        _setting(
+                          l10n.settingColor,
+                          SegmentedButton<Player>(
+                            segments: [
+                              ButtonSegment(
+                                value: Player.white,
+                                label: Text(l10n.white),
+                              ),
+                              ButtonSegment(
+                                value: Player.black,
+                                label: Text(l10n.black),
+                              ),
+                            ],
+                            selected: {_color},
+                            onSelectionChanged: (choice) {
+                              setState(() => _color = choice.single);
+                              widget.controller.updateSettings(
+                                human: choice.single,
+                              );
+                            },
                           ),
-                          ButtonSegment(
-                            value: Player.black,
-                            label: Text(l10n.black),
-                          ),
-                        ],
-                        selected: {_color},
-                        onSelectionChanged: (choice) {
-                          setState(() => _color = choice.single);
-                          widget.controller.updateSettings(
-                            human: choice.single,
-                          );
-                        },
-                      ),
-                    ),
-                    _setting(
-                      l10n.settingView,
-                      SegmentedButton<BoardView>(
-                        segments: [
-                          ButtonSegment(
-                            value: BoardView.white,
-                            label: Text(l10n.white),
-                          ),
-                          ButtonSegment(
-                            value: BoardView.black,
-                            label: Text(l10n.black),
-                          ),
-                        ],
-                        selected: {_view},
-                        onSelectionChanged: (choice) =>
-                            setState(() => _view = choice.single),
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 12,
-                  children: [
-                    _setting(
-                      l10n.settingDifficulty,
-                      SegmentedButton<Difficulty>(
-                        segments: [
-                          ButtonSegment(
-                            value: Difficulty.easy,
-                            label: Text(l10n.difficultyEasy),
-                          ),
-                          ButtonSegment(
-                            value: Difficulty.medium,
-                            label: Text(l10n.difficultyMedium),
-                          ),
-                          ButtonSegment(
-                            value: Difficulty.hard,
-                            label: Text(l10n.difficultyHard),
-                          ),
-                        ],
-                        selected: {_difficulty},
-                        onSelectionChanged: (choice) {
-                          setState(() => _difficulty = choice.single);
-                          widget.controller.updateSettings(
-                            difficulty: choice.single,
-                          );
-                        },
-                      ),
-                    ),
-                    _setting(
-                      l10n.settingPace,
-                      SegmentedButton<GamePace>(
-                        // Without the tick and with less padding, four words
-                        // fit a phone.
-                        showSelectedIcon: false,
-                        style: SegmentedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
-                        segments: [
-                          for (final (pace, label) in [
-                            (GamePace.off, l10n.paceOff),
-                            (GamePace.relaxed, l10n.paceRelaxed),
-                            (GamePace.normal, l10n.paceNormal),
-                            (GamePace.fast, l10n.paceFast),
-                          ])
-                            ButtonSegment(value: pace, label: Text(label)),
-                        ],
-                        selected: {_pace},
-                        onSelectionChanged: (choice) {
-                          setState(() => _pace = choice.single);
-                          widget.controller.updatePace(choice.single);
-                        },
-                      ),
+                        _setting(
+                          l10n.settingView,
+                          SegmentedButton<BoardView>(
+                            segments: [
+                              ButtonSegment(
+                                value: BoardView.white,
+                                label: Text(l10n.white),
+                              ),
+                              ButtonSegment(
+                                value: BoardView.black,
+                                label: Text(l10n.black),
+                              ),
+                            ],
+                            selected: {_view},
+                            onSelectionChanged: (choice) =>
+                                setState(() => _view = choice.single),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 12,
+                      children: [
+                        _setting(
+                          l10n.settingDifficulty,
+                          SegmentedButton<Difficulty>(
+                            segments: [
+                              ButtonSegment(
+                                value: Difficulty.easy,
+                                label: Text(l10n.difficultyEasy),
+                              ),
+                              ButtonSegment(
+                                value: Difficulty.medium,
+                                label: Text(l10n.difficultyMedium),
+                              ),
+                              ButtonSegment(
+                                value: Difficulty.hard,
+                                label: Text(l10n.difficultyHard),
+                              ),
+                            ],
+                            selected: {_difficulty},
+                            onSelectionChanged: (choice) {
+                              setState(() => _difficulty = choice.single);
+                              widget.controller.updateSettings(
+                                difficulty: choice.single,
+                              );
+                            },
+                          ),
+                        ),
+                        _setting(
+                          l10n.settingPace,
+                          SegmentedButton<GamePace>(
+                            // Without the tick and with less padding, four words
+                            // fit a phone.
+                            showSelectedIcon: false,
+                            style: SegmentedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                            ),
+                            segments: [
+                              for (final (pace, label) in [
+                                (GamePace.off, l10n.paceOff),
+                                (GamePace.relaxed, l10n.paceRelaxed),
+                                (GamePace.normal, l10n.paceNormal),
+                                (GamePace.fast, l10n.paceFast),
+                              ])
+                                ButtonSegment(value: pace, label: Text(label)),
+                            ],
+                            selected: {_pace},
+                            onSelectionChanged: (choice) {
+                              setState(() => _pace = choice.single);
+                              widget.controller.updatePace(choice.single);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-            // Shares the row with the hint, because a further row would not
-            // fit a phone without scrolling.
-            Row(
-              spacing: 16,
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.settingsNextGame,
-                    style: Theme.of(context).textTheme.bodySmall,
+              ),
+              // Shares the row with the hint, because a further row would not
+              // fit a phone without scrolling.
+              Row(
+                spacing: 16,
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.settingsNextGame,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
-                ),
-                FilterChip(
-                  visualDensity: VisualDensity.compact,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  label: Text(l10n.settingAutoForced),
-                  tooltip: l10n.settingAutoForcedHint,
-                  selected: _autoForced,
-                  onSelected: (value) {
-                    setState(() => _autoForced = value);
-                    widget.controller.updateAutoForced(value);
-                  },
-                ),
-              ],
-            ),
-          ],
+                  FilterChip(
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    label: Text(l10n.settingAutoForced),
+                    tooltip: l10n.settingAutoForcedHint,
+                    selected: _autoForced,
+                    onSelected: (value) {
+                      setState(() => _autoForced = value);
+                      widget.controller.updateAutoForced(value);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       actionsAlignment: MainAxisAlignment.spaceBetween,

@@ -159,6 +159,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get statsDice => 'Würfel';
 
   @override
+  String get scrollMore => 'Weiter unten';
+
+  @override
+  String get scrollBack => 'Weiter oben';
+
+  @override
   String get leaderboard => 'Bestenliste';
 
   @override

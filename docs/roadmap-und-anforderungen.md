@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `1.1.0+7`, Bundle gebaut. Version 1.0.0 (6) ist im Play Store in Produktion; D6 ist abgeschlossen, sobald sie auf GitHub markiert ist. Für 1.1.0 fehlen noch das Gegenlesen, die Prüfung der Rechtstexte, der Blick auf das Symbol am Gerät und das Hochladen. Die Web-Version ist öffentlich.
+Aktueller Stand: `1.1.0+8` mit den Befunden aus dem Spielen vom 2026-11-11 (T7.9), Bundle gebaut und auf Windows getestet. Version 1.0.0 (6) ist im Play Store in Produktion; D6 ist abgeschlossen, sobald sie auf GitHub markiert ist. Für 1.1.0 fehlen noch das Gegenlesen, die Prüfung der Rechtstexte, der Blick auf das Symbol am Gerät und das Hochladen. Die Web-Version ist öffentlich.
 
 ## Tasks
 
@@ -237,7 +237,7 @@ Aktueller Stand: `1.1.0+7`, Bundle gebaut. Version 1.0.0 (6) ist im Play Store i
     - [ ] Windows-Build bereitstellen
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [x] Version in `pubspec.yaml` auf `1.0.0+6` gesetzt; Build 5 wurde nur hochgeladen und verworfen, weil Google den automatischen Schutz mit `CHECK_LICENSE` eingefügt hatte (siehe [Versionen](#versionen))
-    - [x] Store-Eintrag vorbereitet: Texte in [store-eintrag.md](store-eintrag.md), Symbol, Vorstellungsgrafik und sechs Screenshots in `docs/store/` aus `tools/store/store_graphics_test.dart`
+    - [x] Store-Eintrag vorbereitet: Texte in [store-eintrag.md](store-eintrag.md), Symbol, Vorstellungsgrafik und sechs Screenshots in `docs/store/1.0.0/` aus `tools/store/store_graphics_test.dart`
     - [ ] Version 1.0.0 auf GitHub markieren
 - [ ] **T6.3 Befunde vor dem Release** (Test auf echten Geräten)
 
@@ -270,7 +270,7 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Englische Seiten für GitHub Pages erzeugen: `web/imprint.html` und `web/privacy.html`
     - [ ] Übersetzung und Ergänzung der Datenschutzerklärung durch den Anbieter prüfen
 - [ ] **T7.3 Store-Eintrag auf Englisch**
-    - [x] Kurzbeschreibung, Beschreibung und Versionshinweise in [store-eintrag.md](store-eintrag.md); Screenshots und Vorstellungsgrafik in `docs/store/en/`
+    - [x] Kurzbeschreibung, Beschreibung und Versionshinweise in [store-eintrag.md](store-eintrag.md); Screenshots und Vorstellungsgrafik in `docs/store/1.1.0/en/`
     - [x] Länder: schon mit Version 1.0.0 weltweit freigegeben (Entscheidung vom 2026-11-04), weil der deutsche Store-Eintrag die Sprache klar zeigt
     - [ ] Englischen Eintrag (en-US) in der Play Console anlegen
 - [x] **T7.4 Persönliche Bestenliste** (`A-219`, Rückmeldung eines Benutzers vom 2026-11-09)
@@ -287,7 +287,7 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Test: Auf Android ist das Logo in jeder Maskenform des adaptiven Symbols (Kreis, Squircle, abgerundetes Quadrat) vollständig sichtbar und hat rundum einen angenehmen Abstand zum Rand. Gemessen reichte das Logo bisher 36,9 dp weit, die Schutzzone aber nur 33 dp, runde Masken schnitten also die Spitze ab. Mit 8 % kleinerem Logo und dem Motiv auf 70 statt 85 % im adaptiven Symbol reicht es 28,3 dp weit (`test/app/app_icon_test.dart`)
     - [x] Auf dem Emulator angesehen (2026-11-09, runde Maske): Logo vollständig sichtbar
     - [x] Auf dem echten Handy angesehen (2026-11-09): in Ordnung
-    - [x] Symbol im Store-Eintrag (`docs/store/icon_512.png`) erneuern, jetzt aus `tools/icon/render_icon.py`
+    - [x] Symbol im Store-Eintrag (`docs/store/1.1.0/icon_512.png`) erneuern, jetzt aus `tools/icon/render_icon.py`
 - [ ] **T7.8 Spielfluss** (`A-220` bis `A-224`, Vorschlag vom 2026-11-09)
     - [x] Je nach Situation warten: Ein Zug ohne Alternative endet sofort; ohne Recht zum Doppeln würfelt die App nach dem Computer gleich; „Kein Zug möglich“ geht nach 60 % der Wartezeit weiter
     - [x] Spieltempo statt Sekunden: Aus, Ruhig, Normal, Zügig; alte Einstellungen werden übernommen (0 s → Aus, 3 s → Normal, 5 und 10 s → Ruhig)
@@ -298,9 +298,20 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Der Name „Gemütlich“ aus dem Vorschlag passte auf dem Handy nicht in die Einstellungen; die Stufe heißt „Ruhig“
     - [x] Rückmeldung vom 2026-11-09 umgesetzt: Der Ring machte die rechte Leiste breiter, und die Hinweise auf dem Filz gehörten optisch nicht zu ihrem Symbol; jetzt liegt der Ring auf dem Symbol, und die Hinweise stehen direkt daneben. Der vorgemerkte Würfel war bei der Nachfrage weiß auf weiß
     - [ ] Praxistest am Handy
+- [ ] **T7.9 Befunde aus dem Spielen** (Rückmeldung vom 2026-11-11, gehören noch in 1.1.0)
+    - [x] Statistik: Bestenliste als erster Reiter und beim Öffnen gewählt, Würfelstatistik danach (`A-219`)
+    - [x] Zu Ende spielen: Wer das Rennen verloren und noch keinen Stein abgetragen hat, wendet zuerst Backgammon, dann Gammon ab (`A-411`, `lib/engine/race.dart`); gilt für beide Seiten und jede Spielstärke
+    - [x] Test: Beispielstellungen und 1000 zufällige verlorene Rennen: 0 statt 48 Backgammons, im Schnitt 1,44 statt 1,53 verlorene Punkte; Gammons bleiben gleich häufig (452 statt 450), weil sie meist schon durch den Rennstand feststehen (Stand 2026-11-11)
+    - [x] Scrollbare Dialoge und Rechtstexte zeigen weiteren Text mit auslaufendem Rand und kleinen Pfeilen am rechten Rand, die beim Tippen eine Seite nach unten oder oben scrollen (`A-327`, Rückmeldung vom 2026-11-11: kleiner, invertiert, rechts, auch zurück, `lib/presentation/scroll_hint.dart`)
+    - [x] Die Pfeile halten rechts einen schmalen Streifen frei, damit sie keinen Text verdecken; die beiden Spalten der Einstellungen schrumpfen bei zu wenig Platz leicht, statt überzulaufen
+    - [x] Test auf Windows (2026-11-11)
+    - [x] Test am Handy über den internen Test im Play Store (2026-11-11)
 - [ ] **T7.7 Release 1.1.0**
     - [x] Version `1.1.0+7` setzen und Bundle bauen
+    - [x] Version `1.1.0+8` mit T7.9 setzen und Bundle neu bauen; Store-Screenshots der Einstellungen und der Bestenliste neu erzeugt; Store-Grafiken je Version in `docs/store/<version>/<sprache>/`, die von 1.0.0 wiederhergestellt
     - [ ] Im Play Store und auf GitHub veröffentlichen
+- [ ] **T7.10 Befunde für das nächste Release** (Rückmeldung vom 2026-11-11 nach dem Test von 1.1.0 am Handy; noch nicht umgesetzt)
+    - [ ] Fach von Schwarz: Der schwarze Filz im Auswurffach von Schwarz wird dunkelgrau, damit sich die ausgewürfelten schwarzen Steine besser vom Grund abheben (`A-328`). Heute `tray_felt_black` `#232529` in `tools/blender/board_config.json`; die Fachbilder in beiden Auflösungen müssen neu gerendert werden (`./tools/blender/render.ps1`), danach die Store-Screenshots neu erzeugen
 
 ### D8 Coach
 
@@ -370,7 +381,7 @@ Ein Task ist erledigt, wenn:
 | A-223 | Hinweise zu einem Symbol stehen als weiße Sprechblase in dessen Farben direkt links daneben und lassen sich antippen, etwa „Kein Zug möglich“ neben Weiter und „Doppeln oder Würfeln“ neben dem Dopplerwürfel. | D7 |
 | A-225 | Gegen den Computer steht der Dopplerwürfel rechts, solange der Spieler das Recht zum Doppeln hat, auch im Zug des Computers und beim eigenen Ziehen. Darf er gerade nicht doppeln, merkt ein Tipp das Doppeln vor, ein zweiter nimmt es zurück. Vor dem nächsten eigenen Wurf würfelt die App dann nicht von selbst, sondern fragt neben dem Würfel mit einer anklickbaren Sprechblase „×2 Doppeln oder Würfeln“; Würfeln oder Doppeln erledigt den Wunsch. | D7 |
 | A-224 | Der Schalter „Pflichtzüge selbst setzen“ lässt die App einen Zug ohne Alternative Stein für Stein setzen und beenden. Voreingestellt ist er aus; die Einstellung bleibt gespeichert. | D7 |
-| A-219 | Eine persönliche Bestenliste zeigt die gespielten Partien mit Spielstärke, Farbe, Spielzeit und Punkten des Spielers und des Computers sowie die Gesamtpunkte beider Seiten. | D7 |
+| A-219 | Eine persönliche Bestenliste zeigt die gespielten Partien mit Spielstärke, Farbe, Spielzeit und Punkten des Spielers und des Computers sowie die Gesamtpunkte beider Seiten. Im Statistik-Dialog steht sie vor der Würfelstatistik und ist beim Öffnen gewählt. | D7 |
 
 ### 3xx Grafik
 
@@ -399,6 +410,8 @@ Ein Task ist erledigt, wenn:
 | A-325 | Wird das Brett breiter als 2560 physische Pixel gezeichnet, etwa auf einem 4K-Bildschirm, nutzt die App eine zweite Stufe der Bilder in 3840 × 2160. Sie liegt in `assets/board/hd/` und gehört nur zu Web und Windows; Android nutzt immer die normalen Bilder. | D6 |
 | A-324 | Symbole in der rechten Leiste, die nur in bestimmten Situationen erscheinen (Würfeln, Doppeln, Annehmen, Ablehnen, Kein Zug möglich, Zurücknehmen, Zug beenden, Zu Ende spielen), sind invertiert: weißer Grund mit blauem Symbol. Symbole, die immer da sind (Ansicht, Einstellungen, Statistik, Aufgeben), bleiben blau mit weißem Symbol. Knöpfe in Dialogen sind nicht betroffen. | D6 |
 | A-326 | Das P2G-Logo im App-Symbol ist 8 % kleiner als in Version 1.0. Auf Android bleibt es in jeder Maskenform des adaptiven Symbols vollständig sichtbar, mit einem für das Auge angenehmen Abstand zum Rand: Es reicht höchstens 29 dp weit, die Schutzzone 33 dp. | D7 |
+| A-327 | Lässt sich ein Dialog oder Rechtstext scrollen, läuft der Rand dort aus, wo weiterer Text verborgen ist, und kleine Pfeile am rechten Rand zeigen, dass unten oder oben noch Text folgt: blau mit weißem Pfeil, unten nach unten, oben nach oben. Ein Tipp scrollt eine Seite in diese Richtung; am Ende verschwindet der jeweilige Pfeil. Auf dem PC bleibt die Scrollleiste sichtbar. | D7 |
+| A-328 | Der Filz im Auswurffach von Schwarz ist dunkelgrau statt schwarz, sodass ausgewürfelte schwarze Steine deutlich vom Grund abstechen. | D7 |
 | A-321 | Knöpfe nutzen die Markenfarbe von p2g-it aus dem P2G-Logo (`assets/icon/icon.png`): Blau `#5B84C3` mit weißer Schrift für alle Knöpfe, Symbole und gewählten Auswahlen. | D5 |
 | A-308 | Fachbreite, Fachtiefe und Steindicke ergeben sich aus der Geometrie. 15 hochkant stehende Steine füllen ein Fach exakt; hat ein Spieler gesiegt, ist sein Fach voll. | D1 |
 | A-309 | Bis zu fünf Steine liegen nebeneinander auf einem Dreieck. Steine am Rand werden vom vorderen Rahmen verdeckt wie auf einem echten Brett. | D1 |
@@ -417,6 +430,7 @@ Ein Task ist erledigt, wenn:
 | A-408 | Leicht macht erkennbare, menschliche Fehler, etwa ungeschützte Steine oder ausgelassene Treffer, statt zufällig unter guten Zügen zu wählen. | D5 |
 | A-409 | Leicht doppelt selten oder nie und nimmt auch ungünstige Doppel an. | D5 |
 | A-410 | Beim Zu-Ende-Spielen (`A-114`) bringt die App alle Steine möglichst schnell ins Heimfeld und würfelt dort möglichst mit jedem Würfel einen Stein aus. | D7 |
+| A-411 | Beim Zu-Ende-Spielen begrenzt eine Seite, die das Rennen verloren und noch keinen Stein abgetragen hat, den Schaden: zuerst alle Steine aus dem Heimfeld des Gegners (Backgammon), dann alle Steine nach Hause, ohne Augen im Heimfeld zu verschenken, und so, dass möglichst viele Würfe gleich einen Stein abtragen (Gammon). Das gilt für beide Seiten und jede Spielstärke. | D7 |
 
 ### 5xx Fairness
 

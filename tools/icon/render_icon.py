@@ -11,6 +11,14 @@ ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / 'assets' / 'icon' / 'app_icon.png'
 ROUNDED = ROOT / 'assets' / 'icon' / 'app_icon_rounded.png'
 RES = ROOT / 'android' / 'app' / 'src' / 'main' / 'res'
+
+
+def app_version():
+    """The version from pubspec.yaml without the build number, e.g. 1.1.0."""
+    for line in (ROOT / 'pubspec.yaml').read_text(encoding='utf-8').splitlines():
+        if line.startswith('version:'):
+            return line.split(':', 1)[1].strip().split('+')[0]
+    raise RuntimeError('No version in pubspec.yaml')
 # Launchers crop adaptive icons, so the art shrinks onto a canvas in the brand
 # color of p2g-it; the points reach the edge, so the edge color would not fit.
 # Every mask shows at least a circle of 66 of the 108 dp; at 0.70 the logo
@@ -108,8 +116,10 @@ def main():
     save(safe, 192, web / 'icons' / 'Icon-maskable-192.png')
     save(safe, 512, web / 'icons' / 'Icon-maskable-512.png')
 
-    # Google Play rounds the corners of the store icon itself.
-    save(square, 512, ROOT / 'docs' / 'store' / 'icon_512.png')
+    # Google Play rounds the corners of the store icon itself. One folder per
+    # app version keeps the icon of every release.
+    save(square, 512,
+         ROOT / 'docs' / 'store' / app_version() / 'icon_512.png')
 
     save_ico(art, [16, 32, 48, 256],
              ROOT / 'windows' / 'runner' / 'resources' / 'app_icon.ico')

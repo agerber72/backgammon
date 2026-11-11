@@ -158,6 +158,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statsDice => 'Dice';
 
   @override
+  String get scrollMore => 'More below';
+
+  @override
+  String get scrollBack => 'More above';
+
+  @override
   String get leaderboard => 'Leaderboard';
 
   @override

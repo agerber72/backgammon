@@ -386,6 +386,18 @@ abstract class AppLocalizations {
   /// **'Würfel'**
   String get statsDice;
 
+  /// Tooltip of the arrow that shows more text below and scrolls down.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiter unten'**
+  String get scrollMore;
+
+  /// Tooltip of the arrow that shows more text above and scrolls up.
+  ///
+  /// In de, this message translates to:
+  /// **'Weiter oben'**
+  String get scrollBack;
+
   /// The personal leaderboard of the games against the computer.
   ///
   /// In de, this message translates to:

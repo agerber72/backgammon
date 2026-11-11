@@ -1,4 +1,5 @@
-// Renders the graphics for the Google Play listing into docs/store/:
+// Renders the graphics for the Google Play listing into
+// docs/store/<version>/<language>/:
 // screenshots of the real game page in fixed situations, and the feature
 // graphic. It runs as a widget test so the real widgets, theme, fonts and
 // board images are used, without a device.
@@ -6,6 +7,7 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:backgammon/app/app_version.dart';
 import 'package:backgammon/app/backgammon_app.dart';
 import 'package:backgammon/application/game_controller.dart';
 import 'package:backgammon/domain/board.dart';
@@ -25,7 +27,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _out = 'docs/store';
+/// One folder per app version, so the pictures of every release are kept.
+const _out = 'docs/store/$appVersion';
 
 /// Devices held sideways, each with the prefix of its file names. Google
 /// Play allows at most 2:1; tablets use 16:10.
@@ -35,10 +38,11 @@ const _devices = [
   ('tablet10_', Size(2560, 1600), 2.0), // 10-inch tablet, 1280 x 800 dp
 ];
 
-/// Store languages with the folder of their pictures below docs/store/ and
+/// Store languages with the folder of their pictures below the version folder
+/// and
 /// the line under the title of the feature graphic.
 const _languages = [
-  ('de', '', 'Kostenlos · ohne Werbung · ohne Konto'),
+  ('de', 'de/', 'Kostenlos · ohne Werbung · ohne Konto'),
   ('en', 'en/', 'Free · no ads · no account'),
 ];
 

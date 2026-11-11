@@ -4,4 +4,4 @@
 const appVersion = '1.1.0';
 
 /// The build number after the `+` in pubspec.yaml.
-const appBuild = 7;
+const appBuild = 8;

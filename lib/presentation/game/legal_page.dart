@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide Step;
 import 'package:flutter/services.dart';
 
 import '../../legal/legal_text.dart';
+import '../scroll_hint.dart';
 
 export '../../legal/legal_text.dart' show LegalPlatform, legalLines;
 
@@ -44,12 +45,20 @@ class LegalPage extends StatelessWidget {
           }
           final lines = legalLines(text, platform ?? currentLegalPlatform);
           return SelectionArea(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                for (final line in lines)
-                  if (line.trim().isNotEmpty) _line(context, line),
-              ],
+            child: ScrollHint(
+              builder: (context, scroll) => ListView(
+                controller: scroll,
+                padding: const EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16 + ScrollHint.reserve,
+                  16,
+                ),
+                children: [
+                  for (final line in lines)
+                    if (line.trim().isNotEmpty) _line(context, line),
+                ],
+              ),
             ),
           );
         },

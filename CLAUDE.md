@@ -33,7 +33,7 @@ flutter run -d emulator-5554                      # auf dem Emulator starten
 dart run tools/engine/tune.dart                   # Gewichte der Bewertung abstimmen
 dart run tools/engine/compare_levels.dart         # Spielstufen messen
 dart run tools/legal/build_pages.dart             # Rechtstexte als Seiten in web/ erzeugen
-flutter test tools/store/store_graphics_test.dart # Screenshots und Vorstellungsgrafik für Google Play in docs/store/
+flutter test tools/store/store_graphics_test.dart # Screenshots und Vorstellungsgrafik für Google Play in docs/store/<version>/<sprache>/
 ```
 
 GNU Backgammon ist nur Testwerkzeug (siehe [tools/gnubg/README.md](tools/gnubg/README.md)). Weder Code noch Binärdateien oder Gewichtsdateien dürfen in die App gelangen.
@@ -48,6 +48,7 @@ Vor jedem Abschluss einer Änderung müssen `flutter analyze` und `flutter test`
 - Code, Bezeichner und Code-Kommentare auf Englisch.
 - Tests sind für Menschen lesbar: Der Testname nennt die geprüfte Anforderung und die Erwartung im Schema `A-308: Anforderung – erwartet: Erwartung`. Testnamen sind deutsch, das ist die einzige Ausnahme von Englisch im Code.
 - Sichtbare Texte kommen aus `lib/l10n/app_de.arb`, nie fest aus dem Code. Lange Rechtstexte liegen in `assets/legal/`.
+- Jeder Commit ist in allen Sprachen der App vollständig übersetzt (derzeit Deutsch und Englisch). Neue oder geänderte Texte stehen im selben Commit in jeder `lib/l10n/app_<sprache>.arb`, geänderte Rechtstexte in jeder `assets/legal/<name>_<sprache>.md`, geänderte Store-Texte in jedem Sprachabschnitt von [docs/store-eintrag.md](docs/store-eintrag.md) und Store-Grafiken in jedem `docs/store/<version>/<sprache>/`. Kein Commit mit fehlenden oder veralteten Übersetzungen.
 - Lint-Regeln: `flutter_lints` über `analysis_options.yaml`.
 - Spielregeln und Spiellogik getrennt von der UI halten, damit sie ohne Widgets testbar sind.
 - Neue Pakete nur nach Rücksprache mit dem Benutzer hinzufügen.

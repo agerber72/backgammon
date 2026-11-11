@@ -73,6 +73,14 @@
   "statsDoubles": "Pasch",
   "statistics": "Statistik",
   "statsDice": "Würfel",
+  "scrollMore": "Weiter unten",
+  "scrollBack": "Weiter oben",
+  "@scrollBack": {
+    "description": "Tooltip of the arrow that shows more text above and scrolls up."
+  },
+  "@scrollMore": {
+    "description": "Tooltip of the arrow that shows more text below and scrolls down."
+  },
   "leaderboard": "Bestenliste",
   "@leaderboard": {
     "description": "The personal leaderboard of the games against the computer."
