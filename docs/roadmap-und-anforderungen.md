@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produktion, auf Deutsch und Englisch, und auf GitHub als `v1.1.0` markiert; 1.0.0 (6) trägt das Tag `v1.0.0`. Die Web-Version ist öffentlich. Aus D6 fehlt nur noch der Windows-Build. Die Befunde in T7.10 kommen ins nächste Release.
+Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produktion, auf Deutsch und Englisch, und auf GitHub als `v1.1.0` markiert; 1.0.0 (6) trägt das Tag `v1.0.0`. Die Windows-Version 1.1.0 liegt als ZIP im GitHub-Release `v1.1.0`, die Web-Version ist öffentlich. D6 ist damit abgeschlossen. Die Befunde in T7.10 kommen ins nächste Release.
 
 ## Tasks
 
@@ -229,15 +229,15 @@ Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produkti
     - [x] Berechtigungen des Release-APK geprüft: keine Internetberechtigung, nur die interne Berechtigung `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` von AndroidX (Stand 2026-11-03)
     - [x] Web-Version speichert nichts im Browser (`A-808`); geprüft: Local Storage, Session Storage und Cookies bleiben leer
     - [x] Geprüft am 2026-11-04, Version 0.6.3: keine Werbung, Tracker oder Konten. Laufzeit-Abhängigkeiten sind nur Flutter, `intl`, `cupertino_icons` und `shared_preferences`; das Release-Manifest fordert nur `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` an, keine Internetberechtigung und keine Werbe-ID; der Code im Bundle enthält keine Klassen von Google Ads, Firebase, Analytics, Facebook, Adjust, AppsFlyer, Sentry oder Google-Login
-- [ ] **T6.2 Veröffentlichen** (`A-804`)
+- [x] **T6.2 Veröffentlichen** (`A-804`)
     - [x] Android-Signatur einrichten: Upload-Schlüssel außerhalb des Repos, signiertes Bundle gebaut und auf einem Handy installiert (Stand 2026-11-03)
     - [x] Interner Test über Google Play mit 1.0.0 (6) bestanden (2026-11-04): aus dem Play Store installiert und gespielt; automatischer Schutz aus, Bundle ohne `CHECK_LICENSE`
     - [x] Im Play Store eingereicht (2026-11-04): Produktion 1.0.0 (6), alle Länder, ohne verwaltete Veröffentlichung, also live direkt nach der Freigabe
     - [x] Freigabe durch Google: 1.0.0 (6) ist in Produktion, laut Play Console veröffentlicht am 2026-11-07; seitdem ist die verwaltete Veröffentlichung aktiviert, freigegebene Änderungen gehen also erst nach einem Klick auf „Änderungen veröffentlichen“ live
-    - [ ] Windows-Build bereitstellen
+    - [x] Windows-Build bereitstellen (mit Version 1.1.0)
         - [x] ZIP bauen: `./tools/windows/build_release.ps1` erzeugt `build/release/backgammon_windows_1.1.0-8.zip` mit Visual-C++-Laufzeit und Lizenz und startet die entpackte App zur Probe (2026-11-11, bestanden)
-        - [ ] ZIP an das GitHub-Release `v1.1.0` hängen
-        - [ ] Microsoft Store: Konto „Windows“ im Partner Center für die Passion to Grow GmbH registriert (2026-11-11, Prüfung durch Microsoft läuft), danach MSIX bauen und einreichen
+        - [x] ZIP an das GitHub-Release `v1.1.0` gehängt (2026-11-11): https://github.com/agerber72/backgammon/releases/tag/v1.1.0; geprüft: `releases/latest` führt dorthin, das heruntergeladene ZIP ist identisch und die App startet daraus
+        - Der Microsoft Store folgt als eigener Punkt unter [Später](#später)
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [x] Version in `pubspec.yaml` auf `1.0.0+6` gesetzt; Build 5 wurde nur hochgeladen und verworfen, weil Google den automatischen Schutz mit `CHECK_LICENSE` eingefügt hatte (siehe [Versionen](#versionen))
     - [x] Store-Eintrag vorbereitet: Texte in [store-eintrag.md](store-eintrag.md), Symbol, Vorstellungsgrafik und sechs Screenshots in `docs/store/1.0.0/` aus `tools/store/store_graphics_test.dart`
@@ -489,6 +489,7 @@ Ein Task ist erledigt, wenn:
 
 Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 
+- Windows-Version als MSIX im Microsoft Store: Konto „Windows“ im Partner Center für die Passion to Grow GmbH registriert (2026-11-11, Prüfung durch Microsoft läuft); danach MSIX bauen und einreichen
 - Beim kombinierten Zug die Wahl zwischen Reihenfolgen mit und ohne Schlagen anbieten
 - Animation beim Schlagen und beim Würfelwurf
 - Würfelbecher modellieren und anzeigen (Version 2, aus `A-302` verschoben)
