@@ -20,24 +20,7 @@ Die Web-Version speichert nichts im Browser. Spielstand und Bestenliste gibt es 
 - **Ohne Installation:** Die App braucht keine Installation und keinen Internetzugang. Spielstand und Einstellungen bleiben auf dem eigenen PC.
 - **Entfernen:** Den entpackten Ordner `backgammon_windows_…` löschen. Wer auch Spielstand, Bestenliste und Einstellungen entfernen will, gibt im Explorer in die Adresszeile `%APPDATA%` ein und löscht dort im Ordner des Herausgebers den Unterordner `Backgammon`.
 
-## Versionen
-
-| Version | Datum | Plattformen | Neu |
-| --- | --- | --- | --- |
-| **1.1.0**&nbsp;(8) | 2026&#8209;11&#8209;11 | Android,&nbsp;Windows,&nbsp;Web | Die App gibt es jetzt auch auf Englisch<br>Erste Windows-Version, als ZIP über GitHub Releases<br>Persönliche Bestenliste mit Gesamtpunkten je Spielstärke und den letzten Partien<br>„Zu Ende spielen“ würfelt schneller aus und rettet Gammon und Backgammon, wo es geht<br>Einstellbares Spieltempo mit Countdown-Ring<br>App-Symbol mit kleinerem Logo<br>Pfeile zum Blättern in langen Texten |
-| **1.0.0**&nbsp;(6) | 2026&#8209;11&#8209;07 | Android,&nbsp;Web | Erste Version: Backgammon gegen den Computer in drei Spielstärken, mit Dopplerwürfel, 3D-Brett, Würfelstatistik und gespeicherter Partie |
-
-Die Web-Version ist seit 2026-11-03 online und zeigt immer den neuesten Stand.
-
-## Geplant
-
-| Release | Inhalt |
-| --- | --- |
-| **1.1.x** | Dunkleres Auswurffach für Schwarz<br>Sprechblase „Annehmen oder Ablehnen“, wenn der Computer doppelt |
-| **Microsoft&nbsp;Store** | Windows-Version als MSIX, ohne Warnung beim ersten Start und mit automatischen Updates |
-| **2.0.0** | Coach, der Züge in Alltagssprache erklärt<br>Regel-Nachschlagewerk<br>Würfelbecher<br>Feiner abgestufte Spielstärken |
-
-Weitere Ideen ohne Version stehen in der [Roadmap](docs/roadmap-und-anforderungen.md#später).
+Versionen, Neuerungen und geplante Releases stehen unter **[Releases](https://github.com/agerber72/backgammon/releases)**.
 
 ## In English
 
@@ -59,22 +42,7 @@ The web version stores nothing in your browser, so saved games and the leaderboa
 - **No installation:** The app needs no installation and no internet access. Your game, settings and leaderboard stay on your PC.
 - **Removing:** Delete the unpacked folder `backgammon_windows_…`. To remove your game, leaderboard and settings as well, type `%APPDATA%` into the address bar of File Explorer and delete the subfolder `Backgammon` in the publisher's folder.
 
-### Releases
-
-| Version | Date | Platforms | New |
-| --- | --- | --- | --- |
-| **1.1.0**&nbsp;(8) | 2026&#8209;11&#8209;11 | Android,&nbsp;Windows,&nbsp;Web | The app is now available in English<br>First Windows version, as a ZIP on GitHub Releases<br>Personal leaderboard with total points per level and your latest games<br>"Play to the end" bears off faster and saves the gammon and backgammon where it can<br>Adjustable pace with a countdown ring<br>App icon with a smaller logo<br>Arrows to page through long texts |
-| **1.0.0**&nbsp;(6) | 2026&#8209;11&#8209;07 | Android,&nbsp;Web | First version: backgammon against the computer in three levels, with doubling cube, 3D board, dice statistics and saved game |
-
-The web version has been online since 2026-11-03 and always shows the latest state.
-
-### Planned
-
-| Release | Content |
-| --- | --- |
-| **1.1.x** | Darker bear-off tray for Black<br>Speech bubble "Take or pass" when the computer doubles |
-| **Microsoft&nbsp;Store** | Windows version as MSIX, without the warning on first start and with automatic updates |
-| **2.0.0** | Coach that explains moves in plain language<br>Rules reference<br>Dice cup<br>Finer-grained levels |
+Versions, changes and planned releases are listed under **[Releases](https://github.com/agerber72/backgammon/releases)**.
 
 ## Dokumentation
 
