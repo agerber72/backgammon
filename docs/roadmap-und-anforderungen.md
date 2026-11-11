@@ -235,6 +235,9 @@ Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produkti
     - [x] Im Play Store eingereicht (2026-11-04): Produktion 1.0.0 (6), alle Länder, ohne verwaltete Veröffentlichung, also live direkt nach der Freigabe
     - [x] Freigabe durch Google: 1.0.0 (6) ist in Produktion, laut Play Console veröffentlicht am 2026-11-07; seitdem ist die verwaltete Veröffentlichung aktiviert, freigegebene Änderungen gehen also erst nach einem Klick auf „Änderungen veröffentlichen“ live
     - [ ] Windows-Build bereitstellen
+        - [x] ZIP bauen: `./tools/windows/build_release.ps1` erzeugt `build/release/backgammon_windows_1.1.0-8.zip` mit Visual-C++-Laufzeit und Lizenz und startet die entpackte App zur Probe (2026-11-11, bestanden)
+        - [ ] ZIP an das GitHub-Release `v1.1.0` hängen
+        - [ ] Microsoft Store: Konto „Windows“ im Partner Center für die Passion to Grow GmbH registriert (2026-11-11, Prüfung durch Microsoft läuft), danach MSIX bauen und einreichen
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [x] Version in `pubspec.yaml` auf `1.0.0+6` gesetzt; Build 5 wurde nur hochgeladen und verworfen, weil Google den automatischen Schutz mit `CHECK_LICENSE` eingefügt hatte (siehe [Versionen](#versionen))
     - [x] Store-Eintrag vorbereitet: Texte in [store-eintrag.md](store-eintrag.md), Symbol, Vorstellungsgrafik und sechs Screenshots in `docs/store/1.0.0/` aus `tools/store/store_graphics_test.dart`
@@ -508,4 +511,4 @@ Diese Punkte stehen in der Vision, sind aber keiner Delivery zugeordnet:
 - [x] Datenschutzerklärung und Impressum: am 2026-11-04 vom Benutzer geprüft und freigegeben, ohne externe juristische Prüfung (siehe T6.1). Vor den englischen Fassungen in D7 erneut ansehen. Die Texte liegen in `assets/legal/`, erscheinen in der App unter Einstellungen und werden mit `tools/legal/build_pages.dart` zu Seiten in `web/`.
 - [x] Automatische Android-Sicherung des Spielstands: abgeschaltet (`A-807`).
 - [x] Wo läuft die Web-Version? Auf GitHub Pages, ohne Speicher im Browser (`A-808`).
-- [ ] Wie wird die Windows-Version verteilt? Vorschlag: als Download über GitHub Releases.
+- [x] Wie wird die Windows-Version verteilt? Zuerst als ZIP über GitHub Releases, unsigniert, mit Warnung von SmartScreen beim ersten Start; danach über den Microsoft Store als MSIX, Konto der Passion to Grow GmbH im Partner Center (Entscheidung vom 2026-11-11).

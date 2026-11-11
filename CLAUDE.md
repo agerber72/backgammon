@@ -22,6 +22,7 @@ flutter run -d windows                            # auf Windows starten
 flutter run -d chrome                             # im Browser starten
 flutter build web --no-web-resources-cdn          # Web-Version ohne Google-Server bauen
 ./tools/android/build_bundle.ps1                  # Bundle für Google Play als build/release/<paket>_<version>-<code>.aab
+./tools/windows/build_release.ps1                 # Windows-ZIP als build/release/backgammon_windows_<version>-<code>.zip, mit Starttest
 flutter emulators --launch Medium_Phone_API_37.0  # Emulator starten
 flutter run -d emulator-5554                      # auf dem Emulator starten
 ./tools/gnubg/setup.ps1                           # GNU Backgammon einrichten
