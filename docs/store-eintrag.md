@@ -166,7 +166,9 @@ Alle Länder, die Google Play anbietet (Entscheidung vom 2026-11-04). Version 1.
 | Track | zuerst Interner Test, danach dasselbe Bundle in Produktion übernehmen |
 | Bundle | `build/release/de.p2g_it.backgammon_1.1.0-8.aab` aus `./tools/android/build_bundle.ps1`; das Skript prüft Versionscode und Berechtigungen |
 | Release-Name | 1.1.0 (8) |
-| Vorher | 1.0.0 (6), in Produktion seit 2026-11-04 |
+| Veröffentlicht | 2026-11-11, vollständiger Roll-out in Produktion |
+| Vorher | 1.0.0 (6), eingereicht am 2026-11-04, laut Play Console veröffentlicht am 2026-11-07 |
+| Verwaltete Veröffentlichung | aktiviert: Von Google freigegebene Änderungen gehen erst mit „Änderungen veröffentlichen“ live |
 
 **Optimierungen beim Release**
 

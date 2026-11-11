@@ -1,6 +1,6 @@
 # Anforderungen und Roadmap
 
-Stand: 2026-11-09 · Grundlage: [vision.md](vision.md)
+Stand: 2026-11-11 · Grundlage: [vision.md](vision.md)
 
 Die Tasks werden von oben nach unten abgearbeitet. Ein Haken wird erst gesetzt, wenn der Task die [Definition of Done](#definition-of-done) erfüllt. Verweise wie `A-101` zeigen auf die [Anforderungen](#anforderungen) weiter unten.
 
@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: `1.1.0+8` mit den Befunden aus dem Spielen vom 2026-11-11 (T7.9), Bundle gebaut und auf Windows getestet. Version 1.0.0 (6) ist im Play Store in Produktion; D6 ist abgeschlossen, sobald sie auf GitHub markiert ist. Für 1.1.0 fehlen noch das Gegenlesen, die Prüfung der Rechtstexte, der Blick auf das Symbol am Gerät und das Hochladen. Die Web-Version ist öffentlich.
+Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produktion, auf Deutsch und Englisch, und auf GitHub als `v1.1.0` markiert; 1.0.0 (6) trägt das Tag `v1.0.0`. Die Web-Version ist öffentlich. Aus D6 fehlt nur noch der Windows-Build. Die Befunde in T7.10 kommen ins nächste Release.
 
 ## Tasks
 
@@ -233,19 +233,19 @@ Aktueller Stand: `1.1.0+8` mit den Befunden aus dem Spielen vom 2026-11-11 (T7.9
     - [x] Android-Signatur einrichten: Upload-Schlüssel außerhalb des Repos, signiertes Bundle gebaut und auf einem Handy installiert (Stand 2026-11-03)
     - [x] Interner Test über Google Play mit 1.0.0 (6) bestanden (2026-11-04): aus dem Play Store installiert und gespielt; automatischer Schutz aus, Bundle ohne `CHECK_LICENSE`
     - [x] Im Play Store eingereicht (2026-11-04): Produktion 1.0.0 (6), alle Länder, ohne verwaltete Veröffentlichung, also live direkt nach der Freigabe
-    - [ ] Freigabe durch Google abwarten
+    - [x] Freigabe durch Google: 1.0.0 (6) ist in Produktion, laut Play Console veröffentlicht am 2026-11-07; seitdem ist die verwaltete Veröffentlichung aktiviert, freigegebene Änderungen gehen also erst nach einem Klick auf „Änderungen veröffentlichen“ live
     - [ ] Windows-Build bereitstellen
     - [x] Web-Version bereitstellen (2026-11-03, Version 0.6.0): Workflow `.github/workflows/pages.yml` veröffentlicht jeden Stand auf `main` nach `https://agerber72.github.io/backgammon/`
     - [x] Version in `pubspec.yaml` auf `1.0.0+6` gesetzt; Build 5 wurde nur hochgeladen und verworfen, weil Google den automatischen Schutz mit `CHECK_LICENSE` eingefügt hatte (siehe [Versionen](#versionen))
     - [x] Store-Eintrag vorbereitet: Texte in [store-eintrag.md](store-eintrag.md), Symbol, Vorstellungsgrafik und sechs Screenshots in `docs/store/1.0.0/` aus `tools/store/store_graphics_test.dart`
-    - [ ] Version 1.0.0 auf GitHub markieren
-- [ ] **T6.3 Befunde vor dem Release** (Test auf echten Geräten)
+    - [x] Version 1.0.0 auf GitHub markieren: Tag `v1.0.0` auf dem Commit `f04baea` (2026-11-11)
+- [x] **T6.3 Befunde vor dem Release** (Test auf echten Geräten)
 
     | Nr. | Gerät | Befund | Wunsch | Anforderung |
     | --- | --- | --- | --- | --- |
     | P-14 | Android | Ist nach dem Wurf kein Zug möglich, etwa weil ein geschlagener Stein nicht einsetzen kann, wartet die App auf „Kein Zug möglich“ (⏭). Die Spielerin empfand das als Hänger: Der Knopf sah aus wie alle anderen, und anders als beim Zug beenden und Würfeln läuft hier keine Wartezeit ab. | Knöpfe, die nur in bestimmten Situationen erscheinen, fallen auf: invertiert, weiß mit blauem Symbol. | `A-324` und `A-117`, umgesetzt am 2026-11-04 in Version 0.6.1: invertierte Farben, und „Kein Zug möglich“ geht nach der Wartezeit von selbst weiter |
 
-- [ ] **T6.4 Feinschliff vor dem Release**
+- [x] **T6.4 Feinschliff vor dem Release**
     - [x] App-Version rechts oben in den Einstellungen (`A-218`)
     - [x] Zweite Bildstufe für hohe Auflösungen, etwa 4K (`A-325`)
     - [x] Stein auf der Bar ist zum Einsetzen schon gewählt (`A-217`)
@@ -264,15 +264,15 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Sprache in den Einstellungen über zwei Flaggen wählbar, gespeichert auf Android und Windows (`A-605`, Wunsch vom 2026-11-09)
     - [x] Test: Jeder Text hat eine englische Fassung; bestehende Tests laufen über `test/flutter_test_config.dart` fest auf Deutsch
     - [x] Englische Texte gegengelesen (2026-11-09): in Ordnung
-- [ ] **T7.2 Rechtstexte auf Englisch** (`A-604`)
+- [x] **T7.2 Rechtstexte auf Englisch** (`A-604`)
     - [x] `privacy_en.md` und `imprint_en.md`, mit dem Hinweis, dass die deutsche Fassung maßgeblich ist; beide Fassungen nennen die Bestenliste, Stand 9. November 2026
     - [x] App lädt die Rechtstexte in ihrer Sprache
     - [x] Englische Seiten für GitHub Pages erzeugen: `web/imprint.html` und `web/privacy.html`
-    - [ ] Übersetzung und Ergänzung der Datenschutzerklärung durch den Anbieter prüfen
-- [ ] **T7.3 Store-Eintrag auf Englisch**
+    - [x] Übersetzung und Ergänzung der Datenschutzerklärung durch den Anbieter prüfen: mit der Veröffentlichung von 1.1.0 am 2026-11-11 freigegeben
+- [x] **T7.3 Store-Eintrag auf Englisch**
     - [x] Kurzbeschreibung, Beschreibung und Versionshinweise in [store-eintrag.md](store-eintrag.md); Screenshots und Vorstellungsgrafik in `docs/store/1.1.0/en/`
     - [x] Länder: schon mit Version 1.0.0 weltweit freigegeben (Entscheidung vom 2026-11-04), weil der deutsche Store-Eintrag die Sprache klar zeigt
-    - [ ] Englischen Eintrag (en-US) in der Play Console anlegen
+    - [x] Englischen Eintrag (en-US) in der Play Console anlegen: von Google freigegeben und am 2026-11-11 veröffentlicht
 - [x] **T7.4 Persönliche Bestenliste** (`A-219`, Rückmeldung eines Benutzers vom 2026-11-09)
     - [x] Jede beendete Partie gegen den Computer festhalten: Datum, Spielstärke, Farbe, Spielzeit, Punkte des Spielers und Punkte des Computers
     - [x] Bestenliste im Statistik-Dialog: Gesamtpunkte je Stufe und über alle Stufen, darunter die letzten 100 Partien, neueste zuerst; die Gesamtpunkte zählen auch Partien, die aus der Liste gefallen sind (Entscheidung vom 2026-11-09)
@@ -288,7 +288,7 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Auf dem Emulator angesehen (2026-11-09, runde Maske): Logo vollständig sichtbar
     - [x] Auf dem echten Handy angesehen (2026-11-09): in Ordnung
     - [x] Symbol im Store-Eintrag (`docs/store/1.1.0/icon_512.png`) erneuern, jetzt aus `tools/icon/render_icon.py`
-- [ ] **T7.8 Spielfluss** (`A-220` bis `A-224`, Vorschlag vom 2026-11-09)
+- [x] **T7.8 Spielfluss** (`A-220` bis `A-224`, Vorschlag vom 2026-11-09)
     - [x] Je nach Situation warten: Ein Zug ohne Alternative endet sofort; ohne Recht zum Doppeln würfelt die App nach dem Computer gleich; „Kein Zug möglich“ geht nach 60 % der Wartezeit weiter
     - [x] Spieltempo statt Sekunden: Aus, Ruhig, Normal, Zügig; alte Einstellungen werden übernommen (0 s → Aus, 3 s → Normal, 5 und 10 s → Ruhig)
     - [x] Countdown als Ring um das Symbol, das gleich ausgelöst wird; ein weiterer Tipp aufs Brett startet das Zugende neu
@@ -297,8 +297,8 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Dopplerwürfel immer zeigen, solange man doppeln darf; außerhalb des eigenen Wurfs merkt ein Tipp das Doppeln vor, und vor dem nächsten Wurf fragt die App nach, statt selbst zu würfeln (`A-225`, Rückmeldung vom 2026-11-09: im flüssigen Spiel blieb kaum Zeit zum Doppeln)
     - [x] Der Name „Gemütlich“ aus dem Vorschlag passte auf dem Handy nicht in die Einstellungen; die Stufe heißt „Ruhig“
     - [x] Rückmeldung vom 2026-11-09 umgesetzt: Der Ring machte die rechte Leiste breiter, und die Hinweise auf dem Filz gehörten optisch nicht zu ihrem Symbol; jetzt liegt der Ring auf dem Symbol, und die Hinweise stehen direkt daneben. Der vorgemerkte Würfel war bei der Nachfrage weiß auf weiß
-    - [ ] Praxistest am Handy
-- [ ] **T7.9 Befunde aus dem Spielen** (Rückmeldung vom 2026-11-11, gehören noch in 1.1.0)
+    - [x] Praxistest am Handy: über den internen Test im Play Store am 2026-11-11, die Befunde stehen in T7.9 und T7.10
+- [x] **T7.9 Befunde aus dem Spielen** (Rückmeldung vom 2026-11-11, gehören noch in 1.1.0)
     - [x] Statistik: Bestenliste als erster Reiter und beim Öffnen gewählt, Würfelstatistik danach (`A-219`)
     - [x] Zu Ende spielen: Wer das Rennen verloren und noch keinen Stein abgetragen hat, wendet zuerst Backgammon, dann Gammon ab (`A-411`, `lib/engine/race.dart`); gilt für beide Seiten und jede Spielstärke
     - [x] Test: Beispielstellungen und 1000 zufällige verlorene Rennen: 0 statt 48 Backgammons, im Schnitt 1,44 statt 1,53 verlorene Punkte; Gammons bleiben gleich häufig (452 statt 450), weil sie meist schon durch den Rennstand feststehen (Stand 2026-11-11)
@@ -306,12 +306,13 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Die Pfeile halten rechts einen schmalen Streifen frei, damit sie keinen Text verdecken; die beiden Spalten der Einstellungen schrumpfen bei zu wenig Platz leicht, statt überzulaufen
     - [x] Test auf Windows (2026-11-11)
     - [x] Test am Handy über den internen Test im Play Store (2026-11-11)
-- [ ] **T7.7 Release 1.1.0**
+- [x] **T7.7 Release 1.1.0**
     - [x] Version `1.1.0+7` setzen und Bundle bauen
     - [x] Version `1.1.0+8` mit T7.9 setzen und Bundle neu bauen; Store-Screenshots der Einstellungen und der Bestenliste neu erzeugt; Store-Grafiken je Version in `docs/store/<version>/<sprache>/`, die von 1.0.0 wiederhergestellt
-    - [ ] Im Play Store und auf GitHub veröffentlichen
+    - [x] Im Play Store und auf GitHub veröffentlichen (2026-11-11): Produktion 1.1.0 (8) mit vollständigem Roll-out, englischer Store-Eintrag und Erklärung zum Händlerstatus; Tag `v1.1.0` auf dem Commit `9d84ba1`
 - [ ] **T7.10 Befunde für das nächste Release** (Rückmeldung vom 2026-11-11 nach dem Test von 1.1.0 am Handy; noch nicht umgesetzt)
     - [ ] Fach von Schwarz: Der schwarze Filz im Auswurffach von Schwarz wird dunkelgrau, damit sich die ausgewürfelten schwarzen Steine besser vom Grund abheben (`A-328`). Heute `tray_felt_black` `#232529` in `tools/blender/board_config.json`; die Fachbilder in beiden Auflösungen müssen neu gerendert werden (`./tools/blender/render.ps1`), danach die Store-Screenshots neu erzeugen
+    - [ ] Doppelangebot des Computers: Doppelt der Computer, erscheint neben den Symbolen Annehmen und Ablehnen eine anklickbare Sprechblase wie beim eigenen Doppeln (`A-225`), etwa „×4 Annehmen oder Ablehnen“, damit der Spieler sieht, dass er sich entscheiden muss (`A-226`, Rückmeldung vom 2026-11-11)
 
 ### D8 Coach
 
@@ -380,6 +381,7 @@ Ein Task ist erledigt, wenn:
 | A-222 | Um das Symbol, das die App gleich von selbst auslöst, läuft ein blauer Ring als Countdown ab. Er liegt auf dem Rand des Symbols und macht die rechte Leiste nicht breiter. Ein weiterer Tipp aufs Brett startet die Wartezeit bis zum Zugende neu. | D7 |
 | A-223 | Hinweise zu einem Symbol stehen als weiße Sprechblase in dessen Farben direkt links daneben und lassen sich antippen, etwa „Kein Zug möglich“ neben Weiter und „Doppeln oder Würfeln“ neben dem Dopplerwürfel. | D7 |
 | A-225 | Gegen den Computer steht der Dopplerwürfel rechts, solange der Spieler das Recht zum Doppeln hat, auch im Zug des Computers und beim eigenen Ziehen. Darf er gerade nicht doppeln, merkt ein Tipp das Doppeln vor, ein zweiter nimmt es zurück. Vor dem nächsten eigenen Wurf würfelt die App dann nicht von selbst, sondern fragt neben dem Würfel mit einer anklickbaren Sprechblase „×2 Doppeln oder Würfeln“; Würfeln oder Doppeln erledigt den Wunsch. | D7 |
+| A-226 | Doppelt der Computer, steht neben Annehmen und Ablehnen eine anklickbare Sprechblase nach `A-223` mit dem neuen Einsatz, etwa „×4 Annehmen oder Ablehnen“. Sie erinnert daran, dass der Spieler sich entscheiden muss: annehmen und weiterspielen oder ablehnen und die Partie zum bisherigen Einsatz verlieren. | D7 |
 | A-224 | Der Schalter „Pflichtzüge selbst setzen“ lässt die App einen Zug ohne Alternative Stein für Stein setzen und beenden. Voreingestellt ist er aus; die Einstellung bleibt gespeichert. | D7 |
 | A-219 | Eine persönliche Bestenliste zeigt die gespielten Partien mit Spielstärke, Farbe, Spielzeit und Punkten des Spielers und des Computers sowie die Gesamtpunkte beider Seiten. Im Statistik-Dialog steht sie vor der Würfelstatistik und ist beim Öffnen gewählt. | D7 |
 

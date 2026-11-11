@@ -1,7 +1,7 @@
 # Backgammon
 
 Flutter-App für Backgammon. Zielplattformen: Android, Windows, Web.
-Stand: Version 1 ist spielbar: Partie gegen den Computer in drei Stufen, Speichern, Würfelstatistik und Einstellungen. Es fehlt die Veröffentlichung. Die Regeln stehen in [docs/regeln.md](docs/regeln.md).
+Stand: Version 1.1.0 ist im Play Store veröffentlicht, auf Deutsch und Englisch: Partie gegen den Computer in drei Stufen, Speichern, Bestenliste, Würfelstatistik und Einstellungen. Die Web-Version läuft auf GitHub Pages; es fehlt der Windows-Build. Die Regeln stehen in [docs/regeln.md](docs/regeln.md).
 
 Die Produktvision steht in [docs/vision.md](docs/vision.md), Tasks und Anforderungen stehen in [docs/roadmap-und-anforderungen.md](docs/roadmap-und-anforderungen.md), der Aufbau der App steht in [docs/architektur.md](docs/architektur.md). Lizenz: GPL-3.0 (siehe [LICENSE](LICENSE)).
 
