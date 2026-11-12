@@ -217,6 +217,58 @@ void main() {
     expect(controller.board.count(Player.white, 5), 1);
   });
 
+  testWidgets('A-203: Antippen mit verrutschendem Finger – erwartet: '
+      'Der Stein bleibt gewählt; ein zweites solches Antippen wählt ihn ab', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1600, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final controller = GameController(
+      roller: FixedRoller([3, 1]),
+      engine: InstantEngine(),
+      computerPause: Duration.zero,
+      autoActionDelay: null,
+    );
+    await showPage(tester, controller);
+    await tester.tap(find.text('Weiß'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mittel'));
+    await tester.pumpAndSettle();
+
+    final assets = (await tester.runAsync(
+      () => BoardAssets.load(BoardView.white, rootBundle),
+    ))!;
+    final layout = assets.layout;
+    const insets = BoardPage.insets;
+    final size = insets.deflateSize(const Size(1600, 900));
+    final fit = BoardFit.compute(layout.bounds, layout.aspect, size);
+    final position = layout.points[8]![2];
+    final start =
+        insets.topLeft +
+        fit.offset +
+        Offset(
+          position.u * fit.imageSize.width,
+          position.v * fit.imageSize.height,
+        );
+
+    // Moves past the pan slop but stays on the point, so the board sees a
+    // short drag that ends where it started.
+    Future<void> slippingTap() async {
+      final gesture = await tester.startGesture(start);
+      await gesture.moveBy(const Offset(2, -25));
+      await gesture.moveBy(const Offset(2, -20));
+      await gesture.up();
+      await tester.pumpAndSettle();
+    }
+
+    await slippingTap();
+    expect(controller.selected, 8);
+
+    await slippingTap();
+    expect(controller.selected, isNull);
+  });
+
   testWidgets('A-207: Ergebnis anzeigen – erwartet: '
       'Am Ende stehen Sieger und Punkte da, und eine neue Partie ist möglich', (
     tester,
@@ -264,11 +316,66 @@ void main() {
     await tester.tap(find.byTooltip('Doppeln'));
     await tester.pumpAndSettle();
     expect(find.byTooltip('Doppeln auf 2?'), findsOneWidget);
-    expect(find.text('×2'), findsOneWidget);
+    // Above the symbols and in the bubble next to them (A-226).
+    expect(find.text('×2'), findsNWidgets(2));
 
     await tester.tap(find.byTooltip('Ablehnen'));
     await tester.pumpAndSettle();
     expect(find.text('Weiß gewinnt: 1 Punkt'), findsOneWidget);
+  });
+
+  group('A-226: Sprechblase beim Doppelangebot', () {
+    /// White has doubled and Black has to answer.
+    Future<GameController> offered(WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1600, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final controller = GameController(
+        game: Game.at(
+          board: Board.start(),
+          turn: Player.white,
+          phase: GamePhase.awaitingRoll,
+        ),
+      );
+      await showPage(tester, controller);
+      controller.offerDouble();
+      await tester.pumpAndSettle();
+      return controller;
+    }
+
+    testWidgets('A-226: Angebot – erwartet: '
+        'Neben dem neuen Einsatz steht „×2 Annehmen oder Ablehnen“', (
+      tester,
+    ) async {
+      await offered(tester);
+
+      expect(find.text('Annehmen'), findsOneWidget);
+      expect(find.text('oder'), findsOneWidget);
+      expect(find.text('Ablehnen'), findsOneWidget);
+    });
+
+    testWidgets('A-226: Annehmen antippen – erwartet: '
+        'Die Sprechblase nimmt das Doppeln an, der Einsatz ist 2', (
+      tester,
+    ) async {
+      final controller = await offered(tester);
+
+      await tester.tap(find.text('Annehmen'));
+      await tester.pumpAndSettle();
+
+      expect(controller.game!.cube.value, 2);
+      expect(find.text('oder'), findsNothing);
+    });
+
+    testWidgets('A-226: Ablehnen antippen – erwartet: '
+        'Die Sprechblase lehnt ab, Weiß gewinnt einen Punkt', (tester) async {
+      await offered(tester);
+
+      await tester.tap(find.text('Ablehnen'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Weiß gewinnt: 1 Punkt'), findsOneWidget);
+    });
   });
 
   testWidgets('A-315: Gleiche Höhe – erwartet: '

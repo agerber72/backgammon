@@ -1,8 +1,8 @@
 # Store-Eintrag Google Play
 
-Stand: 2026-11-11 · Version 1.1.0 (8) · Sprachen Deutsch (de-DE) und Englisch (en-US)
+Stand: 2026-11-12 · Version 1.1.1 (9) · Sprachen Deutsch (de-DE) und Englisch (en-US)
 
-Texte zum Kopieren in die Play Console. Die Grafiken liegen je Version in `store/<version>/`: deutsch in [store/1.1.0/de/](store/1.1.0/de/), englisch in [store/1.1.0/en/](store/1.1.0/en/), das Symbol in [store/1.1.0/](store/1.1.0/). Sie entstehen mit `flutter test tools/store/store_graphics_test.dart` aus der echten Oberfläche, und zwar im Ordner der Version aus `pubspec.yaml`. Die Bilder früherer Versionen bleiben liegen, etwa [store/1.0.0/](store/1.0.0/).
+Texte zum Kopieren in die Play Console. Die Grafiken liegen je Version in `store/<version>/`: deutsch in [store/1.1.1/de/](store/1.1.1/de/), englisch in [store/1.1.1/en/](store/1.1.1/en/), das Symbol in [store/1.1.1/](store/1.1.1/). Sie entstehen mit `flutter test tools/store/store_graphics_test.dart` aus der echten Oberfläche, und zwar im Ordner der Version aus `pubspec.yaml`. Die Bilder früherer Versionen bleiben liegen, etwa [store/1.1.0/](store/1.1.0/) und [store/1.0.0/](store/1.0.0/).
 
 ## App erstellen
 
@@ -65,7 +65,7 @@ Auch im Browser spielbar: https://agerber72.github.io/backgammon/
 
 ## Englischer Store-Eintrag (en-US)
 
-In der Play Console unter Hauptstore-Eintrag → Übersetzungen verwalten → Englisch (USA) – en-US anlegen. Die Grafiken stammen aus [store/1.1.0/en/](store/1.1.0/en/), das App-Symbol ist dasselbe.
+In der Play Console unter Hauptstore-Eintrag → Übersetzungen verwalten → Englisch (USA) – en-US anlegen. Die Grafiken stammen aus [store/1.1.1/en/](store/1.1.1/en/), das App-Symbol ist dasselbe.
 
 **App-Name**
 
@@ -119,12 +119,12 @@ Also playable in the browser: https://agerber72.github.io/backgammon/
 
 | Feld | Datei | Vorgabe von Google |
 | --- | --- | --- |
-| App-Symbol | [store/1.1.0/icon_512.png](store/1.1.0/icon_512.png) | 512 × 512, PNG; Google rundet die Ecken selbst ab |
-| Vorstellungsgrafik | [store/1.1.0/de/feature_graphic.png](store/1.1.0/de/feature_graphic.png) | 1024 × 500 |
+| App-Symbol | [store/1.1.1/icon_512.png](store/1.1.1/icon_512.png) | 512 × 512, PNG; Google rundet die Ecken selbst ab |
+| Vorstellungsgrafik | [store/1.1.1/de/feature_graphic.png](store/1.1.1/de/feature_graphic.png) | 1024 × 500 |
 | Screenshots Smartphone | `store/screenshot_*.png` | 2 bis 8 Bilder; 1920 × 1080 im Querformat |
 | Screenshots Tablet 7 Zoll | `store/tablet7_screenshot_*.png` | 1920 × 1200 im Querformat |
 | Screenshots Tablet 10 Zoll | `store/tablet10_screenshot_*.png` | 2560 × 1600 im Querformat |
-| Englisch | `store/1.1.0/en/` mit denselben Namen | wie oben |
+| Englisch | `store/1.1.1/en/` mit denselben Namen | wie oben |
 
 Reihenfolge der Screenshots für jedes Gerät: 2 Spielbeginn mit Richtungspfeil, 3 Zug mit Zielen, 4 Doppelangebot, 7 Bestenliste, 5 Ergebnis, 1 Farbwahl, 6 Einstellungen. Die ersten Bilder sieht man im Store zuerst, deshalb steht das Spiel vorn.
 
@@ -164,10 +164,10 @@ Alle Länder, die Google Play anbietet (Entscheidung vom 2026-11-04). Version 1.
 | Feld | Wert |
 | --- | --- |
 | Track | zuerst Interner Test, danach dasselbe Bundle in Produktion übernehmen |
-| Bundle | `build/release/de.p2g_it.backgammon_1.1.0-8.aab` aus `./tools/android/build_bundle.ps1`; das Skript prüft Versionscode und Berechtigungen |
-| Release-Name | 1.1.0 (8) |
-| Veröffentlicht | 2026-11-11, vollständiger Roll-out in Produktion |
-| Vorher | 1.0.0 (6), eingereicht am 2026-11-04, laut Play Console veröffentlicht am 2026-11-07 |
+| Bundle | `build/release/de.p2g_it.backgammon_1.1.1-9.aab` aus `./tools/android/build_bundle.ps1`; das Skript prüft Versionscode und Berechtigungen |
+| Release-Name | 1.1.1 (9) |
+| Veröffentlicht | noch offen; am 2026-11-12 nach dem internen Test in Produktion übernommen und mit Versionshinweisen und Screenshots aus `store/1.1.1/` zur Prüfung eingereicht |
+| Vorher | 1.1.0 (8), veröffentlicht am 2026-11-11 mit vollständigem Roll-out; 1.0.0 (6), eingereicht am 2026-11-04, laut Play Console veröffentlicht am 2026-11-07 |
 | Verwaltete Veröffentlichung | aktiviert: Von Google freigegebene Änderungen gehen erst mit „Änderungen veröffentlichen“ live |
 
 **Optimierungen beim Release**
@@ -185,21 +185,17 @@ Nach einer Änderung an den Optimierungen verlangt Google ein neu hochgeladenes 
 
 ```
 <de-DE>
-Neu in 1.1.0:
-• Die App gibt es jetzt auch auf Englisch
-• Persönliche Bestenliste mit Gesamtpunkten je Spielstärke und deinen letzten Partien
-• „Zu Ende spielen“ würfelt schneller aus und rettet Gammon und Backgammon, wo es geht
-• Flüssigeres Spiel: Spieltempo einstellbar, keine Wartezeit ohne Wahl, Countdown-Ring
-• Neues App-Symbol mit kleinerem Logo
+Neu in 1.1.1:
+• Antippen wählt den Stein zuverlässig, auch wenn der Finger etwas verrutscht
+• Doppelt der Computer, fragt eine Sprechblase „Annehmen oder Ablehnen“
+• Dunkelgraues Auswurffach für Schwarz, damit die schwarzen Steine besser zu sehen sind
 </de-DE>
 <en-US>
-New in 1.1.0:
-• The app is now available in English
-• Personal leaderboard with total points per level and your latest games
-• "Play to the end" bears off faster and saves the gammon and backgammon where it can
-• Smoother play: adjustable pace, no waiting without a choice, countdown ring
-• New app icon with a smaller logo
+New in 1.1.1:
+• Tapping selects a checker reliably, even if your finger slips a little
+• When the computer doubles, a speech bubble asks "Take or Pass"
+• Dark grey bear-off tray for Black, so the black checkers stand out
 </en-US>
 ```
 
-Versionshinweise von 1.0.0 (6): „Erste Version: Backgammon gegen den Computer in drei Spielstärken, mit Dopplerwürfel, Würfelstatistik und gespeicherter Partie.“
+Versionshinweise von 1.1.0 (8): „Die App gibt es jetzt auch auf Englisch; persönliche Bestenliste; „Zu Ende spielen“ würfelt schneller aus und rettet Gammon und Backgammon; einstellbares Spieltempo mit Countdown-Ring; neues App-Symbol.“ Versionshinweise von 1.0.0 (6): „Erste Version: Backgammon gegen den Computer in drei Spielstärken, mit Dopplerwürfel, Würfelstatistik und gespeicherter Partie.“

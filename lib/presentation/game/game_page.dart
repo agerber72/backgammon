@@ -267,16 +267,27 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
             onTapUp: (details) => tapAt(details.localPosition),
             onPanStart: (details) {
               final hit = _hit(assets, size, details.localPosition);
-              if (hit != null && hit != _controller.selected) {
-                _controller.tap(hit);
+              _dragStart = hit;
+              _dragSelected = hit != null && hit != _controller.selected;
+              if (_dragSelected) {
+                _controller.tap(hit!);
               }
+              _dragPosition = null;
             },
             onPanUpdate: (details) => _dragPosition = details.localPosition,
             onPanEnd: (details) {
               final position = _dragPosition;
-              if (position != null) {
-                tapAt(position);
+              final end = position == null
+                  ? _dragStart
+                  : _hit(assets, size, position);
+              // A finger that slips a little while tapping makes a short
+              // drag. Ending it where it started is that tap: it must not
+              // deselect the checker the drag has just selected.
+              if (end != null && !(end == _dragStart && _dragSelected)) {
+                _controller.tap(end);
               }
+              _dragStart = null;
+              _dragSelected = false;
               _dragPosition = null;
             },
             child: AnimatedSwitcher(
@@ -304,6 +315,11 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
   }
 
   Offset? _dragPosition;
+
+  /// The position under the finger when a drag starts, and whether the drag
+  /// selected its checker there.
+  int? _dragStart;
+  bool _dragSelected = false;
 
   BoardScene _scene() {
     final game = _controller.game;
@@ -404,11 +420,30 @@ class _GamePageState extends State<GamePage> with TickerProviderStateMixin {
               ),
             ],
             GamePhase.awaitingDoubleResponse => [
-              Tooltip(
-                message: l10n.doubleOffered(game.cube.value * 2),
-                child: Text(
-                  l10n.cubeValue(game.cube.value * 2),
-                  style: Theme.of(context).textTheme.titleMedium,
+              // The bubble reminds the person that the game waits for a
+              // decision on the double.
+              HintedButton(
+                hint: ButtonHint([
+                  HintAction(
+                    l10n.accept,
+                    Text(
+                      l10n.cubeValue(game.cube.value * 2),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    _controller.acceptDouble,
+                  ),
+                  HintAction(
+                    l10n.refuse,
+                    const Icon(Icons.close),
+                    _controller.refuseDouble,
+                  ),
+                ], separator: l10n.or),
+                child: Tooltip(
+                  message: l10n.doubleOffered(game.cube.value * 2),
+                  child: Text(
+                    l10n.cubeValue(game.cube.value * 2),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ),
               situational(

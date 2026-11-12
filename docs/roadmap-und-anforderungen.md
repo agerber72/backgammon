@@ -36,7 +36,7 @@ Die App-Version steht nur in `pubspec.yaml` als `Hauptversion.Nebenversion.Korre
 - Die Build-Nummer hinter `+` wird vor jedem Build erhöht, der das Gerät des Entwicklers verlässt, etwa für den Play Store oder für Tester. Sie wird nie zurückgesetzt, denn Google Play verlangt einen steigenden `versionCode`.
 - Jede veröffentlichte Version bekommt auf GitHub ein Tag `vX.Y.Z`.
 
-Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produktion, auf Deutsch und Englisch, und auf GitHub als `v1.1.0` markiert; 1.0.0 (6) trägt das Tag `v1.0.0`. Die Windows-Version 1.1.0 liegt als ZIP im GitHub-Release `v1.1.0`, die Web-Version ist öffentlich. D6 ist damit abgeschlossen. Die Befunde in T7.10 kommen ins nächste Release.
+Aktueller Stand: Version 1.1.0 (8) ist seit 2026-11-11 im Play Store in Produktion, auf Deutsch und Englisch, und auf GitHub als `v1.1.0` markiert; 1.0.0 (6) trägt das Tag `v1.0.0`. Die Windows-Version 1.1.0 liegt als ZIP im GitHub-Release `v1.1.0`, die Web-Version ist öffentlich. D6 ist damit abgeschlossen. Die Befunde aus T7.10 sind umgesetzt: Version 1.1.1 (9) liegt seit 2026-11-12 bei Google zur Prüfung für die Produktion, die Windows-Version 1.1.1 im GitHub-Release `v1.1.1` (T7.11).
 
 ## Tasks
 
@@ -313,9 +313,16 @@ Zwischenrelease 1.1.0 nach Version 1.
     - [x] Version `1.1.0+7` setzen und Bundle bauen
     - [x] Version `1.1.0+8` mit T7.9 setzen und Bundle neu bauen; Store-Screenshots der Einstellungen und der Bestenliste neu erzeugt; Store-Grafiken je Version in `docs/store/<version>/<sprache>/`, die von 1.0.0 wiederhergestellt
     - [x] Im Play Store und auf GitHub veröffentlichen (2026-11-11): Produktion 1.1.0 (8) mit vollständigem Roll-out, englischer Store-Eintrag und Erklärung zum Händlerstatus; Tag `v1.1.0` auf dem Commit `9d84ba1`
-- [ ] **T7.10 Befunde für das nächste Release** (Rückmeldung vom 2026-11-11 nach dem Test von 1.1.0 am Handy; noch nicht umgesetzt)
-    - [ ] Fach von Schwarz: Der schwarze Filz im Auswurffach von Schwarz wird dunkelgrau, damit sich die ausgewürfelten schwarzen Steine besser vom Grund abheben (`A-328`). Heute `tray_felt_black` `#232529` in `tools/blender/board_config.json`; die Fachbilder in beiden Auflösungen müssen neu gerendert werden (`./tools/blender/render.ps1`), danach die Store-Screenshots neu erzeugen
-    - [ ] Doppelangebot des Computers: Doppelt der Computer, erscheint neben den Symbolen Annehmen und Ablehnen eine anklickbare Sprechblase wie beim eigenen Doppeln (`A-225`), etwa „×4 Annehmen oder Ablehnen“, damit der Spieler sieht, dass er sich entscheiden muss (`A-226`, Rückmeldung vom 2026-11-11)
+- [x] **T7.10 Befunde für das nächste Release** (Rückmeldungen vom 2026-11-11 und 2026-11-12 nach dem Test von 1.1.0 am Handy; umgesetzt in 1.1.1)
+    - [x] Fach von Schwarz: Der schwarze Filz im Auswurffach von Schwarz ist jetzt dunkelgrau, damit sich die ausgewürfelten schwarzen Steine besser vom Grund abheben (`A-328`): `tray_felt_black` von `#232529` auf `#4B4E54` in `tools/blender/board_config.json`, Bilder in beiden Auflösungen neu gerendert, Store-Grafiken in `docs/store/1.1.1/` neu erzeugt (2026-11-12)
+    - [x] Doppelangebot des Computers: Doppelt der Computer, steht neben dem neuen Einsatz über Annehmen und Ablehnen eine anklickbare Sprechblase wie beim eigenen Doppeln (`A-225`), etwa „×4 Annehmen oder Ablehnen“, damit der Spieler sieht, dass er sich entscheiden muss (`A-226`, Rückmeldung vom 2026-11-11, umgesetzt am 2026-11-12 mit Widget-Tests)
+    - [x] Auswahl per Touch flackert: Am Handy geht seit 1.1.0 die Markierung eines angetippten Steins vor allem im schnellen Spieltempo kurz an und gleich wieder aus, sodass der Stein nicht sicher gewählt wirkt (`A-203`, Rückmeldung vom 2026-11-12). Ursache in `lib/presentation/game/game_page.dart`: Rutscht der Finger beim Tippen, erkennt der `GestureDetector` ein Ziehen statt eines Tipps; `onPanStart` wählte den Stein, `onPanEnd` tippte auf derselben Zunge noch einmal und wählte ihn wieder ab. Jetzt zählt ein Ziehen, das dort endet, wo es den Stein gewählt hat, als ein einziger Tipp (umgesetzt am 2026-11-12, Widget-Test mit verrutschendem Finger)
+    - [x] Test am Handy: Touch-Korrektur per Release-APK über USB geprüft (2026-11-12)
+- [ ] **T7.11 Release 1.1.1**
+    - [x] Version `1.1.1+9` setzen, Bundle bauen, Store-Grafiken und Versionshinweise in `docs/store-eintrag.md` (2026-11-12)
+    - [x] Interner Test im Play Store (2026-11-12), danach in Produktion übernommen, mit Versionshinweisen und neuen Screenshots zur Prüfung eingereicht
+    - [ ] Nach der Freigabe durch Google mit „Änderungen veröffentlichen“ live schalten
+    - [x] Windows-ZIP gebaut und gestartet, GitHub-Release `v1.1.1` mit Tag angelegt (2026-11-12)
 
 ### D8 Coach
 
